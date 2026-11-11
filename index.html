@@ -52,6 +52,7 @@ h1,h2,h3{ margin:0; }
 .btn-secondary{ background:#fff; color:var(--text); border:2px solid #E2E8F0; box-shadow:0 4px 0 #CBD5E1; }
 .btn-secondary:active{ transform:translateY(3px); box-shadow:0 1px 0 #CBD5E1; }
 .btn-danger{ background:#fff; color:var(--red); border:2px solid #FFD5D5; box-shadow:0 4px 0 #FFBABA; }
+.btn-map{ background:#EAF4FF; color:#0B6FB8; border:2px solid #BFE1FF; box-shadow:0 4px 0 #9BCDFF; }
 .back-btn{ background:transparent; color:#fff; font-weight:700; padding:10px 6px; border-radius:12px; }
 .back-btn:active{ background:rgba(255,255,255,.12); }
 
@@ -106,6 +107,21 @@ h1,h2,h3{ margin:0; }
 .island-progress-fill{ background:#fff; height:100%; border-radius:999px; transition:width .4s ease; }
 .trophy-banner{ margin-top:16px; background:linear-gradient(135deg,#FFD93D,#FFB84D); color:#5A3E00; font-weight:800; text-align:center; padding:14px; border-radius:16px; box-shadow:0 6px 0 #C98A00; }
 
+.ranking-cta{ display:block; width:100%; background:linear-gradient(135deg,#FFD93D,#FFB84D); color:#5A3E00; font-weight:800; font-size:1rem; text-align:center; padding:13px; border:none; border-radius:16px; box-shadow:0 5px 0 #C98A00; margin-bottom:14px; cursor:pointer; }
+.ranking-cta:active{ transform:translateY(4px); box-shadow:0 1px 0 #C98A00; }
+
+/* ============== RANKING ============== */
+.ranking-list{ margin-top:14px; display:flex; flex-direction:column; gap:8px; }
+.ranking-loading, .ranking-empty{ background:#fff; border-radius:16px; padding:22px 16px; text-align:center; color:var(--text-soft); font-weight:700; box-shadow:var(--card-shadow); }
+.ranking-row{ display:flex; align-items:center; gap:10px; background:#fff; border-radius:16px; padding:10px 12px; box-shadow:var(--card-shadow); }
+.ranking-row.mine{ background:#FFF6DD; border:2px solid #FFD93D; }
+.rank-pos{ flex:none; width:36px; text-align:center; font-weight:800; font-size:1rem; color:var(--text-soft); }
+.rank-avatar{ flex:none; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.3rem; box-shadow:0 2px 0 rgba(0,0,0,.15); }
+.rank-info{ flex:1; min-width:0; }
+.rank-name{ font-weight:800; font-size:.92rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.you-tag{ background:#FFD93D; color:#5A3E00; font-size:.65rem; padding:1px 6px; border-radius:999px; margin-left:4px; font-weight:800; }
+.rank-stats{ font-size:.76rem; color:var(--text-soft); font-weight:700; }
+
 .badges-section{ margin-top:18px; }
 .badge-row{ display:flex; gap:8px; flex-wrap:wrap; }
 .badge-chip{ display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); color:#fff; padding:8px 12px; border-radius:999px; font-size:.78rem; font-weight:700; }
@@ -150,6 +166,7 @@ h1,h2,h3{ margin:0; }
 .q-part{ color:var(--text-soft); font-weight:700; font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; }
 .q-prompt{ font-size:1.18rem; font-weight:800; line-height:1.35; margin-bottom:14px; }
 .q-hint{ color:var(--text-soft); font-size:.85rem; margin:-6px 0 12px; font-style:italic; }
+.q-multi-badge{ display:inline-flex; align-items:center; gap:6px; background:linear-gradient(180deg,#FFE27A,var(--yellow)); color:#7A4B00; font-weight:800; font-size:.78rem; letter-spacing:.03em; text-transform:uppercase; padding:6px 12px; border-radius:999px; margin:-4px 0 14px; box-shadow:0 3px 0 #D9A400; }
 .q-options{ display:flex; flex-direction:column; gap:10px; }
 .option-btn{ background:#F3F4F6; border:2.5px solid transparent; border-radius:16px; padding:14px 16px; font-size:1.02rem; font-weight:700; text-align:left; color:var(--text); transition:transform .08s; }
 .option-btn:active{ transform:scale(.98); }
@@ -173,6 +190,10 @@ h1,h2,h3{ margin:0; }
 .feedback-banner{ margin-top:16px; border-radius:14px; padding:12px 14px; font-weight:800; text-align:center; animation:screenIn .3s ease; }
 .feedback-banner.good{ background:#DFF6E3; color:#1B5E25; }
 .feedback-banner.bad{ background:#FFE9E0; color:#8A3B1F; }
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:0.95em;line-height:1.15;margin:0 3px;font-weight:700;}
+.frac .num{border-bottom:2px solid currentColor;padding:0 4px 1px;}
+.frac .den{padding:1px 4px 0;}
+
 .explain-box{ margin-top:12px; background:#EEF2FF; border:2px solid #C7D2FE; border-radius:14px; padding:12px 14px; color:#3730A3; font-size:.95rem; line-height:1.45; display:flex; gap:10px; align-items:flex-start; animation:screenIn .3s ease; }
 .explain-box .explain-icon{ font-size:1.2rem; flex:none; line-height:1.2; }
 .explain-box .explain-text b{ display:block; font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; color:#4338CA; margin-bottom:2px; }
@@ -218,10 +239,16 @@ h1,h2,h3{ margin:0; }
 <body>
 <div id="app"></div>
 <div id="toast"></div>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script>
 /* Banco de questões - 3º Trimestre - 4º Ano
    Fonte: PDFs de conteúdo de provas (Cap. 13-15 Port, Cap.13 Mat, Cap.8-9 Hist,
    Cap.8-9 Geo, Cap.13 Ciências) + lista de vocabulário/gramática de Inglês (Unit 5-6). */
+
+// Fração empilhada (numerador em cima, traço, denominador embaixo) para questões de
+// Matemática — muito mais clara para crianças de 10 anos do que "2/3" em texto corrido.
+function F(n, d){ return '<span class="frac"><span class="num">'+n+'</span><span class="den">'+d+'</span></span>'; }
 
 const SUBJECTS = [
   // ============================= LÍNGUA PORTUGUESA =============================
@@ -352,32 +379,32 @@ const SUBJECTS = [
         id:'mat-1', name:'Comparando frações', cap:'Capítulo 13',
         questions: [
           { id:'mat-1-1', part:'Comparando frações', type:'choice',
-            prompt:'Qual fração é maior: 1/2 ou 1/4?',
-            options:['1/2','1/4','São iguais','Não dá para comparar'],
+            prompt:`Qual fração é maior: ${F(1,2)} ou ${F(1,4)}?`,
+            options:[F(1,2),F(1,4),'São iguais','Não dá para comparar'],
             correct:[0],
-            explain:"Com o mesmo numerador (1), quanto menor o denominador, maior é cada parte — por isso 1/2 é maior que 1/4." },
+            explain:`Com o mesmo numerador (1), quanto menor o denominador, maior é cada parte — por isso ${F(1,2)} é maior que ${F(1,4)}.` },
           { id:'mat-1-2', part:'Comparando frações', type:'choice',
             prompt:'Entre frações com o mesmo denominador, é maior a que tem:',
             options:['Maior numerador','Menor numerador','Maior denominador','Menor denominador'],
             correct:[0],
             explain:"Com denominadores iguais, a fração maior é a que tem o maior numerador." },
           { id:'mat-1-3', part:'Comparando frações', type:'choice',
-            prompt:'Qual é menor: 3/5 ou 2/5?',
-            options:['3/5','2/5','São iguais','Impossível saber'],
+            prompt:`Qual é menor: ${F(3,5)} ou ${F(2,5)}?`,
+            options:[F(3,5),F(2,5),'São iguais','Impossível saber'],
             correct:[1],
-            explain:"Com o mesmo denominador (5), a fração com menor numerador é a menor: 2/5 < 3/5." },
+            explain:`Com o mesmo denominador (5), a fração com menor numerador é a menor: ${F(2,5)} é menor que ${F(3,5)}.` },
           { id:'mat-1-4', part:'Comparando frações', type:'items',
-            prompt:'Compare as frações:',
+            prompt:'Compare as frações de cada linha. O que podemos afirmar sobre a primeira fração, em relação à segunda?',
             items:[
-              { label:'2/3  ?  1/3', options:['é maior que','é menor que'], correct:0 },
-              { label:'1/6  ?  4/6', options:['é maior que','é menor que'], correct:1 },
+              { label:`${F(2,3)} e ${F(1,3)}`, options:['É maior que a segunda','É menor que a segunda'], correct:0 },
+              { label:`${F(1,6)} e ${F(4,6)}`, options:['É maior que a segunda','É menor que a segunda'], correct:1 },
             ],
-            explain:"2/3 é maior que 1/3 (numerador maior, mesmo denominador); 1/6 é menor que 4/6, pelo mesmo motivo." },
+            explain:`${F(2,3)} é maior que ${F(1,3)} (numerador maior, mesmo denominador); ${F(1,6)} é menor que ${F(4,6)}, pelo mesmo motivo.` },
           { id:'mat-1-5', part:'Comparando frações', type:'choice', multi:true,
             prompt:'Marque as comparações corretas:',
-            options:['3/4 > 1/4','2/5 < 1/5','5/8 > 3/8','1/2 < 1/3'],
+            options:[`${F(3,4)} é maior que ${F(1,4)}`,`${F(2,5)} é menor que ${F(1,5)}`,`${F(5,8)} é maior que ${F(3,8)}`,`${F(1,2)} é menor que ${F(1,3)}`],
             correct:[0,2],
-            explain:"3/4 > 1/4 e 5/8 > 3/8 porque, com o mesmo denominador, vale a fração de maior numerador." },
+            explain:`${F(3,4)} é maior que ${F(1,4)} e ${F(5,8)} é maior que ${F(3,8)} porque, com o mesmo denominador, vale a fração de maior numerador.` },
           { id:'mat-1-6', part:'Comparando frações', type:'choice',
             prompt:'Para comparar frações com denominadores diferentes, uma boa estratégia é:',
             options:['Comparar só os numeradores','Deixá-las com o mesmo denominador antes de comparar','Somar numerador e denominador','Ignorar o denominador'],
@@ -392,12 +419,12 @@ const SUBJECTS = [
             prompt:'Frações equivalentes representam:',
             options:['Quantidades diferentes','A mesma quantidade, escrita de formas diferentes','Sempre números inteiros','Sempre frações impróprias'],
             correct:[1],
-            explain:"Frações equivalentes representam a mesma quantidade, só escrita de formas diferentes, como 1/2 e 2/4." },
+            explain:`Frações equivalentes representam a mesma quantidade, só escrita de formas diferentes, como ${F(1,2)} e ${F(2,4)}.` },
           { id:'mat-2-2', part:'Frações equivalentes', type:'choice',
-            prompt:'Qual fração é equivalente a 1/2?',
-            options:['2/3','2/4','3/5','1/3'],
+            prompt:`Qual fração é equivalente a ${F(1,2)}?`,
+            options:[F(2,3),F(2,4),F(3,5),F(1,3)],
             correct:[1],
-            explain:"2/4 representa a mesma quantidade que 1/2 (multiplicando numerador e denominador por 2)." },
+            explain:`${F(2,4)} representa a mesma quantidade que ${F(1,2)} (multiplicando numerador e denominador por 2).` },
           { id:'mat-2-3', part:'Frações equivalentes', type:'choice',
             prompt:'Para encontrar uma fração equivalente, multiplicamos (ou dividimos) numerador e denominador:',
             options:['Por números diferentes','Pelo mesmo número','Só o numerador','Só o denominador'],
@@ -406,20 +433,20 @@ const SUBJECTS = [
           { id:'mat-2-4', part:'Frações equivalentes', type:'items',
             prompt:'Complete as frações equivalentes:',
             items:[
-              { label:'1/3 = ?/6', options:['2/6','3/6'], correct:0 },
-              { label:'2/5 = ?/10', options:['4/10','5/10'], correct:0 },
+              { label:`${F(1,3)} = ${F('?',6)}`, options:[F(2,6),F(3,6)], correct:0 },
+              { label:`${F(2,5)} = ${F('?',10)}`, options:[F(4,10),F(5,10)], correct:0 },
             ],
-            explain:"Multiplicando numerador e denominador por 2, 1/3 vira 2/6 e 2/5 vira 4/10." },
+            explain:`Multiplicando numerador e denominador por 2, ${F(1,3)} vira ${F(2,6)} e ${F(2,5)} vira ${F(4,10)}.` },
           { id:'mat-2-5', part:'Frações equivalentes', type:'choice', multi:true,
             prompt:'Marque os pares de frações equivalentes:',
-            options:['1/2 e 2/4','1/3 e 2/5','3/4 e 6/8','1/5 e 2/8'],
+            options:[`${F(1,2)} e ${F(2,4)}`,`${F(1,3)} e ${F(2,5)}`,`${F(3,4)} e ${F(6,8)}`,`${F(1,5)} e ${F(2,8)}`],
             correct:[0,2],
-            explain:"1/2 e 2/4 são equivalentes (×2); 3/4 e 6/8 também são equivalentes (×2)." },
+            explain:`${F(1,2)} e ${F(2,4)} são equivalentes (×2); ${F(3,4)} e ${F(6,8)} também são equivalentes (×2).` },
           { id:'mat-2-6', part:'Frações equivalentes', type:'choice',
-            prompt:'3/6 é equivalente a qual fração mais simples?',
-            options:['1/2','1/3','2/3','1/6'],
+            prompt:`${F(3,6)} é equivalente a qual fração mais simples?`,
+            options:[F(1,2),F(1,3),F(2,3),F(1,6)],
             correct:[0],
-            explain:"Dividindo 3/6 por 3 (numerador e denominador), chegamos a 1/2." },
+            explain:`Dividindo ${F(3,6)} por 3 (numerador e denominador), chegamos a ${F(1,2)}.` },
         ],
       },
       {
@@ -431,10 +458,10 @@ const SUBJECTS = [
             correct:[1],
             explain:"Simplificar uma fração é escrevê-la com números menores, sem mudar seu valor." },
           { id:'mat-3-2', part:'Simplificação de frações', type:'choice',
-            prompt:'Qual é a forma simplificada de 4/8?',
-            options:['1/2','2/4','1/4','4/4'],
+            prompt:`Qual é a forma simplificada de ${F(4,8)}?`,
+            options:[F(1,2),F(2,4),F(1,4),F(4,4)],
             correct:[0],
-            explain:"Dividindo 4/8 por 4 (numerador e denominador), chegamos a 1/2." },
+            explain:`Dividindo ${F(4,8)} por 4 (numerador e denominador), chegamos a ${F(1,2)}.` },
           { id:'mat-3-3', part:'Simplificação de frações', type:'choice',
             prompt:'Uma fração está em sua forma mais simples (irredutível) quando:',
             options:['Numerador e denominador não têm mais divisor comum além do 1','O numerador é 1','O denominador é 10','Ela é maior que 1'],
@@ -443,20 +470,20 @@ const SUBJECTS = [
           { id:'mat-3-4', part:'Simplificação de frações', type:'items',
             prompt:'Simplifique:',
             items:[
-              { label:'6/9', options:['2/3','3/4'], correct:0 },
-              { label:'10/20', options:['1/2','2/5'], correct:0 },
+              { label:F(6,9), options:[F(2,3),F(3,4)], correct:0 },
+              { label:F(10,20), options:[F(1,2),F(2,5)], correct:0 },
             ],
-            explain:"Dividindo 6/9 por 3 obtemos 2/3; dividindo 10/20 por 10 obtemos 1/2." },
+            explain:`Dividindo ${F(6,9)} por 3 obtemos ${F(2,3)}; dividindo ${F(10,20)} por 10 obtemos ${F(1,2)}.` },
           { id:'mat-3-5', part:'Simplificação de frações', type:'choice',
-            prompt:'Para simplificar 9/12, podemos dividir numerador e denominador por:',
+            prompt:`Para simplificar ${F(9,12)}, podemos dividir numerador e denominador por:`,
             options:['2','3','5','9'],
             correct:[1],
-            explain:"9/12 pode ser simplificada dividindo numerador e denominador por 3, resultando em 3/4." },
+            explain:`${F(9,12)} pode ser simplificada dividindo numerador e denominador por 3, resultando em ${F(3,4)}.` },
           { id:'mat-3-6', part:'Simplificação de frações', type:'choice', multi:true,
             prompt:'Marque as frações que já estão simplificadas (irredutíveis):',
-            options:['2/3','4/6','3/5','5/10'],
+            options:[F(2,3),F(4,6),F(3,5),F(5,10)],
             correct:[0,2],
-            explain:"2/3 e 3/5 já são irredutíveis; 4/6 e 5/10 ainda podem ser simplificadas (por 2 e por 5)." },
+            explain:`${F(2,3)} e ${F(3,5)} já são irredutíveis; ${F(4,6)} e ${F(5,10)} ainda podem ser simplificadas (por 2 e por 5).` },
         ],
       },
       {
@@ -468,22 +495,22 @@ const SUBJECTS = [
             correct:[1],
             explain:"Para somar frações com o mesmo denominador, somamos os numeradores e mantemos o denominador." },
           { id:'mat-4-2', part:'Operações com frações', type:'choice',
-            prompt:'Quanto é 1/5 + 2/5?',
-            options:['3/5','3/10','1/10','2/25'],
+            prompt:`Quanto é ${F(1,5)} + ${F(2,5)}?`,
+            options:[F(3,5),F(3,10),F(1,10),F(2,25)],
             correct:[0],
-            explain:"1/5 + 2/5 = (1+2)/5 = 3/5." },
+            explain:`${F(1,5)} + ${F(2,5)} = ${F('1+2',5)} = ${F(3,5)}.` },
           { id:'mat-4-3', part:'Operações com frações', type:'choice',
-            prompt:'Quanto é 4/7 - 1/7?',
-            options:['3/14','3/7','5/7','Não dá para calcular'],
+            prompt:`Quanto é ${F(4,7)} - ${F(1,7)}?`,
+            options:[F(3,14),F(3,7),F(5,7),'Não dá para calcular'],
             correct:[1],
-            explain:"4/7 - 1/7 = (4-1)/7 = 3/7." },
+            explain:`${F(4,7)} - ${F(1,7)} = ${F('4-1',7)} = ${F(3,7)}.` },
           { id:'mat-4-4', part:'Operações com frações', type:'items',
             prompt:'Resolva:',
             items:[
-              { label:'2/6 + 3/6 = ?', options:['5/6','5/12'], correct:0 },
-              { label:'5/8 - 2/8 = ?', options:['3/8','3/16'], correct:0 },
+              { label:`${F(2,6)} + ${F(3,6)} = ?`, options:[F(5,6),F(5,12)], correct:0 },
+              { label:`${F(5,8)} - ${F(2,8)} = ?`, options:[F(3,8),F(3,16)], correct:0 },
             ],
-            explain:"Somando os numeradores: 2/6+3/6=5/6; subtraindo: 5/8-2/8=3/8 — sempre mantendo o denominador." },
+            explain:`Somando os numeradores: ${F(2,6)}+${F(3,6)}=${F(5,6)}; subtraindo: ${F(5,8)}-${F(2,8)}=${F(3,8)} — sempre mantendo o denominador.` },
           { id:'mat-4-5', part:'Operações com frações', type:'choice',
             prompt:'Para somar frações com denominadores diferentes, primeiro precisamos:',
             options:['Somar os numeradores direto','Encontrar frações equivalentes com o mesmo denominador','Simplificar antes de tudo','Multiplicar os denominadores sempre'],
@@ -491,9 +518,9 @@ const SUBJECTS = [
             explain:"Para somar frações com denominadores diferentes, primeiro encontramos frações equivalentes com o mesmo denominador." },
           { id:'mat-4-6', part:'Operações com frações', type:'choice', multi:true,
             prompt:'Marque as operações corretas:',
-            options:['1/4 + 1/4 = 2/4','1/3 + 1/3 = 2/6','3/5 - 1/5 = 2/5','2/9 - 1/9 = 1/0'],
+            options:[`${F(1,4)} + ${F(1,4)} = ${F(2,4)}`,`${F(1,3)} + ${F(1,3)} = ${F(2,6)}`,`${F(3,5)} - ${F(1,5)} = ${F(2,5)}`,`${F(2,9)} - ${F(1,9)} = ${F(1,0)}`],
             correct:[0,2],
-            explain:"1/4+1/4=2/4 e 3/5-1/5=2/5 estão certas, somando/subtraindo só os numeradores e mantendo o denominador." },
+            explain:`${F(1,4)}+${F(1,4)}=${F(2,4)} e ${F(3,5)}-${F(1,5)}=${F(2,5)} estão certas, somando/subtraindo só os numeradores e mantendo o denominador.` },
         ],
       },
     ],
@@ -1189,7 +1216,26 @@ function defaultSave(){
     xp: 0, coins: 0, streak: 0, lastPlayedDate: null,
     phaseResults: {}, // phaseId -> {stars, bestCorrect, total, attempts}
     badges: [], soundOn: true, createdAt: null,
+    playerId: null, // id anônimo estável neste aparelho, usado no ranking compartilhado
   };
+}
+
+// ---------- Identidade anônima do jogador (para o ranking compartilhado) ----------
+function ensurePlayerId(){
+  if (STATE.playerId) return STATE.playerId;
+  let id;
+  try{ id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : null; }catch(e){ id = null; }
+  if (!id) id = 'p-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+  STATE.playerId = id;
+  saveGame();
+  return id;
+}
+
+// ---------- Total de estrelas (para o ranking) ----------
+function totalStarsEarned(){
+  let t = 0;
+  SUBJECTS.forEach(s => s.phases.forEach(p => { const r = STATE.phaseResults[p.id]; if (r) t += r.stars; }));
+  return t;
 }
 let STATE = loadSave();
 function loadSave(){
@@ -1269,7 +1315,109 @@ if (typeof module !== 'undefined') {
     SAVE_KEY, defaultSave, loadSave, saveGame, resetGame, registerPlayToday,
     levelForXp, xpIntoLevel, BADGE_DEFS, subjectBadgeId, awardBadge, checkStreakBadges,
     starsFor, isPhaseUnlocked, isSubjectComplete, subjectStars, allSubjectsComplete,
+    ensurePlayerId, totalStarsEarned,
   };
+}
+
+</script>
+<script>
+/* Ranking compartilhado via Firebase Firestore (plano Spark, gratuito, sem login).
+   Qualquer falha de rede/Firebase é isolada aqui com try/catch: o jogo continua
+   funcionando 100% offline mesmo se a nuvem estiver indisponível. */
+
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBT9lGYMVODn4W2mhky7GBgQtLQJs85sAU",
+  authDomain: "simulado-4ano-ranking.firebaseapp.com",
+  projectId: "simulado-4ano-ranking",
+  storageBucket: "simulado-4ano-ranking.firebasestorage.app",
+  messagingSenderId: "13551801863",
+  appId: "1:13551801863:web:7fa89538422e67ab483ca2",
+};
+
+let _db = null;
+let _dbFailed = false;
+function getDb(){
+  if (_db) return _db;
+  if (_dbFailed) return null;
+  try{
+    if (typeof firebase === 'undefined' || !firebase.initializeApp){ _dbFailed = true; return null; }
+    if (!firebase.apps || !firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    _db = firebase.firestore();
+    return _db;
+  }catch(e){
+    console.warn('[ranking] Firebase indisponível:', e);
+    _dbFailed = true;
+    return null;
+  }
+}
+
+// ---------- Enviar minha pontuação para o ranking ----------
+let _syncTimer = null;
+function syncScoreToCloud(){
+  try{
+    const db = getDb();
+    if (!db) return;
+    const id = ensurePlayerId();
+    clearTimeout(_syncTimer);
+    _syncTimer = setTimeout(()=>{
+      try{
+        const avatarEmoji = (AVATARS.find(a=>a.id===STATE.avatar)||{}).emoji || '🦸';
+        const data = {
+          name: String(STATE.playerName || 'Explorador(a)').slice(0, 30),
+          avatar: String(avatarEmoji),
+          color: String(STATE.avatarColor || '#FF6B6B'),
+          xp: Math.max(0, Math.min(200000, Math.round(STATE.xp || 0))),
+          stars: Math.max(0, Math.round(totalStarsEarned())),
+          updatedAt: (firebase.firestore && firebase.firestore.FieldValue)
+            ? firebase.firestore.FieldValue.serverTimestamp() : Date.now(),
+        };
+        db.collection('scores').doc(id).set(data, { merge: true })
+          .catch(e=> console.warn('[ranking] falha ao enviar pontuação:', e));
+      }catch(e){ console.warn('[ranking] erro ao montar dados de sincronização:', e); }
+    }, 350);
+  }catch(e){ console.warn('[ranking] syncScoreToCloud falhou:', e); }
+}
+
+// ---------- Buscar o ranking (tempo real, com fallback de leitura única) ----------
+function loadRanking(onData, onError){
+  let unsub = () => {};
+  try{
+    const db = getDb();
+    if (!db){ onError && onError(new Error('Firebase indisponível')); return unsub; }
+    const q = db.collection('scores').orderBy('xp', 'desc').limit(50);
+    try{
+      const stop = q.onSnapshot(
+        snap => {
+          const rows = [];
+          snap.forEach(doc => rows.push(Object.assign({ id: doc.id }, doc.data())));
+          onData(rows);
+        },
+        err => {
+          console.warn('[ranking] onSnapshot falhou, tentando leitura única:', err);
+          q.get().then(snap=>{
+            const rows = [];
+            snap.forEach(doc => rows.push(Object.assign({ id: doc.id }, doc.data())));
+            onData(rows);
+          }).catch(e2 => onError && onError(e2));
+        }
+      );
+      unsub = stop;
+    }catch(e){
+      // navegador/SDK sem suporte a onSnapshot: faz leitura única
+      q.get().then(snap=>{
+        const rows = [];
+        snap.forEach(doc => rows.push(Object.assign({ id: doc.id }, doc.data())));
+        onData(rows);
+      }).catch(e2 => onError && onError(e2));
+    }
+  }catch(e){
+    onError && onError(e);
+  }
+  return unsub;
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = { FIREBASE_CONFIG, getDb, syncScoreToCloud, loadRanking };
 }
 
 </script>
@@ -1281,9 +1429,15 @@ const root = document.getElementById('app');
 const toastEl = document.getElementById('toast');
 let NAV = { screen:'boot' };
 let QUIZ = null; // {subject, phase, index, answers:[], correctCount, selected:[]}
+let _rankingUnsub = null;
 
 function el(html){ const t=document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; }
 function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+// rich(): usado SÓ para conteúdo autoral nosso (prompt/opções/explicação das questões),
+// nunca para texto digitado pelo usuário. Permite marcadores HTML de apresentação como
+// <span class="frac">...</span> (fração empilhada) sem escapar a tag. Não há risco de XSS
+// aqui porque esse texto vem exclusivamente de questions.js, nunca de input do jogador.
+function rich(s){ return String(s); }
 function findSubject(id){ return SUBJECTS.find(s=>s.id===id); }
 function findPhase(subject, id){ return subject.phases.find(p=>p.id===id); }
 
@@ -1297,11 +1451,13 @@ function showToast(msg){
 // ---------------------------- BOOT ----------------------------
 function boot(){
   registerPlayToday();
+  ensurePlayerId();
   if (!STATE.playerName) { goTo('onboarding'); }
-  else { goTo('map'); }
+  else { goTo('map'); syncScoreToCloud(); }
 }
 
 function goTo(screen, params){
+  if (NAV.screen === 'ranking' && screen !== 'ranking' && _rankingUnsub){ _rankingUnsub(); _rankingUnsub = null; }
   NAV = Object.assign({ screen }, params||{});
   render();
   window.scrollTo(0,0);
@@ -1316,6 +1472,7 @@ function render(){
   if (NAV.screen === 'phaseIntro') return renderPhaseIntro();
   if (NAV.screen === 'quiz') return renderQuiz();
   if (NAV.screen === 'result') return renderResult();
+  if (NAV.screen === 'ranking') return renderRanking();
 }
 
 // ---------------------------- ONBOARDING ----------------------------
@@ -1376,6 +1533,7 @@ function renderOnboarding(){
     STATE.playerName = name; STATE.avatar = pendingAvatar; STATE.avatarColor = pendingColor;
     if(!STATE.createdAt) STATE.createdAt = Date.now();
     saveGame();
+    syncScoreToCloud();
     SFX.whoosh();
     showToast(pick(MASCOT_LINES.welcome));
     goTo('map');
@@ -1441,6 +1599,9 @@ function renderMap(){
   const mascotMsg = el(`<div class="mascot-banner"><span class="mascot-emoji">${MASCOT}</span><span class="speech">${esc(pick(MASCOT_LINES.welcome))}</span></div>`);
   wrap.appendChild(mascotMsg);
 
+  const rankingCta = el(`<button class="ranking-cta" id="rankingCta">🏆 Ver Ranking da Turma</button>`);
+  wrap.appendChild(rankingCta);
+
   const grid = el(`<div class="island-grid"></div>`);
   SUBJECTS.forEach(subject => {
     const totalStars = subject.phases.length * 3;
@@ -1472,6 +1633,63 @@ function renderMap(){
     SFX.click();
     goTo('island', { subjectId: c.dataset.subject });
   }));
+  wrap.querySelector('#rankingCta').addEventListener('click', ()=>{
+    SFX.click();
+    goTo('ranking');
+  });
+}
+
+// ---------------------------- RANKING (compartilhado via Firebase) ----------------------------
+function renderRanking(){
+  root.innerHTML = '';
+  const wrap = el(`<div class="screen ranking-screen"></div>`);
+  wrap.insertAdjacentHTML('beforeend', topBarHtml());
+
+  wrap.appendChild(el(`
+    <div class="island-header">
+      <button class="back-btn" id="backToMap">⬅ Mapa</button>
+      <div class="island-header-title">🏆 Ranking da Turma</div>
+    </div>`));
+
+  wrap.appendChild(el(`<div class="mascot-banner"><span class="mascot-emoji">${MASCOT}</span><span class="speech">Veja como você está em relação aos seus colegas! O ranking é o mesmo pra todo mundo, em qualquer celular.</span></div>`));
+
+  const listWrap = el(`<div class="ranking-list" id="rankingList"><div class="ranking-loading">⏳ Carregando ranking...</div></div>`);
+  wrap.appendChild(listWrap);
+
+  root.appendChild(wrap);
+  wireTopBar(wrap);
+  wrap.querySelector('#backToMap').addEventListener('click', ()=>{
+    SFX.click();
+    if (_rankingUnsub){ _rankingUnsub(); _rankingUnsub = null; }
+    goTo('map');
+  });
+
+  ensurePlayerId();
+  if (_rankingUnsub){ _rankingUnsub(); _rankingUnsub = null; }
+  _rankingUnsub = loadRanking((rows)=>{
+    const list = document.getElementById('rankingList');
+    if (!list) return; // tela já trocou
+    if (!rows || !rows.length){
+      list.innerHTML = `<div class="ranking-empty">🌱 Ainda não há ninguém no ranking. Jogue uma fase para ser o primeiro a aparecer aqui!</div>`;
+      return;
+    }
+    list.innerHTML = rows.map((r, i)=>{
+      const mine = r.id === STATE.playerId;
+      const pos = i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'º';
+      return `<div class="ranking-row ${mine?'mine':''}">
+        <div class="rank-pos">${pos}</div>
+        <div class="rank-avatar" style="background:${esc(r.color||'#FF6B6B')}">${esc(r.avatar||'🦸')}</div>
+        <div class="rank-info">
+          <div class="rank-name">${esc(r.name||'Explorador(a)')}${mine?' <span class="you-tag">você</span>':''}</div>
+          <div class="rank-stats">⭐ ${r.stars||0} estrelas · ✨ ${r.xp||0} XP</div>
+        </div>
+      </div>`;
+    }).join('');
+  }, (err)=>{
+    const list = document.getElementById('rankingList');
+    if (!list) return;
+    list.innerHTML = `<div class="ranking-empty">😕 Não foi possível carregar o ranking agora.<br/>Verifique sua internet e tente novamente mais tarde.</div>`;
+  });
 }
 
 function renderBadgesSection(){
@@ -1596,15 +1814,16 @@ function renderChoiceCard(q){
   const card = el(`
     <div class="q-card">
       <div class="q-part">${esc(q.part)}</div>
-      <div class="q-prompt">${esc(q.prompt)}</div>
-      ${q.multi ? '<div class="q-hint">Marque todas as corretas</div>' : ''}
+      <div class="q-prompt">${rich(q.prompt)}</div>
+      ${q.multi ? '<div class="q-multi-badge">🔢 ESCOLHA VÁRIAS</div>' : ''}
       <div class="q-options" id="qOptions"></div>
       <button class="btn-primary btn-big q-submit" id="qSubmit" disabled>Confirmar</button>
     </div>`);
   const optsWrap = card.querySelector('#qOptions');
+  const minNeeded = q.multi ? 2 : 1;
   let selected = new Set();
   q.options.forEach((opt, i) => {
-    const b = el(`<button class="option-btn" data-i="${i}">${esc(opt)}</button>`);
+    const b = el(`<button class="option-btn" data-i="${i}">${rich(opt)}</button>`);
     b.addEventListener('click', ()=>{
       if (card.classList.contains('answered')) return;
       SFX.click();
@@ -1616,7 +1835,7 @@ function renderChoiceCard(q){
         selected = new Set([i]);
         b.classList.add('selected');
       }
-      card.querySelector('#qSubmit').disabled = selected.size===0;
+      card.querySelector('#qSubmit').disabled = selected.size<minNeeded;
     });
     optsWrap.appendChild(b);
   });
@@ -1638,7 +1857,7 @@ function renderItemsCard(q){
   const card = el(`
     <div class="q-card">
       <div class="q-part">${esc(q.part)}</div>
-      <div class="q-prompt">${esc(q.prompt)}</div>
+      <div class="q-prompt">${rich(q.prompt)}</div>
       <div class="q-items" id="qItems"></div>
       <button class="btn-primary btn-big q-submit" id="qSubmit" disabled>Confirmar</button>
     </div>`);
@@ -1647,9 +1866,9 @@ function renderItemsCard(q){
   q.items.forEach((item, idx) => {
     const row = el(`
       <div class="q-item-row">
-        <div class="q-item-label">${esc(item.label)}</div>
+        <div class="q-item-label">${rich(item.label)}</div>
         <div class="q-item-opts">
-          ${item.options.map((o,oi)=>`<button class="mini-opt" data-item="${idx}" data-opt="${oi}">${esc(o)}</button>`).join('')}
+          ${item.options.map((o,oi)=>`<button class="mini-opt" data-item="${idx}" data-opt="${oi}">${rich(o)}</button>`).join('')}
         </div>
       </div>`);
     itemsWrap.appendChild(row);
@@ -1685,7 +1904,7 @@ function renderReflectionCard(q){
   const card = el(`
     <div class="q-card">
       <div class="q-part">${esc(q.part)}</div>
-      <div class="q-prompt">${esc(q.prompt)}</div>
+      <div class="q-prompt">${rich(q.prompt)}</div>
       <div class="q-hint">Pergunta aberta — não vale ponto, é só para você refletir!</div>
       <textarea id="qText" class="q-textarea" rows="4" placeholder="Escreva aqui o que você pensa..."></textarea>
       <button class="btn-primary btn-big q-submit" id="qSubmit">Enviar</button>
@@ -1706,7 +1925,7 @@ function finishAnswer(isCorrect, card, isReflection, q){
     const banner = el(`<div class="feedback-banner ${isCorrect?'good':'bad'}">${isCorrect ? '✅ '+esc(pick(MASCOT_LINES.correct)) : '❌ '+esc(pick(MASCOT_LINES.wrong))}</div>`);
     card.appendChild(banner);
     if (q && q.explain){
-      const explainBox = el(`<div class="explain-box"><div class="explain-icon">💡</div><div class="explain-text"><b>Por quê?</b>${esc(q.explain)}</div></div>`);
+      const explainBox = el(`<div class="explain-box"><div class="explain-icon">💡</div><div class="explain-text"><b>Por quê?</b>${rich(q.explain)}</div></div>`);
       card.appendChild(explainBox);
     }
   } else {
@@ -1753,6 +1972,7 @@ function finishQuiz(){
     gameJustCompleted = awardBadge('gameComplete');
   }
   saveGame();
+  syncScoreToCloud();
 
   QUIZ.resultData = { stars, prevStars, correctCount, total, xpGained, coinsGained, subjectJustCompleted, gameJustCompleted, improved };
   goTo('result', { subjectId: subject.id, phaseId: phase.id });
@@ -1777,6 +1997,7 @@ function renderResult(){
           <div class="reward-chip">🪙 +${coinsGained} moedas</div>
         </div>
         <button class="btn-primary btn-big" id="continueBtn">Continuar ➡</button>
+        <button class="btn-secondary btn-map" id="mapBtn">🗺️ Voltar ao mapa</button>
         <button class="btn-secondary" id="retryBtn">Jogar de novo 🔁</button>
       </div>
       <canvas id="confettiCanvas"></canvas>
@@ -1805,6 +2026,12 @@ function renderResult(){
   wrap.querySelector('#retryBtn').addEventListener('click', ()=>{
     SFX.click();
     goTo('phaseIntro', { subjectId: subject.id, phaseId: phase.id });
+  });
+  wrap.querySelector('#mapBtn').addEventListener('click', ()=>{
+    SFX.click();
+    if (gameJustCompleted){ showToast(pick(MASCOT_LINES.gameComplete)); }
+    else if (subjectJustCompleted){ showToast(pick(MASCOT_LINES.islandComplete)); }
+    goTo('map');
   });
 }
 

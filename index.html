@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<title>Aventura do 3º Trimestre — 4º Ano</title>
+<meta name="description" content="Jogo educativo gamificado de revisão do 3º trimestre do 4º ano: Língua Portuguesa, Matemática, História, Geografia, Ciências e Inglês."/>
+<meta name="theme-color" content="#1B2A4A"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦉</text></svg>"/>
+<style>
+/* ===================== Simulado Gamificado 3º Trimestre - Estilos ===================== */
+:root{
+  --bg1:#1B2A4A; --bg2:#0F1B33;
+  --card:#ffffff; --card-shadow: 0 10px 0 rgba(0,0,0,.12), 0 14px 24px rgba(0,0,0,.18);
+  --text:#1F2937; --text-soft:#5B6472;
+  --yellow:#FFD93D; --green:#6BCB77; --red:#FF5C5C; --blue:#5AC8FA;
+  --radius:22px; --radius-sm:14px;
+  --font: 'Baloo 2', 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+*{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+html,body{ margin:0; padding:0; }
+body{
+  font-family: var(--font);
+  background: radial-gradient(circle at 20% 0%, #24406e 0%, var(--bg1) 45%, var(--bg2) 100%);
+  color: var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+#app{ min-height:100vh; padding-bottom:40px; }
+#app.fade{ animation:none; }
+button{ font-family:inherit; cursor:pointer; border:none; }
+input, textarea{ font-family:inherit; }
+.screen{ max-width:720px; margin:0 auto; padding:16px 16px 32px; animation:screenIn .35s ease; }
+@keyframes screenIn{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+
+h1,h2,h3{ margin:0; }
+.accent{ color: var(--yellow); }
+.title-xl{ font-size:1.8rem; color:#fff; text-align:center; line-height:1.25; margin-bottom:6px; }
+.subtitle{ color:#D7DEF0; text-align:center; margin:0 0 18px; font-size:1rem; }
+.section-label{ color:#AEB9D4; font-weight:700; font-size:.85rem; text-transform:uppercase; letter-spacing:.04em; margin:18px 0 8px; text-align:center; }
+
+/* -------- Botões -------- */
+.btn-primary, .btn-secondary, .btn-danger{
+  display:block; width:100%; border-radius:999px; padding:16px 20px; font-size:1.08rem;
+  font-weight:800; text-align:center; transition:transform .08s ease, filter .15s ease; margin-top:10px;
+}
+.btn-primary{ background:linear-gradient(180deg,#58D68D,#2ECC71); color:#fff; box-shadow:0 6px 0 #1E8449, 0 10px 18px rgba(0,0,0,.25); }
+.btn-primary:active{ transform:translateY(4px); box-shadow:0 2px 0 #1E8449, 0 4px 10px rgba(0,0,0,.2); }
+.btn-primary:disabled{ background:#9CA3AF; box-shadow:0 6px 0 #6B7280; cursor:not-allowed; opacity:.7; }
+.btn-big{ font-size:1.2rem; padding:18px 20px; }
+.btn-secondary{ background:#fff; color:var(--text); border:2px solid #E2E8F0; box-shadow:0 4px 0 #CBD5E1; }
+.btn-secondary:active{ transform:translateY(3px); box-shadow:0 1px 0 #CBD5E1; }
+.btn-danger{ background:#fff; color:var(--red); border:2px solid #FFD5D5; box-shadow:0 4px 0 #FFBABA; }
+.back-btn{ background:transparent; color:#fff; font-weight:700; padding:10px 6px; border-radius:12px; }
+.back-btn:active{ background:rgba(255,255,255,.12); }
+
+/* -------- Toast -------- */
+#toast{ position:fixed; left:50%; bottom:24px; transform:translate(-50%,120%); background:#1F2937; color:#fff;
+  padding:12px 20px; border-radius:999px; font-weight:700; z-index:999; transition:transform .35s ease; box-shadow:0 8px 24px rgba(0,0,0,.3); max-width:90vw; text-align:center; }
+#toast.show{ transform:translate(-50%,0); }
+
+/* ============== ONBOARDING ============== */
+.onboarding-screen{ display:flex; align-items:center; min-height:100vh; }
+.onboarding-card{ background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:var(--radius); padding:22px; width:100%; backdrop-filter: blur(6px); }
+.mascot-big{ font-size:4.2rem; text-align:center; filter:drop-shadow(0 6px 10px rgba(0,0,0,.35)); animation:bob 2.4s ease-in-out infinite; }
+@keyframes bob{ 0%,100%{transform:translateY(0) rotate(-2deg);} 50%{transform:translateY(-8px) rotate(2deg);} }
+.avatar-preview{ width:96px; height:96px; border-radius:50%; margin:10px auto 4px; display:flex; align-items:center; justify-content:center; font-size:3rem; box-shadow:0 8px 0 rgba(0,0,0,.18), 0 12px 20px rgba(0,0,0,.25); border:4px solid #fff; }
+.avatar-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+.avatar-pick{ background:rgba(255,255,255,.08); border:3px solid transparent; border-radius:16px; padding:10px 0; transition:transform .1s; }
+.avatar-pick .avatar-emoji{ font-size:1.8rem; }
+.avatar-pick.selected{ border-color:var(--yellow); background:rgba(255,217,61,.18); transform:scale(1.06); }
+.avatar-pick:active{ transform:scale(.95); }
+.color-grid{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+.color-pick{ width:34px; height:34px; border-radius:50%; border:3px solid rgba(255,255,255,.4); }
+.color-pick.selected{ border-color:#fff; box-shadow:0 0 0 3px var(--yellow); transform:scale(1.15); }
+.name-input{ width:100%; padding:14px 16px; border-radius:14px; border:none; font-size:1.1rem; text-align:center; font-weight:700; }
+
+/* ============== TOPBAR ============== */
+.topbar{ display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1); border-radius:18px; padding:10px 12px; margin-bottom:12px; backdrop-filter:blur(6px); position:sticky; top:8px; z-index:10; }
+.tb-avatar{ width:44px; height:44px; min-width:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.4rem; border:2px solid #fff; }
+.tb-info{ flex:1; min-width:0; }
+.tb-name{ color:#fff; font-weight:800; font-size:.95rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.tb-level{ color:var(--yellow); font-size:.8rem; }
+.xp-bar{ background:rgba(255,255,255,.2); border-radius:999px; height:7px; margin-top:4px; overflow:hidden; }
+.xp-fill{ background:linear-gradient(90deg,#FFD93D,#FFB84D); height:100%; border-radius:999px; transition:width .4s ease; }
+.tb-stat{ color:#fff; font-weight:800; font-size:.9rem; white-space:nowrap; }
+.tb-settings{ background:rgba(255,255,255,.12); border-radius:50%; width:38px; height:38px; font-size:1.1rem; color:#fff; }
+
+/* ============== MASCOTE ============== */
+.mascot-banner{ display:flex; align-items:center; gap:10px; background:#fff; border-radius:18px; padding:10px 14px; margin:10px 0 16px; box-shadow:var(--card-shadow); }
+.mascot-banner.small{ margin:10px 0; padding:8px 12px; }
+.mascot-emoji{ font-size:2rem; flex:none; animation:bob 2.4s ease-in-out infinite; }
+.mascot-banner .speech{ font-weight:700; color:var(--text); font-size:.95rem; }
+
+/* ============== MAPA / ILHAS ============== */
+.island-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+.island-card{ position:relative; background:var(--c, #fff); border-radius:var(--radius); padding:16px 10px 14px; text-align:center; color:#fff; box-shadow:0 8px 0 var(--cd,#999), 0 14px 22px rgba(0,0,0,.25); transition:transform .1s; }
+.island-card:active{ transform:translateY(5px); box-shadow:0 3px 0 var(--cd,#999), 0 6px 12px rgba(0,0,0,.2); }
+.island-badge{ position:absolute; top:-8px; right:-8px; font-size:1.6rem; filter:drop-shadow(0 3px 4px rgba(0,0,0,.3)); }
+.island-icon{ font-size:2.6rem; margin-bottom:4px; }
+.island-name{ font-weight:800; font-size:1.02rem; line-height:1.15; }
+.island-subtitle{ font-size:.78rem; opacity:.9; margin-bottom:6px; }
+.island-stars{ font-weight:800; font-size:.9rem; }
+.island-progress-bar{ background:rgba(0,0,0,.2); height:6px; border-radius:999px; margin-top:6px; overflow:hidden; }
+.island-progress-fill{ background:#fff; height:100%; border-radius:999px; transition:width .4s ease; }
+.trophy-banner{ margin-top:16px; background:linear-gradient(135deg,#FFD93D,#FFB84D); color:#5A3E00; font-weight:800; text-align:center; padding:14px; border-radius:16px; box-shadow:0 6px 0 #C98A00; }
+
+.badges-section{ margin-top:18px; }
+.badge-row{ display:flex; gap:8px; flex-wrap:wrap; }
+.badge-chip{ display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); color:#fff; padding:8px 12px; border-radius:999px; font-size:.78rem; font-weight:700; }
+.badge-chip.locked{ opacity:.45; }
+.badge-icon{ font-size:1rem; }
+
+/* ============== ILHA (TRILHA) ============== */
+.island-screen{ --c:#999; }
+.island-header{ display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+.island-header-title{ color:#fff; font-weight:800; font-size:1.1rem; }
+.trail{ display:flex; flex-direction:column; align-items:center; gap:28px; margin-top:20px; padding:10px 0 20px; position:relative; }
+.trail-node-wrap{ display:flex; flex-direction:column; align-items:center; gap:4px; }
+.trail-node-wrap.left{ align-self:flex-start; margin-left:8%; }
+.trail-node-wrap.right{ align-self:flex-end; margin-right:8%; }
+.trail-node{ width:74px; height:74px; border-radius:50%; background:var(--c); box-shadow:0 8px 0 var(--cd), 0 12px 18px rgba(0,0,0,.3); display:flex; align-items:center; justify-content:center; }
+.trail-node.locked{ background:#6B7280; box-shadow:0 8px 0 #4B5563, 0 12px 18px rgba(0,0,0,.25); opacity:.75; }
+.trail-node.unlocked:active{ transform:translateY(5px); box-shadow:0 3px 0 var(--cd); }
+.trail-node-num{ font-size:1.6rem; color:#fff; font-weight:900; }
+.trail-node.maxed{ outline:3px solid var(--yellow); outline-offset:3px; }
+.trail-node-label{ color:#fff; font-weight:700; font-size:.82rem; text-align:center; max-width:150px; }
+.trail-node-stars{ font-size:.95rem; }
+.star{ color:rgba(255,255,255,.35); }
+.star.filled{ color:var(--yellow); text-shadow:0 0 6px rgba(255,217,61,.6); }
+
+/* ============== INTRO DE FASE ============== */
+.phase-intro-screen{ display:flex; align-items:center; min-height:100vh; }
+.phase-intro-card{ background:#fff; border-radius:var(--radius); padding:26px 20px; text-align:center; width:100%; box-shadow:var(--card-shadow); }
+.phase-intro-icon{ font-size:3rem; }
+.phase-intro-cap{ color:var(--text-soft); font-weight:700; font-size:.85rem; text-transform:uppercase; letter-spacing:.05em; }
+.phase-intro-title{ font-size:1.4rem; margin:4px 0 10px; }
+.phase-intro-stars{ font-size:1.6rem; margin-bottom:6px; }
+.phase-intro-sub{ color:var(--text-soft); font-size:.92rem; }
+
+/* ============== QUIZ ============== */
+.quiz-top{ display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+.quiz-progress-bar{ flex:1; background:rgba(255,255,255,.2); height:12px; border-radius:999px; overflow:hidden; }
+.quiz-progress-fill{ background:linear-gradient(90deg,#6BCB77,#4ECDC4); height:100%; border-radius:999px; transition:width .35s ease; }
+.quiz-counter{ color:#fff; font-weight:800; font-size:.9rem; min-width:42px; text-align:right; }
+#quitQuiz{ background:rgba(255,255,255,.12); border-radius:50%; width:36px; height:36px; color:#fff; font-size:1rem; }
+
+.q-card{ background:#fff; border-radius:var(--radius); padding:20px 18px 24px; box-shadow:var(--card-shadow); }
+.q-part{ color:var(--text-soft); font-weight:700; font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; }
+.q-prompt{ font-size:1.18rem; font-weight:800; line-height:1.35; margin-bottom:14px; }
+.q-hint{ color:var(--text-soft); font-size:.85rem; margin:-6px 0 12px; font-style:italic; }
+.q-options{ display:flex; flex-direction:column; gap:10px; }
+.option-btn{ background:#F3F4F6; border:2.5px solid transparent; border-radius:16px; padding:14px 16px; font-size:1.02rem; font-weight:700; text-align:left; color:var(--text); transition:transform .08s; }
+.option-btn:active{ transform:scale(.98); }
+.option-btn.selected{ border-color:var(--blue); background:#E9F7FF; }
+.option-btn.correct{ background:#DFF6E3; border-color:var(--green); color:#1B5E25; }
+.option-btn.incorrect{ background:#FFE3E3; border-color:var(--red); color:#8A1F1F; }
+.q-card.answered .option-btn{ pointer-events:none; }
+
+.q-items{ display:flex; flex-direction:column; gap:14px; }
+.q-item-row{ background:#F8FAFC; border-radius:16px; padding:12px; }
+.q-item-label{ font-weight:800; margin-bottom:8px; }
+.q-item-opts{ display:flex; gap:8px; flex-wrap:wrap; }
+.mini-opt{ background:#fff; border:2px solid #E2E8F0; border-radius:12px; padding:9px 14px; font-weight:700; font-size:.92rem; }
+.mini-opt.selected{ border-color:var(--blue); background:#E9F7FF; }
+.mini-opt.correct{ border-color:var(--green); background:#DFF6E3; color:#1B5E25; }
+.mini-opt.incorrect{ border-color:var(--red); background:#FFE3E3; color:#8A1F1F; }
+.q-card.answered .mini-opt{ pointer-events:none; }
+
+.q-textarea{ width:100%; border:2px solid #E2E8F0; border-radius:14px; padding:12px; font-size:1rem; resize:vertical; }
+
+.feedback-banner{ margin-top:16px; border-radius:14px; padding:12px 14px; font-weight:800; text-align:center; animation:screenIn .3s ease; }
+.feedback-banner.good{ background:#DFF6E3; color:#1B5E25; }
+.feedback-banner.bad{ background:#FFE9E0; color:#8A3B1F; }
+.next-btn{ margin-top:14px; }
+.q-card.flash-correct{ animation:flashGood .5s ease; }
+.q-card.flash-incorrect{ animation:flashBad .5s ease; }
+@keyframes flashGood{ 0%{box-shadow:0 0 0 0 rgba(107,203,119,.6);} 100%{box-shadow:0 0 0 18px rgba(107,203,119,0);} }
+@keyframes flashBad{ 0%{box-shadow:0 0 0 0 rgba(255,92,92,.5);} 100%{box-shadow:0 0 0 18px rgba(255,92,92,0);} 10%,30%,50%{transform:translateX(-4px);} 20%,40%{transform:translateX(4px);} }
+
+/* ============== RESULTADO ============== */
+.result-screen{ display:flex; align-items:center; min-height:100vh; position:relative; }
+.result-card{ background:#fff; border-radius:var(--radius); padding:28px 20px; text-align:center; width:100%; box-shadow:var(--card-shadow); position:relative; z-index:2; }
+.result-stars{ font-size:2.6rem; margin-bottom:6px; }
+.big-star{ color:#E5E7EB; transition:color .2s, transform .2s; display:inline-block; }
+.big-star.filled{ color:var(--yellow); text-shadow:0 0 14px rgba(255,217,61,.7); }
+.big-star.pop{ animation:pop .45s ease; }
+@keyframes pop{ 0%{transform:scale(0);} 60%{transform:scale(1.4);} 100%{transform:scale(1);} }
+.result-title{ font-size:1.3rem; margin-bottom:4px; }
+.result-score{ color:var(--text-soft); font-weight:700; margin-bottom:10px; }
+.result-rewards{ display:flex; gap:10px; justify-content:center; margin:14px 0 4px; flex-wrap:wrap; }
+.reward-chip{ background:#FFF7D6; color:#8A6D00; font-weight:800; padding:8px 14px; border-radius:999px; }
+#confettiCanvas{ position:fixed; inset:0; pointer-events:none; z-index:1; }
+
+/* ============== MODAL (CONFIGURAÇÕES) ============== */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; z-index:100; padding:20px; }
+.modal{ background:#fff; border-radius:20px; padding:22px; width:100%; max-width:340px; }
+.modal h2{ margin:0 0 14px; text-align:center; }
+.settings-row{ display:flex; justify-content:space-between; align-items:center; font-weight:700; margin-bottom:14px; }
+.settings-row input[type=checkbox]{ width:22px; height:22px; }
+
+/* ============== RESPONSIVO ============== */
+@media (min-width:640px){
+  .island-grid{ grid-template-columns:repeat(3,1fr); }
+  .avatar-grid{ grid-template-columns:repeat(8,1fr); }
+}
+@media (max-width:380px){
+  .title-xl{ font-size:1.5rem; }
+  .island-icon{ font-size:2.2rem; }
+}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast"></div>
+<script>
+/* Banco de questões - 3º Trimestre - 4º Ano
+   Fonte: PDFs de conteúdo de provas (Cap. 13-15 Port, Cap.13 Mat, Cap.8-9 Hist,
+   Cap.8-9 Geo, Cap.13 Ciências) + lista de vocabulário/gramática de Inglês (Unit 5-6). */
+
+const SUBJECTS = [
+  // ============================= LÍNGUA PORTUGUESA =============================
+  {
+    id: 'port', name: 'Ilha das Palavras', subtitle: 'Língua Portuguesa',
+    icon: '📖', color: '#FF6B6B', colorDark: '#E85555',
+    phases: [
+      {
+        id: 'port-1', name: 'Poema visual e linguagem figurada', cap: 'Capítulo 13',
+        questions: [
+          { id:'port-1-1', part:'Poema visual e linguagem figurada', type:'choice',
+            prompt:'O que é um poema visual?',
+            options:['Um poema que também é desenhado, formando uma imagem com as palavras','Um poema sem nenhuma palavra','Um poema que só pode ser cantado','Um poema escrito em outro idioma'],
+            correct:[0] },
+          { id:'port-1-2', part:'Poema visual e linguagem figurada', type:'choice',
+            prompt:"Quando dizemos que alguém 'chorou rios de lágrimas', estamos usando:",
+            options:['Linguagem literal (ao pé da letra)','Linguagem figurada','Um poema visual','Uma receita culinária'],
+            correct:[1] },
+          { id:'port-1-3', part:'Poema visual e linguagem figurada', type:'choice', multi:true,
+            prompt:'Marque as frases que usam linguagem figurada:',
+            options:['Meu coração está partido de tristeza.','Comprei duas maçãs no mercado.','Ela tem um coração de ouro.','O relógio marca oito horas.'],
+            correct:[0,2] },
+          { id:'port-1-4', part:'Poema visual e linguagem figurada', type:'items',
+            prompt:'Relacione cada expressão ao seu sentido:',
+            items:[
+              { label:'Chover canivetes', options:['Chover muito forte','Chover canivetes de verdade'], correct:0 },
+              { label:'Ser um doce', options:['Comer doces o tempo todo','Ser uma pessoa gentil e carinhosa'], correct:1 },
+            ] },
+          { id:'port-1-5', part:'Poema visual e linguagem figurada', type:'choice',
+            prompt:'Na construção de um poema visual, as palavras podem ser organizadas para:',
+            options:['Formar um desenho relacionado ao tema do poema','Ficar embaralhadas sem nenhum sentido','Sempre rimar perfeitamente','Sumir da página'],
+            correct:[0] },
+          { id:'port-1-6', part:'Poema visual e linguagem figurada', type:'choice',
+            prompt:"A expressão 'ela tem os pés no chão' quer dizer que a pessoa é:",
+            options:['Baixinha','Realista e sensata','Desajeitada ao andar','Muito alta'],
+            correct:[1] },
+        ],
+      },
+      {
+        id: 'port-2', name: 'Cartazes, numeral e a letra H', cap: 'Capítulo 14',
+        questions: [
+          { id:'port-2-1', part:'Cartazes, numeral e a letra H', type:'choice',
+            prompt:'Qual é o principal objetivo de um cartaz de conscientização?',
+            options:['Vender um produto qualquer','Alertar e sensibilizar as pessoas sobre um assunto importante','Contar uma história de ficção','Ensinar uma receita'],
+            correct:[1] },
+          { id:'port-2-2', part:'Cartazes, numeral e a letra H', type:'choice', multi:true,
+            prompt:'Marque as características comuns de um bom cartaz de conscientização:',
+            options:['Frases curtas e diretas','Textos longos e complicados','Imagens que chamam a atenção','Letras pequenas e difíceis de ler'],
+            correct:[0,2] },
+          { id:'port-2-3', part:'Cartazes, numeral e a letra H', type:'choice',
+            prompt:'O numeral é a classe gramatical que indica:',
+            options:['Uma ação','Quantidade, ordem ou posição','O lugar onde algo está','Uma pessoa'],
+            correct:[1] },
+          { id:'port-2-4', part:'Cartazes, numeral e a letra H', type:'items',
+            prompt:'Classifique os numerais:',
+            items:[
+              { label:'primeiro', options:['Numeral ordinal','Numeral cardinal'], correct:0 },
+              { label:'três', options:['Numeral ordinal','Numeral cardinal'], correct:1 },
+            ] },
+          { id:'port-2-5', part:'Cartazes, numeral e a letra H', type:'choice',
+            prompt:'Em qual palavra a letra H aparece formando um dígrafo (duas letras, um só som)?',
+            options:['hoje','chuva','hora','honesto'],
+            correct:[1] },
+          { id:'port-2-6', part:'Cartazes, numeral e a letra H', type:'choice',
+            prompt:'A letra H, quando sozinha no início da palavra, geralmente:',
+            options:['Tem som bem forte','Não tem som (é muda)','Soa como "rr"','Soa como "f"'],
+            correct:[1] },
+        ],
+      },
+      {
+        id: 'port-3', name: 'Palavras em am/ão e concordância verbal', cap: 'Capítulo 15',
+        questions: [
+          { id:'port-3-1', part:'Palavras em am/ão e concordância verbal', type:'choice',
+            prompt:"Qual palavra tem o som nasal escrito com 'ÃO'?",
+            options:['falaram','coração','cantam','amam'],
+            correct:[1] },
+          { id:'port-3-2', part:'Palavras em am/ão e concordância verbal', type:'choice',
+            prompt:"Complete: 'Eles ___ para a escola todos os dias.'",
+            options:['vão','vam','vãm','vai'],
+            correct:[0] },
+          { id:'port-3-3', part:'Palavras em am/ão e concordância verbal', type:'choice', multi:true,
+            prompt:"Marque as palavras terminadas em 'AM' que representam verbos no passado:",
+            options:['Eles cantaram','limão','Eles brincaram','órfão'],
+            correct:[0,2] },
+          { id:'port-3-4', part:'Palavras em am/ão e concordância verbal', type:'choice',
+            prompt:"Complete mantendo a concordância: 'Os alunos ___ a tarefa com capricho.'",
+            options:['faz','fazem','fazemos','faço'],
+            correct:[1] },
+          { id:'port-3-5', part:'Palavras em am/ão e concordância verbal', type:'items',
+            prompt:'Escolha a forma verbal que concorda com o sujeito:',
+            items:[
+              { label:'O menino (brincar)', options:['brinca','brincam'], correct:0 },
+              { label:'As meninas (brincar)', options:['brinca','brincam'], correct:1 },
+            ] },
+          { id:'port-3-6', part:'Palavras em am/ão e concordância verbal', type:'choice',
+            prompt:'Concordância verbal é a regra que faz o verbo combinar com o sujeito em:',
+            options:['Cor e tamanho','Número (singular/plural) e pessoa','Apenas o tempo verbal','Lugar'],
+            correct:[1] },
+        ],
+      },
+    ],
+  },
+
+  // ================================ MATEMÁTICA ================================
+  {
+    id: 'mat', name: 'Ilha dos Números', subtitle: 'Matemática',
+    icon: '🔢', color: '#4ECDC4', colorDark: '#35A79C',
+    phases: [
+      {
+        id:'mat-1', name:'Comparando frações', cap:'Capítulo 13',
+        questions: [
+          { id:'mat-1-1', part:'Comparando frações', type:'choice',
+            prompt:'Qual fração é maior: 1/2 ou 1/4?',
+            options:['1/2','1/4','São iguais','Não dá para comparar'],
+            correct:[0] },
+          { id:'mat-1-2', part:'Comparando frações', type:'choice',
+            prompt:'Entre frações com o mesmo denominador, é maior a que tem:',
+            options:['Maior numerador','Menor numerador','Maior denominador','Menor denominador'],
+            correct:[0] },
+          { id:'mat-1-3', part:'Comparando frações', type:'choice',
+            prompt:'Qual é menor: 3/5 ou 2/5?',
+            options:['3/5','2/5','São iguais','Impossível saber'],
+            correct:[1] },
+          { id:'mat-1-4', part:'Comparando frações', type:'items',
+            prompt:'Compare as frações:',
+            items:[
+              { label:'2/3  ?  1/3', options:['é maior que','é menor que'], correct:0 },
+              { label:'1/6  ?  4/6', options:['é maior que','é menor que'], correct:1 },
+            ] },
+          { id:'mat-1-5', part:'Comparando frações', type:'choice', multi:true,
+            prompt:'Marque as comparações corretas:',
+            options:['3/4 > 1/4','2/5 < 1/5','5/8 > 3/8','1/2 < 1/3'],
+            correct:[0,2] },
+          { id:'mat-1-6', part:'Comparando frações', type:'choice',
+            prompt:'Para comparar frações com denominadores diferentes, uma boa estratégia é:',
+            options:['Comparar só os numeradores','Deixá-las com o mesmo denominador antes de comparar','Somar numerador e denominador','Ignorar o denominador'],
+            correct:[1] },
+        ],
+      },
+      {
+        id:'mat-2', name:'Frações equivalentes', cap:'Capítulo 13',
+        questions: [
+          { id:'mat-2-1', part:'Frações equivalentes', type:'choice',
+            prompt:'Frações equivalentes representam:',
+            options:['Quantidades diferentes','A mesma quantidade, escrita de formas diferentes','Sempre números inteiros','Sempre frações impróprias'],
+            correct:[1] },
+          { id:'mat-2-2', part:'Frações equivalentes', type:'choice',
+            prompt:'Qual fração é equivalente a 1/2?',
+            options:['2/3','2/4','3/5','1/3'],
+            correct:[1] },
+          { id:'mat-2-3', part:'Frações equivalentes', type:'choice',
+            prompt:'Para encontrar uma fração equivalente, multiplicamos (ou dividimos) numerador e denominador:',
+            options:['Por números diferentes','Pelo mesmo número','Só o numerador','Só o denominador'],
+            correct:[1] },
+          { id:'mat-2-4', part:'Frações equivalentes', type:'items',
+            prompt:'Complete as frações equivalentes:',
+            items:[
+              { label:'1/3 = ?/6', options:['2/6','3/6'], correct:0 },
+              { label:'2/5 = ?/10', options:['4/10','5/10'], correct:0 },
+            ] },
+          { id:'mat-2-5', part:'Frações equivalentes', type:'choice', multi:true,
+            prompt:'Marque os pares de frações equivalentes:',
+            options:['1/2 e 2/4','1/3 e 2/5','3/4 e 6/8','1/5 e 2/8'],
+            correct:[0,2] },
+          { id:'mat-2-6', part:'Frações equivalentes', type:'choice',
+            prompt:'3/6 é equivalente a qual fração mais simples?',
+            options:['1/2','1/3','2/3','1/6'],
+            correct:[0] },
+        ],
+      },
+      {
+        id:'mat-3', name:'Simplificação de frações', cap:'Capítulo 13',
+        questions: [
+          { id:'mat-3-1', part:'Simplificação de frações', type:'choice',
+            prompt:'Simplificar uma fração significa:',
+            options:['Aumentar seus termos','Escrevê-la com números menores, mantendo o mesmo valor','Transformá-la em número decimal','Somar com outra fração'],
+            correct:[1] },
+          { id:'mat-3-2', part:'Simplificação de frações', type:'choice',
+            prompt:'Qual é a forma simplificada de 4/8?',
+            options:['1/2','2/4','1/4','4/4'],
+            correct:[0] },
+          { id:'mat-3-3', part:'Simplificação de frações', type:'choice',
+            prompt:'Uma fração está em sua forma mais simples (irredutível) quando:',
+            options:['Numerador e denominador não têm mais divisor comum além do 1','O numerador é 1','O denominador é 10','Ela é maior que 1'],
+            correct:[0] },
+          { id:'mat-3-4', part:'Simplificação de frações', type:'items',
+            prompt:'Simplifique:',
+            items:[
+              { label:'6/9', options:['2/3','3/4'], correct:0 },
+              { label:'10/20', options:['1/2','2/5'], correct:0 },
+            ] },
+          { id:'mat-3-5', part:'Simplificação de frações', type:'choice',
+            prompt:'Para simplificar 9/12, podemos dividir numerador e denominador por:',
+            options:['2','3','5','9'],
+            correct:[1] },
+          { id:'mat-3-6', part:'Simplificação de frações', type:'choice', multi:true,
+            prompt:'Marque as frações que já estão simplificadas (irredutíveis):',
+            options:['2/3','4/6','3/5','5/10'],
+            correct:[0,2] },
+        ],
+      },
+      {
+        id:'mat-4', name:'Operações com frações', cap:'Capítulo 13',
+        questions: [
+          { id:'mat-4-1', part:'Operações com frações', type:'choice',
+            prompt:'Para somar frações com o mesmo denominador, somamos:',
+            options:['Os denominadores','Os numeradores e mantemos o denominador','Tudo junto','Nada, não é possível'],
+            correct:[1] },
+          { id:'mat-4-2', part:'Operações com frações', type:'choice',
+            prompt:'Quanto é 1/5 + 2/5?',
+            options:['3/5','3/10','1/10','2/25'],
+            correct:[0] },
+          { id:'mat-4-3', part:'Operações com frações', type:'choice',
+            prompt:'Quanto é 4/7 - 1/7?',
+            options:['3/14','3/7','5/7','Não dá para calcular'],
+            correct:[1] },
+          { id:'mat-4-4', part:'Operações com frações', type:'items',
+            prompt:'Resolva:',
+            items:[
+              { label:'2/6 + 3/6 = ?', options:['5/6','5/12'], correct:0 },
+              { label:'5/8 - 2/8 = ?', options:['3/8','3/16'], correct:0 },
+            ] },
+          { id:'mat-4-5', part:'Operações com frações', type:'choice',
+            prompt:'Para somar frações com denominadores diferentes, primeiro precisamos:',
+            options:['Somar os numeradores direto','Encontrar frações equivalentes com o mesmo denominador','Simplificar antes de tudo','Multiplicar os denominadores sempre'],
+            correct:[1] },
+          { id:'mat-4-6', part:'Operações com frações', type:'choice', multi:true,
+            prompt:'Marque as operações corretas:',
+            options:['1/4 + 1/4 = 2/4','1/3 + 1/3 = 2/6','3/5 - 1/5 = 2/5','2/9 - 1/9 = 1/0'],
+            correct:[0,2] },
+        ],
+      },
+    ],
+  },
+
+  // ================================= HISTÓRIA =================================
+  {
+    id:'hist', name:'Ilha do Tempo', subtitle:'História',
+    icon:'⏳', color:'#FFB84D', colorDark:'#E8991A',
+    phases: [
+      {
+        id:'hist-1', name:'Por que as pessoas migram?', cap:'Capítulo 8',
+        questions: [
+          { id:'hist-1-1', part:'Por que as pessoas migram?', type:'choice',
+            prompt:'Migrar significa:',
+            options:['Mudar-se de um lugar para outro, buscando melhores condições de vida','Viajar só de férias','Nunca sair de casa','Trabalhar sempre no mesmo lugar'],
+            correct:[0] },
+          { id:'hist-1-2', part:'Por que as pessoas migram?', type:'choice', multi:true,
+            prompt:'Marque motivos que podem levar pessoas a migrar:',
+            options:['Buscar novas oportunidades de trabalho','Fugir de guerras ou perigos','Ir a um parque de diversões','Buscar um lugar seguro para viver'],
+            correct:[0,1,3] },
+          { id:'hist-1-3', part:'Por que as pessoas migram?', type:'choice',
+            prompt:'Pessoas que migram em busca de proteção contra guerras ou perseguições são chamadas de:',
+            options:['Turistas','Refugiados','Comerciantes','Exploradores'],
+            correct:[1] },
+          { id:'hist-1-4', part:'Por que as pessoas migram?', type:'items',
+            prompt:'Relacione o motivo da migração:',
+            items:[
+              { label:'Perder a casa em um desastre natural', options:['Buscando abrigo','À procura de oportunidades'], correct:0 },
+              { label:'Querer um emprego melhor em outra cidade', options:['Buscando abrigo','À procura de oportunidades'], correct:1 },
+            ] },
+          { id:'hist-1-5', part:'Por que as pessoas migram?', type:'choice',
+            prompt:'Buscar um novo lar pode significar mudar-se para:',
+            options:['Apenas outro país','Outra cidade, outro estado ou outro país','Somente lugares no exterior','Nenhum lugar novo'],
+            correct:[1] },
+          { id:'hist-1-6', part:'Por que as pessoas migram?', type:'reflection',
+            prompt:'Por que você acha importante acolher bem as pessoas que migram para uma nova cidade ou país?' },
+        ],
+      },
+      {
+        id:'hist-2', name:'Escolhendo o destino e entrando no país', cap:'Capítulo 8',
+        questions: [
+          { id:'hist-2-1', part:'Escolhendo o destino e entrando no país', type:'choice',
+            prompt:'O que pode influenciar a escolha do destino de quem migra?',
+            options:['Apenas a cor do céu','Oportunidades de trabalho, segurança e familiares no local','Só o sabor da comida','Nada influencia'],
+            correct:[1] },
+          { id:'hist-2-2', part:'Escolhendo o destino e entrando no país', type:'choice', multi:true,
+            prompt:'Marque fatores que podem pesar na escolha de para onde migrar:',
+            options:['Ter parentes ou amigos no local','Possibilidade de trabalho','Segurança','Time de futebol da região'],
+            correct:[0,1,2] },
+          { id:'hist-2-3', part:'Escolhendo o destino e entrando no país', type:'choice',
+            prompt:"'Basta entrar?' nos ensina que, para migrar para outro país, geralmente é preciso:",
+            options:['Apenas querer','Seguir regras e documentos exigidos pelo país de destino','Nada, qualquer um entra livremente','Pedir permissão aos vizinhos'],
+            correct:[1] },
+          { id:'hist-2-4', part:'Escolhendo o destino e entrando no país', type:'choice',
+            prompt:'Países podem ter regras diferentes para receber migrantes porque:',
+            options:['Todos os países têm as mesmas leis','Cada país tem suas próprias leis de imigração','Não existem leis sobre isso','Migrar é sempre proibido'],
+            correct:[1] },
+          { id:'hist-2-5', part:'Escolhendo o destino e entrando no país', type:'items',
+            prompt:'Classifique:',
+            items:[
+              { label:'Documento que comprova identidade para viajar entre países', options:['Passaporte','Bilhete de ônibus'], correct:0 },
+              { label:'Permissão oficial para entrar e ficar em um país', options:['Visto','Cardápio'], correct:0 },
+            ] },
+          { id:'hist-2-6', part:'Escolhendo o destino e entrando no país', type:'choice',
+            prompt:'Uma dificuldade comum enfrentada por quem migra é:',
+            options:['Ser sempre muito bem recebido sem nenhum desafio','Adaptar-se a uma nova língua, cultura ou costumes','Não precisar se adaptar a nada','Nenhuma dificuldade existe'],
+            correct:[1] },
+        ],
+      },
+      {
+        id:'hist-3', name:'Carruagens e caravelas', cap:'Capítulo 9',
+        questions: [
+          { id:'hist-3-1', part:'Carruagens e caravelas', type:'choice',
+            prompt:'A carruagem era um meio de transporte puxado por:',
+            options:['Motor','Cavalos','Vento apenas','Pessoas correndo'],
+            correct:[1] },
+          { id:'hist-3-2', part:'Carruagens e caravelas', type:'choice',
+            prompt:'A caravela foi um importante meio de transporte:',
+            options:['Terrestre, usado em estradas','Marítimo, usado nas grandes navegações','Aéreo','Usado só em rios pequenos'],
+            correct:[1] },
+          { id:'hist-3-3', part:'Carruagens e caravelas', type:'choice', multi:true,
+            prompt:'Marque meios de transporte que existiam antes dos veículos motorizados modernos:',
+            options:['Carruagem','Caravela','Avião a jato','Carroça'],
+            correct:[0,1,3] },
+          { id:'hist-3-4', part:'Carruagens e caravelas', type:'choice',
+            prompt:'Antes dos transportes motorizados, as viagens longas eram, em geral:',
+            options:['Muito mais rápidas que hoje','Muito mais demoradas que hoje','Feitas apenas de avião','Instantâneas'],
+            correct:[1] },
+          { id:'hist-3-5', part:'Carruagens e caravelas', type:'items',
+            prompt:'Relacione o transporte ao ambiente onde era usado:',
+            items:[
+              { label:'Caravela', options:['Mar','Terra'], correct:0 },
+              { label:'Carruagem', options:['Mar','Terra'], correct:1 },
+            ] },
+          { id:'hist-3-6', part:'Carruagens e caravelas', type:'choice',
+            prompt:'As caravelas foram fundamentais para:',
+            options:['As viagens marítimas de exploração e comércio entre continentes','O transporte dentro de uma mesma rua','Viagens espaciais','O transporte de cargas em rodovias modernas'],
+            correct:[0] },
+        ],
+      },
+      {
+        id:'hist-4', name:'A evolução dos transportes', cap:'Capítulo 9',
+        questions: [
+          { id:'hist-4-1', part:'A evolução dos transportes', type:'choice',
+            prompt:'Com o passar do tempo, os meios de transporte ficaram, em geral:',
+            options:['Mais lentos','Mais rápidos e eficientes','Iguais, sem mudanças','Proibidos'],
+            correct:[1] },
+          { id:'hist-4-2', part:'A evolução dos transportes', type:'choice', multi:true,
+            prompt:'Marque transportes que surgiram com avanços da tecnologia:',
+            options:['Trem','Avião','Carruagem','Carro'],
+            correct:[0,1,3] },
+          { id:'hist-4-3', part:'A evolução dos transportes', type:'choice',
+            prompt:'A evolução dos transportes ajudou as pessoas a:',
+            options:['Se deslocar com mais dificuldade','Se deslocar mais rápido e para lugares mais distantes','Parar de viajar','Andar sempre a pé'],
+            correct:[1] },
+          { id:'hist-4-4', part:'A evolução dos transportes', type:'choice',
+            prompt:'Transformar-se para se deslocar significa que o ser humano:',
+            options:['Nunca mudou sua forma de viajar','Criou e aperfeiçoou meios de transporte ao longo da história','Sempre usou o mesmo transporte','Parou de inventar coisas novas'],
+            correct:[1] },
+          { id:'hist-4-5', part:'A evolução dos transportes', type:'items',
+            prompt:'Ordene pela evolução no tempo:',
+            items:[
+              { label:'Veio primeiro', options:['Carruagem','Avião a jato'], correct:0 },
+              { label:'Veio depois', options:['Carruagem','Avião a jato'], correct:1 },
+            ] },
+          { id:'hist-4-6', part:'A evolução dos transportes', type:'choice',
+            prompt:'Hoje em dia, viagens que antigamente levavam meses podem levar:',
+            options:['Ainda mais tempo','Apenas algumas horas, graças aos aviões','O mesmo tempo de sempre','Nunca podem ser feitas'],
+            correct:[1] },
+        ],
+      },
+    ],
+  },
+
+  // ================================= GEOGRAFIA =================================
+  {
+    id:'geo', name:'Ilha do Mundo', subtitle:'Geografia',
+    icon:'🌎', color:'#6BCB77', colorDark:'#4CAE59',
+    phases: [
+      {
+        id:'geo-1', name:'Circulação de mercadorias', cap:'Capítulo 8',
+        questions: [
+          { id:'geo-1-1', part:'Circulação de mercadorias', type:'choice',
+            prompt:'Circulação de mercadorias é:',
+            options:['O transporte de produtos de um lugar a outro','Apenas a produção de alimentos','O uso do dinheiro','A construção de casas'],
+            correct:[0] },
+          { id:'geo-1-2', part:'Circulação de mercadorias', type:'choice', multi:true,
+            prompt:'Marque as vias usadas para transportar mercadorias:',
+            options:['Vias aéreas','Vias aquáticas','Vias terrestres','Vias imaginárias'],
+            correct:[0,1,2] },
+          { id:'geo-1-3', part:'Circulação de mercadorias', type:'items',
+            prompt:'Classifique o tipo de via:',
+            items:[
+              { label:'Avião transportando carga', options:['Via aérea','Via aquática'], correct:0 },
+              { label:'Navio transportando contêineres', options:['Via aérea','Via aquática'], correct:1 },
+            ] },
+          { id:'geo-1-4', part:'Circulação de mercadorias', type:'choice',
+            prompt:'O transporte ferroviário usa principalmente:',
+            options:['Trens sobre trilhos','Navios','Aviões','Bicicletas'],
+            correct:[0] },
+          { id:'geo-1-5', part:'Circulação de mercadorias', type:'choice',
+            prompt:'O transporte rodoviário é feito por:',
+            options:['Trilhos','Estradas, com caminhões e carros','Rios','O ar'],
+            correct:[1] },
+          { id:'geo-1-6', part:'Circulação de mercadorias', type:'choice',
+            prompt:'Produtos que viajam de navio geralmente usam via:',
+            options:['Terrestre','Aquática','Aérea','Nenhuma das anteriores'],
+            correct:[1] },
+        ],
+      },
+      {
+        id:'geo-2', name:'O comércio entre o Brasil e o mundo', cap:'Capítulo 8',
+        questions: [
+          { id:'geo-2-1', part:'O comércio entre o Brasil e o mundo', type:'choice',
+            prompt:"Produtos consumidos 'dentro' do país são aqueles:",
+            options:['Vendidos e usados no próprio país onde foram produzidos','Só vendidos para fora','Produzidos em outro planeta','Nunca produzidos'],
+            correct:[0] },
+          { id:'geo-2-2', part:'O comércio entre o Brasil e o mundo', type:'choice',
+            prompt:'Quando o Brasil vende produtos para outros países, isso é chamado de:',
+            options:['Importação','Exportação','Migração','Depressão'],
+            correct:[1] },
+          { id:'geo-2-3', part:'O comércio entre o Brasil e o mundo', type:'choice',
+            prompt:'Quando o Brasil compra produtos de outros países, isso é chamado de:',
+            options:['Exportação','Importação','Colonização','Circulação interna'],
+            correct:[1] },
+          { id:'geo-2-4', part:'O comércio entre o Brasil e o mundo', type:'choice', multi:true,
+            prompt:'Marque exemplos de produtos que o Brasil pode exportar:',
+            options:['Soja','Minério de ferro','Café','Nenhum, o Brasil não exporta nada'],
+            correct:[0,1,2] },
+          { id:'geo-2-5', part:'O comércio entre o Brasil e o mundo', type:'choice',
+            prompt:'O comércio entre o Brasil e outros países depende de:',
+            options:['Apenas da vontade de uma pessoa','Transporte, acordos comerciais e demanda dos produtos','Nada além do clima','Não existir transporte'],
+            correct:[1] },
+          { id:'geo-2-6', part:'O comércio entre o Brasil e o mundo', type:'items',
+            prompt:'Classifique a operação comercial:',
+            items:[
+              { label:'Brasil vende café para a Alemanha', options:['Exportação','Importação'], correct:0 },
+              { label:'Brasil compra eletrônicos de outro país', options:['Exportação','Importação'], correct:1 },
+            ] },
+        ],
+      },
+      {
+        id:'geo-3', name:'As formas de relevo', cap:'Capítulo 9',
+        questions: [
+          { id:'geo-3-1', part:'As formas de relevo', type:'choice',
+            prompt:'O conjunto das diferentes formas da superfície terrestre é chamado de:',
+            options:['Relevo','Clima','Hidrografia','Vegetação'],
+            correct:[0] },
+          { id:'geo-3-2', part:'As formas de relevo', type:'choice',
+            prompt:'As planícies são áreas:',
+            options:['Muito altas e montanhosas','Baixas e geralmente planas, que recebem sedimentos','Sempre no fundo do mar','Sem nenhuma vegetação'],
+            correct:[1] },
+          { id:'geo-3-3', part:'As formas de relevo', type:'choice',
+            prompt:'As depressões são áreas:',
+            options:['Mais altas que os terrenos vizinhos','Mais baixas que os terrenos vizinhos, ou abaixo do nível do mar','Sempre cobertas de gelo','Encontradas só no oceano'],
+            correct:[1] },
+          { id:'geo-3-4', part:'As formas de relevo', type:'choice',
+            prompt:'Os planaltos são regiões de superfície:',
+            options:['Elevada, mais ou menos plana, com chapadas, serras e morros','Sempre submersa','Feita só de areia','Impossível de ocupar'],
+            correct:[0] },
+          { id:'geo-3-5', part:'As formas de relevo', type:'choice', multi:true,
+            prompt:'Marque as formas de relevo estudadas no capítulo:',
+            options:['Planícies','Depressões','Planaltos','Vulcões de gelo'],
+            correct:[0,1,2] },
+          { id:'geo-3-6', part:'As formas de relevo', type:'items',
+            prompt:'Relacione a paisagem à forma de relevo:',
+            items:[
+              { label:'Vale do Pati (BA), com superfície elevada e chapadas', options:['Planalto','Planície'], correct:0 },
+              { label:'Pantanal, área baixa e plana às margens de rios', options:['Planalto','Planície'], correct:1 },
+            ] },
+        ],
+      },
+      {
+        id:'geo-4', name:'Como o relevo se forma e se transforma', cap:'Capítulo 9',
+        questions: [
+          { id:'geo-4-1', part:'Como o relevo se forma e se transforma', type:'choice', multi:true,
+            prompt:'Marque os agentes naturais que podem transformar o relevo:',
+            options:['Água','Vento','Temperatura','Televisão'],
+            correct:[0,1,2] },
+          { id:'geo-4-2', part:'Como o relevo se forma e se transforma', type:'choice',
+            prompt:'Terremotos e vulcões transformam o relevo de forma:',
+            options:['Muito lenta, ao longo de séculos','Rápida, às vezes de uma só vez','Eles não transformam o relevo','Apenas em outros planetas'],
+            correct:[1] },
+          { id:'geo-4-3', part:'Como o relevo se forma e se transforma', type:'choice',
+            prompt:'A ação da água sobre rochas e solos, desgastando-os aos poucos, é chamada de:',
+            options:['Erosão','Fotossíntese','Nevasca','Poluição sonora'],
+            correct:[0] },
+          { id:'geo-4-4', part:'Como o relevo se forma e se transforma', type:'choice',
+            prompt:'A dilatação térmica, que ajuda a quebrar rochas, é causada por:',
+            options:['Variações de temperatura','Som alto','Cor das rochas','Nenhuma causa natural'],
+            correct:[0] },
+          { id:'geo-4-5', part:'Como o relevo se forma e se transforma', type:'choice',
+            prompt:'Construções humanas, como estradas e prédios, podem alterar o relevo porque:',
+            options:['O ser humano nunca modifica a paisagem','Escavações, aterros e desmatamentos mudam a forma do terreno','Só a natureza pode mudar o relevo','Construções flutuam sem tocar o solo'],
+            correct:[1] },
+          { id:'geo-4-6', part:'Como o relevo se forma e se transforma', type:'items',
+            prompt:'Relacione o agente ao tipo de transformação do relevo:',
+            items:[
+              { label:'Vulcão em erupção', options:['Transformação rápida','Transformação lentíssima'], correct:0 },
+              { label:'Água do rio desgastando uma rocha por séculos', options:['Transformação rápida','Transformação lentíssima'], correct:1 },
+            ] },
+        ],
+      },
+    ],
+  },
+
+  // ================================= CIÊNCIAS =================================
+  {
+    id:'cien', name:'Ilha da Vida', subtitle:'Ciências',
+    icon:'🔬', color:'#A78BFA', colorDark:'#8B6EE0',
+    phases: [
+      {
+        id:'cien-1', name:'Doenças causadas por vírus', cap:'Capítulo 13',
+        questions: [
+          { id:'cien-1-1', part:'Doenças causadas por vírus', type:'choice',
+            prompt:'Vírus são microrganismos que precisam de:',
+            options:['Nada para sobreviver','Uma célula hospedeira para se multiplicar','Luz solar direta apenas','Água salgada'],
+            correct:[1] },
+          { id:'cien-1-2', part:'Doenças causadas por vírus', type:'choice', multi:true,
+            prompt:'Marque doenças causadas por vírus:',
+            options:['Gripe','Covid-19','Tétano','Sarampo'],
+            correct:[0,1,3] },
+          { id:'cien-1-3', part:'Doenças causadas por vírus', type:'choice',
+            prompt:'Uma das formas de prevenir doenças causadas por vírus é:',
+            options:['Tomar vacinas e lavar as mãos','Nunca se vacinar','Ignorar os sintomas','Comer mais doces'],
+            correct:[0] },
+          { id:'cien-1-4', part:'Doenças causadas por vírus', type:'choice',
+            prompt:'Os vírus são tão pequenos que só podem ser vistos com:',
+            options:['Olho nu','Microscópios potentes','Lupa comum','Binóculos'],
+            correct:[1] },
+          { id:'cien-1-5', part:'Doenças causadas por vírus', type:'items',
+            prompt:'Classifique a causa da doença:',
+            items:[
+              { label:'Gripe', options:['Causada por vírus','Causada por verme'], correct:0 },
+              { label:'Verminose', options:['Causada por vírus','Causada por verme'], correct:1 },
+            ] },
+          { id:'cien-1-6', part:'Doenças causadas por vírus', type:'choice',
+            prompt:'Vacinas ajudam o corpo a:',
+            options:['Criar defesas contra doenças antes de ficarmos doentes','Ficar doente de propósito, sem benefício','Nunca mais precisar de médico','Enfraquecer o sistema imunológico'],
+            correct:[0] },
+        ],
+      },
+      {
+        id:'cien-2', name:'Doenças causadas por bactérias', cap:'Capítulo 13',
+        questions: [
+          { id:'cien-2-1', part:'Doenças causadas por bactérias', type:'choice',
+            prompt:'Bactérias são seres vivos:',
+            options:['Sempre prejudiciais, nunca fazem bem','Microscópicos, podem ser prejudiciais ou úteis ao corpo','Visíveis a olho nu','Sempre do tamanho de um inseto'],
+            correct:[1] },
+          { id:'cien-2-2', part:'Doenças causadas por bactérias', type:'choice', multi:true,
+            prompt:'Marque doenças causadas por bactérias:',
+            options:['Tétano','Tuberculose','Gripe','Faringite bacteriana'],
+            correct:[0,1,3] },
+          { id:'cien-2-3', part:'Doenças causadas por bactérias', type:'choice',
+            prompt:'Uma forma de evitar o tétano é:',
+            options:['Cuidar bem de ferimentos e manter a vacina em dia','Nunca limpar feridas','Comer alimentos crus sempre','Nenhuma prevenção existe'],
+            correct:[0] },
+          { id:'cien-2-4', part:'Doenças causadas por bactérias', type:'choice',
+            prompt:'Diferente dos vírus, muitas bactérias podem ser combatidas com:',
+            options:['Antibióticos','Repouso sem remédio nenhum','Sorvete','Nada, são invencíveis'],
+            correct:[0] },
+          { id:'cien-2-5', part:'Doenças causadas por bactérias', type:'choice',
+            prompt:'Boas práticas de higiene, como lavar as mãos, ajudam a:',
+            options:['Aumentar o número de bactérias prejudiciais no corpo','Reduzir o risco de infecções bacterianas','Não fazer diferença nenhuma','Causar mais doenças'],
+            correct:[1] },
+          { id:'cien-2-6', part:'Doenças causadas por bactérias', type:'items',
+            prompt:'Classifique a afirmação:',
+            items:[
+              { label:'Algumas bactérias ajudam na digestão dos alimentos', options:['Verdadeiro','Falso'], correct:0 },
+              { label:'Todas as bactérias fazem mal ao corpo', options:['Verdadeiro','Falso'], correct:1 },
+            ] },
+        ],
+      },
+      {
+        id:'cien-3', name:'Outros microrganismos', cap:'Capítulo 13',
+        questions: [
+          { id:'cien-3-1', part:'Outros microrganismos', type:'choice',
+            prompt:'Além de vírus e bactérias, outros microrganismos que podem causar doenças são, por exemplo:',
+            options:['Protozoários e fungos','Peixes e aves','Cachorros e gatos','Plantas grandes'],
+            correct:[0] },
+          { id:'cien-3-2', part:'Outros microrganismos', type:'choice',
+            prompt:'A malária é uma doença causada por um:',
+            options:['Vírus','Protozoário, transmitido pelo mosquito Anopheles','Verme','Fungo que cresce em pão'],
+            correct:[1] },
+          { id:'cien-3-3', part:'Outros microrganismos', type:'choice',
+            prompt:'Micoses de pele são causadas por:',
+            options:['Vírus','Fungos','Vermes','Bactérias apenas'],
+            correct:[1] },
+          { id:'cien-3-4', part:'Outros microrganismos', type:'choice', multi:true,
+            prompt:'Marque cuidados que ajudam a prevenir doenças causadas por fungos e protozoários:',
+            options:['Manter a pele limpa e seca','Eliminar água parada que atrai mosquitos','Nunca tomar banho','Usar repelente contra mosquitos'],
+            correct:[0,1,3] },
+          { id:'cien-3-5', part:'Outros microrganismos', type:'choice',
+            prompt:'Protozoários são seres:',
+            options:['Unicelulares (uma só célula), microscópicos','Sempre grandes e visíveis a olho nu','Formados só de pedra','Plantas com flores'],
+            correct:[0] },
+          { id:'cien-3-6', part:'Outros microrganismos', type:'items',
+            prompt:'Classifique o microrganismo causador:',
+            items:[
+              { label:'Micose de pele', options:['Fungo','Protozoário'], correct:0 },
+              { label:'Malária', options:['Fungo','Protozoário'], correct:1 },
+            ] },
+        ],
+      },
+      {
+        id:'cien-4', name:'Doenças causadas por vermes', cap:'Capítulo 13',
+        questions: [
+          { id:'cien-4-1', part:'Doenças causadas por vermes', type:'choice',
+            prompt:'Verminoses são doenças causadas por:',
+            options:['Vermes parasitas','Metais pesados','Luz solar','Frio intenso'],
+            correct:[0] },
+          { id:'cien-4-2', part:'Doenças causadas por vermes', type:'choice', multi:true,
+            prompt:'Marque formas de prevenir verminoses:',
+            options:['Lavar bem frutas e verduras antes de comer','Lavar as mãos antes das refeições','Andar descalço em terra com esgoto a céu aberto','Beber água tratada ou filtrada'],
+            correct:[0,1,3] },
+          { id:'cien-4-3', part:'Doenças causadas por vermes', type:'choice',
+            prompt:'Uma forma comum de contaminação por vermes é:',
+            options:['Ingerir água ou alimentos contaminados com ovos de vermes','Tomar vacina','Usar protetor solar','Dormir cedo'],
+            correct:[0] },
+          { id:'cien-4-4', part:'Doenças causadas por vermes', type:'choice',
+            prompt:'Pessoas com verminose podem sentir, por exemplo:',
+            options:['Nenhum sintoma jamais','Dor de barriga e falta de apetite','Crescimento acelerado','Melhora da visão'],
+            correct:[1] },
+          { id:'cien-4-5', part:'Doenças causadas por vermes', type:'choice',
+            prompt:'Caminhar descalço em solo contaminado pode facilitar a entrada de:',
+            options:['Alguns tipos de vermes no corpo','Vitaminas','Minerais úteis','Nada acontece'],
+            correct:[0] },
+          { id:'cien-4-6', part:'Doenças causadas por vermes', type:'items',
+            prompt:'Classifique a atitude:',
+            items:[
+              { label:'Lavar bem as mãos antes de comer', options:['Ajuda a prevenir verminose','Aumenta o risco de verminose'], correct:0 },
+              { label:'Andar descalço perto de esgoto a céu aberto', options:['Ajuda a prevenir verminose','Aumenta o risco de verminose'], correct:1 },
+            ] },
+        ],
+      },
+    ],
+  },
+
+  // =================================== INGLÊS ===================================
+  {
+    id:'ing', name:'Ilha do Inglês', subtitle:'English',
+    icon:'🗣️', color:'#FF8FAB', colorDark:'#E86B8C',
+    phases: [
+      {
+        id:'ing-1', name:'Animals vocabulary', cap:'Unit 5',
+        questions: [
+          { id:'ing-1-1', part:'Animals vocabulary', type:'choice',
+            prompt:'Which animal has stripes?',
+            options:['Tiger','Panda','Parrot','Rhino'],
+            correct:[0] },
+          { id:'ing-1-2', part:'Animals vocabulary', type:'choice',
+            prompt:"Which animal is known for its 'spots'?",
+            options:['Leopard','Snake','Penguin','Zebra'],
+            correct:[0] },
+          { id:'ing-1-3', part:'Animals vocabulary', type:'choice',
+            prompt:"Which animal has 'fur' all over its body?",
+            options:['Monkey','Snake','Parrot','Penguin'],
+            correct:[0] },
+          { id:'ing-1-4', part:'Animals vocabulary', type:'choice', multi:true,
+            prompt:"Mark the animals that have 'wings':",
+            options:['Parrot','Snake','Penguin','Lion'],
+            correct:[0,2] },
+          { id:'ing-1-5', part:'Animals vocabulary', type:'items',
+            prompt:'Match the animal to its feature:',
+            items:[
+              { label:'Zebra', options:['Stripes','Spots'], correct:0 },
+              { label:'Leopard', options:['Stripes','Spots'], correct:1 },
+            ] },
+          { id:'ing-1-6', part:'Animals vocabulary', type:'choice',
+            prompt:'Which word names a long body part monkeys use to balance?',
+            options:['Tail','Wings','Fur','Feathers'],
+            correct:[0] },
+        ],
+      },
+      {
+        id:'ing-2', name:"Can / can't & have / don't have", cap:'Unit 5',
+        questions: [
+          { id:'ing-2-1', part:"Can / can't & have / don't have", type:'choice',
+            prompt:"Complete: 'Monkeys ___ climb trees.'",
+            options:['can','can\'t','is','are'],
+            correct:[0] },
+          { id:'ing-2-2', part:"Can / can't & have / don't have", type:'choice',
+            prompt:"Complete: 'Penguins ___ fly.'",
+            options:['can','can\'t','do','does'],
+            correct:[1] },
+          { id:'ing-2-3', part:"Can / can't & have / don't have", type:'choice',
+            prompt:"'Can lions climb trees easily?' — choose the correct short answer (No):",
+            options:['Yes, they can.','No, they can\'t.','Yes, they do.','No, they don\'t.'],
+            correct:[1] },
+          { id:'ing-2-4', part:"Can / can't & have / don't have", type:'choice',
+            prompt:"Complete: 'Zebras ___ stripes.'",
+            options:['have','has','don\'t have','can\'t'],
+            correct:[0] },
+          { id:'ing-2-5', part:"Can / can't & have / don't have", type:'choice',
+            prompt:"'Do monkeys have fur?' — choose the correct answer (Yes):",
+            options:['Yes, they do.','Yes, they can.','No, they don\'t.','No, they can\'t.'],
+            correct:[0] },
+          { id:'ing-2-6', part:"Can / can't & have / don't have", type:'items',
+            prompt:'Choose the correct form:',
+            items:[
+              { label:'Snakes ___ legs.', options:["don't have",'do have'], correct:0 },
+              { label:'Tigers ___ stripes.', options:['have',"don't have"], correct:0 },
+            ] },
+        ],
+      },
+      {
+        id:'ing-3', name:'Activities vocabulary', cap:'Unit 6',
+        questions: [
+          { id:'ing-3-1', part:'Activities vocabulary', type:'choice',
+            prompt:"'Riding a bike' means:",
+            options:['Andar de bicicleta','Pescar','Nadar','Desenhar'],
+            correct:[0] },
+          { id:'ing-3-2', part:'Activities vocabulary', type:'choice',
+            prompt:"'Fishing' means:",
+            options:['Construir um forte','Pescar','Andar de skate','Fazer um piquenique'],
+            correct:[1] },
+          { id:'ing-3-3', part:'Activities vocabulary', type:'choice',
+            prompt:"'Having a picnic' means:",
+            options:['Fazer um piquenique','Escalar uma pedra','Ler um mapa','Velejar'],
+            correct:[0] },
+          { id:'ing-3-4', part:'Activities vocabulary', type:'choice', multi:true,
+            prompt:'Mark the activities that usually happen outdoors, in nature:',
+            options:['Hiking a nature trail','Sailing','Watching TV at home','Rock-climbing'],
+            correct:[0,1,3] },
+          { id:'ing-3-5', part:'Activities vocabulary', type:'choice',
+            prompt:"'Reading a map' means:",
+            options:['Ler um livro de histórias','Ler um mapa','Desenhar um mapa','Comprar um mapa'],
+            correct:[1] },
+          { id:'ing-3-6', part:'Activities vocabulary', type:'items',
+            prompt:'Match the word to its meaning:',
+            items:[
+              { label:'Skateboarding', options:['Andar de skate','Velejar'], correct:0 },
+              { label:'Sailing', options:['Andar de skate','Velejar'], correct:1 },
+            ] },
+        ],
+      },
+      {
+        id:'ing-4', name:"She is / he isn't + ing", cap:'Unit 6',
+        questions: [
+          { id:'ing-4-1', part:"She is / he isn't + ing", type:'choice',
+            prompt:"Complete: 'She ___ fishing.'",
+            options:['is',"isn't",'are','do'],
+            correct:[0] },
+          { id:'ing-4-2', part:"She is / he isn't + ing", type:'choice',
+            prompt:"Complete: 'He ___ drawing.' (he is NOT drawing)",
+            options:['is',"isn't",'am',"don't"],
+            correct:[1] },
+          { id:'ing-4-3', part:"She is / he isn't + ing", type:'choice',
+            prompt:"'Is she sailing?' — choose the correct YES answer:",
+            options:['Yes, she is.','Yes, she does.',"No, she isn't.",'Yes, he is.'],
+            correct:[0] },
+          { id:'ing-4-4', part:"She is / he isn't + ing", type:'choice',
+            prompt:"'Is he building a fort?' — choose the correct NO answer:",
+            options:['Yes, he is.',"No, he isn't.","No, she isn't.",'Yes, they are.'],
+            correct:[1] },
+          { id:'ing-4-5', part:"She is / he isn't + ing", type:'choice', multi:true,
+            prompt:'Mark the grammatically correct sentences:',
+            options:['She is fishing.',"He isn't drawing.",'She are sailing.','He is skateboard.'],
+            correct:[0,1] },
+          { id:'ing-4-6', part:"She is / he isn't + ing", type:'items',
+            prompt:'Choose the correct word:',
+            items:[
+              { label:'She ___ hiking a nature trail. (yes, she is)', options:['is',"isn't"], correct:0 },
+              { label:'He ___ rock-climbing. (no, he is not)', options:['is',"isn't"], correct:1 },
+            ] },
+        ],
+      },
+    ],
+  },
+];
+
+if (typeof module !== 'undefined') { module.exports = { SUBJECTS }; }
+
+</script>
+<script>
+/* Motor do jogo - Simulado Gamificado 3º Trimestre
+   UX/UI pensado para crianças de 10 anos, mobile-first, estilo "mapa de fases". */
+
+// ---------- Avatares ----------
+const AVATARS = [
+  { id:'hero',   emoji:'🦸' }, { id:'heroine',emoji:'🦸‍♀️' },
+  { id:'astro',  emoji:'🧑‍🚀' }, { id:'wizard', emoji:'🧙' },
+  { id:'ninja',  emoji:'🥷' }, { id:'fairy',  emoji:'🧚' },
+  { id:'robot',  emoji:'🤖' }, { id:'explorer',emoji:'🧭' },
+];
+const AVATAR_COLORS = ['#FF6B6B','#4ECDC4','#FFB84D','#6BCB77','#A78BFA','#FF8FAB','#5AC8FA','#FFD93D'];
+
+const MASCOT = '🦉';
+const MASCOT_LINES = {
+  welcome: ["Oi, eu sou o Sábio! Vamos estudar juntos?","Prontinho pra nossa aventura de hoje?","Bora encarar o 3º trimestre com tudo!"],
+  islandIntro: ["Essa ilha tem desafios incríveis te esperando!","Vamos nessa? Cada fase te deixa mais forte!"],
+  phaseIntro: ["Vamos ver o que você sabe sobre isso!","Respire fundo e vai com calma, você consegue!"],
+  correct: ["Isso aí! Mandou bem!","Show de bola!","Perfeito, continue assim!","Você é demais!","Acertou em cheio!"],
+  wrong: ["Quase! Vamos para a próxima.","Não foi dessa vez, mas tudo bem!","Respira e tenta a próxima!","Errar faz parte de aprender!"],
+  threeStars: ["UAU! Você mandou muito bem, 3 estrelas!","Perfeito! Você é um craque nessa matéria!"],
+  twoStars: ["Muito bem! Quase perfeito!","Ótimo trabalho, duas estrelas!"],
+  oneStar: ["Você conseguiu! Pode tentar de novo para melhorar.","Boa! Com um pouco mais de prática você chega nas 3 estrelas!"],
+  zeroStars: ["Não desanime! Vamos tentar de novo?","Essa fase é difícil mesmo. Bora de novo?"],
+  islandComplete: ["Incrível! Você completou essa ilha inteira!","Parabéns, explorador(a)! Ilha concluída!"],
+  gameComplete: ["Você é o MESTRE do 3º trimestre! Parabéns!!","Todas as ilhas concluídas! Você é demais!"],
+};
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+// ---------- Áudio (Web Audio API, sem arquivos externos) ----------
+const SFX = (() => {
+  let ctx = null;
+  function getCtx(){ if(!ctx){ try{ ctx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ ctx=null; } } return ctx; }
+  function tone(freq, start, dur, type='sine', gain=0.18){
+    const c = getCtx(); if(!c) return;
+    const o = c.createOscillator(); const g = c.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, c.currentTime+start);
+    g.gain.setValueAtTime(0, c.currentTime+start);
+    g.gain.linearRampToValueAtTime(gain, c.currentTime+start+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime+start+dur);
+    o.connect(g); g.connect(c.destination);
+    o.start(c.currentTime+start); o.stop(c.currentTime+start+dur+0.05);
+  }
+  return {
+    enabled: true,
+    unlock(){ const c = getCtx(); if(c && c.state==='suspended'){ c.resume(); } },
+    correct(){ if(!this.enabled) return; tone(880,0,0.12,'sine'); tone(1174,0.09,0.18,'sine'); },
+    wrong(){ if(!this.enabled) return; tone(220,0,0.22,'sawtooth',0.12); tone(160,0.1,0.22,'sawtooth',0.1); },
+    click(){ if(!this.enabled) return; tone(520,0,0.06,'square',0.08); },
+    whoosh(){ if(!this.enabled) return; tone(300,0,0.15,'sine',0.08); tone(500,0.05,0.15,'sine',0.08); },
+    star(){ if(!this.enabled) return; tone(660,0,0.1,'triangle',0.15); tone(880,0.1,0.1,'triangle',0.15); tone(1320,0.2,0.22,'triangle',0.18); },
+    victory(){ if(!this.enabled) return; [523,659,784,1047].forEach((f,i)=> tone(f, i*0.13, 0.25, 'triangle', 0.17)); },
+    coin(){ if(!this.enabled) return; tone(988,0,0.07,'square',0.1); tone(1319,0.06,0.12,'square',0.1); },
+  };
+})();
+
+// ---------- Estado / Persistência ----------
+const SAVE_KEY = 'quiz3tri_save_v1';
+function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+function defaultSave(){
+  return {
+    playerName: '', avatar: 'hero', avatarColor: AVATAR_COLORS[0],
+    xp: 0, coins: 0, streak: 0, lastPlayedDate: null,
+    phaseResults: {}, // phaseId -> {stars, bestCorrect, total, attempts}
+    badges: [], soundOn: true, createdAt: null,
+  };
+}
+let STATE = loadSave();
+function loadSave(){
+  try{
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(!raw) return defaultSave();
+    const parsed = JSON.parse(raw);
+    return Object.assign(defaultSave(), parsed);
+  }catch(e){ return defaultSave(); }
+}
+function saveGame(){
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(STATE)); }catch(e){ /* ignore quota errors */ }
+}
+function resetGame(){
+  try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+  STATE = defaultSave();
+}
+
+function registerPlayToday(){
+  const t = todayStr();
+  if(STATE.lastPlayedDate === t) return; // already counted today
+  const y = new Date(); y.setDate(y.getDate()-1);
+  const yStr = y.getFullYear()+'-'+(y.getMonth()+1)+'-'+y.getDate();
+  if(STATE.lastPlayedDate === yStr){ STATE.streak += 1; } else { STATE.streak = 1; }
+  STATE.lastPlayedDate = t;
+  checkStreakBadges();
+  saveGame();
+}
+
+// ---------- Level / XP ----------
+function levelForXp(xp){ return Math.floor(xp/100) + 1; }
+function xpIntoLevel(xp){ return xp % 100; }
+
+// ---------- Badges ----------
+const BADGE_DEFS = {
+  streak3: { icon:'🔥', name:'Chama de 3 dias', desc:'Jogou 3 dias seguidos' },
+  streak7: { icon:'🔥🔥', name:'Chama de 7 dias', desc:'Jogou 7 dias seguidos' },
+  firstPhase: { icon:'🥇', name:'Primeiros passos', desc:'Completou a primeira fase' },
+  allStars: { icon:'⭐', name:'Perfeccionista', desc:'Conquistou 3 estrelas em uma fase' },
+};
+function subjectBadgeId(subjId){ return 'island_'+subjId; }
+function awardBadge(id){
+  if(!STATE.badges.includes(id)){ STATE.badges.push(id); return true; }
+  return false;
+}
+function checkStreakBadges(){
+  if(STATE.streak >= 3) awardBadge('streak3');
+  if(STATE.streak >= 7) awardBadge('streak7');
+}
+
+// ---------- Cálculo de estrelas ----------
+function starsFor(correctCount, total){
+  const ratio = correctCount/total;
+  if (ratio >= 1) return 3;
+  if (ratio >= 0.66) return 2;
+  if (ratio >= 0.33) return 1;
+  return 0;
+}
+
+function isPhaseUnlocked(subject, phaseIndex){
+  if (phaseIndex === 0) return true;
+  const prevPhase = subject.phases[phaseIndex-1];
+  const prevResult = STATE.phaseResults[prevPhase.id];
+  return !!(prevResult && prevResult.stars >= 1);
+}
+function isSubjectComplete(subject){
+  return subject.phases.every(p => STATE.phaseResults[p.id] && STATE.phaseResults[p.id].stars >= 1);
+}
+function subjectStars(subject){
+  return subject.phases.reduce((a,p)=> a + (STATE.phaseResults[p.id] ? STATE.phaseResults[p.id].stars : 0), 0);
+}
+function allSubjectsComplete(){ return SUBJECTS.every(isSubjectComplete); }
+
+if (typeof module !== 'undefined') {
+  module.exports = {
+    AVATARS, AVATAR_COLORS, MASCOT, MASCOT_LINES, pick, SFX,
+    SAVE_KEY, defaultSave, loadSave, saveGame, resetGame, registerPlayToday,
+    levelForXp, xpIntoLevel, BADGE_DEFS, subjectBadgeId, awardBadge, checkStreakBadges,
+    starsFor, isPhaseUnlocked, isSubjectComplete, subjectStars, allSubjectsComplete,
+  };
+}
+
+</script>
+<script>
+/* App / UI - Simulado Gamificado 3º Trimestre - 4º Ano
+   Telas: onboarding -> mapa -> ilha -> intro da fase -> quiz -> resultado */
+
+const root = document.getElementById('app');
+const toastEl = document.getElementById('toast');
+let NAV = { screen:'boot' };
+let QUIZ = null; // {subject, phase, index, answers:[], correctCount, selected:[]}
+
+function el(html){ const t=document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; }
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function findSubject(id){ return SUBJECTS.find(s=>s.id===id); }
+function findPhase(subject, id){ return subject.phases.find(p=>p.id===id); }
+
+function showToast(msg){
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=> toastEl.classList.remove('show'), 2200);
+}
+
+// ---------------------------- BOOT ----------------------------
+function boot(){
+  registerPlayToday();
+  if (!STATE.playerName) { goTo('onboarding'); }
+  else { goTo('map'); }
+}
+
+function goTo(screen, params){
+  NAV = Object.assign({ screen }, params||{});
+  render();
+  window.scrollTo(0,0);
+}
+
+function render(){
+  root.classList.add('fade');
+  requestAnimationFrame(()=> root.classList.remove('fade'));
+  if (NAV.screen === 'onboarding') return renderOnboarding();
+  if (NAV.screen === 'map') return renderMap();
+  if (NAV.screen === 'island') return renderIsland();
+  if (NAV.screen === 'phaseIntro') return renderPhaseIntro();
+  if (NAV.screen === 'quiz') return renderQuiz();
+  if (NAV.screen === 'result') return renderResult();
+}
+
+// ---------------------------- ONBOARDING ----------------------------
+let pendingAvatar = STATE.avatar || 'hero';
+let pendingColor = STATE.avatarColor || AVATAR_COLORS[0];
+
+function renderOnboarding(){
+  root.innerHTML = '';
+  const avatarsHtml = AVATARS.map(a => `
+    <button class="avatar-pick ${a.id===pendingAvatar?'selected':''}" data-avatar="${a.id}" aria-label="Avatar ${a.id}">
+      <span class="avatar-emoji">${a.emoji}</span>
+    </button>`).join('');
+  const colorsHtml = AVATAR_COLORS.map(c => `
+    <button class="color-pick ${c===pendingColor?'selected':''}" data-color="${c}" style="background:${c}" aria-label="Cor ${c}"></button>`).join('');
+
+  const card = el(`
+    <div class="screen onboarding-screen">
+      <div class="onboarding-card">
+        <div class="mascot-big">${MASCOT}</div>
+        <h1 class="title-xl">Bem-vindo(a) à<br/><span class="accent">Ilha do Conhecimento</span>!</h1>
+        <p class="subtitle">Crie seu explorador para começar a aventura do 3º trimestre!</p>
+
+        <div class="avatar-preview" id="avatarPreview" style="background:${pendingColor}">
+          <span>${AVATARS.find(a=>a.id===pendingAvatar).emoji}</span>
+        </div>
+
+        <div class="section-label">Escolha seu avatar</div>
+        <div class="avatar-grid">${avatarsHtml}</div>
+
+        <div class="section-label">Escolha sua cor</div>
+        <div class="color-grid">${colorsHtml}</div>
+
+        <div class="section-label">Como podemos te chamar?</div>
+        <input id="nameInput" class="name-input" maxlength="18" placeholder="Digite seu nome..." value="${esc(STATE.playerName||'')}" />
+
+        <button id="startBtn" class="btn-primary btn-big">Começar aventura 🚀</button>
+      </div>
+    </div>`);
+  root.appendChild(card);
+
+  card.querySelectorAll('.avatar-pick').forEach(b => b.addEventListener('click', ()=>{
+    SFX.unlock(); SFX.click();
+    pendingAvatar = b.dataset.avatar;
+    card.querySelectorAll('.avatar-pick').forEach(x=>x.classList.remove('selected'));
+    b.classList.add('selected');
+    document.getElementById('avatarPreview').querySelector('span').textContent = AVATARS.find(a=>a.id===pendingAvatar).emoji;
+  }));
+  card.querySelectorAll('.color-pick').forEach(b => b.addEventListener('click', ()=>{
+    SFX.unlock(); SFX.click();
+    pendingColor = b.dataset.color;
+    card.querySelectorAll('.color-pick').forEach(x=>x.classList.remove('selected'));
+    b.classList.add('selected');
+    document.getElementById('avatarPreview').style.background = pendingColor;
+  }));
+  card.querySelector('#startBtn').addEventListener('click', ()=>{
+    SFX.unlock();
+    const name = card.querySelector('#nameInput').value.trim() || 'Explorador(a)';
+    STATE.playerName = name; STATE.avatar = pendingAvatar; STATE.avatarColor = pendingColor;
+    if(!STATE.createdAt) STATE.createdAt = Date.now();
+    saveGame();
+    SFX.whoosh();
+    showToast(pick(MASCOT_LINES.welcome));
+    goTo('map');
+  });
+}
+
+// ---------------------------- TOP BAR ----------------------------
+function topBarHtml(){
+  const lvl = levelForXp(STATE.xp);
+  const into = xpIntoLevel(STATE.xp);
+  const avatarEmoji = AVATARS.find(a=>a.id===STATE.avatar)?.emoji || '🦸';
+  return `
+  <div class="topbar">
+    <div class="tb-avatar" style="background:${STATE.avatarColor}">${avatarEmoji}</div>
+    <div class="tb-info">
+      <div class="tb-name">${esc(STATE.playerName)} <span class="tb-level">Nv. ${lvl}</span></div>
+      <div class="xp-bar"><div class="xp-fill" style="width:${into}%"></div></div>
+    </div>
+    <div class="tb-stat" title="Moedas">🪙 <b>${STATE.coins}</b></div>
+    <div class="tb-stat" title="Sequência de dias">🔥 <b>${STATE.streak}</b></div>
+    <button class="tb-settings" id="settingsBtn" aria-label="Configurações">⚙️</button>
+  </div>`;
+}
+
+function wireTopBar(container){
+  container.querySelector('#settingsBtn')?.addEventListener('click', openSettings);
+}
+
+function openSettings(){
+  SFX.click();
+  const modal = el(`
+    <div class="modal-backdrop">
+      <div class="modal">
+        <h2>Configurações</h2>
+        <label class="settings-row"><span>Som 🔊</span>
+          <input type="checkbox" id="soundToggle" ${STATE.soundOn?'checked':''}/>
+        </label>
+        <button class="btn-secondary" id="editAvatarBtn">Editar avatar/nome</button>
+        <button class="btn-danger" id="resetBtn">Reiniciar progresso</button>
+        <button class="btn-primary" id="closeModal">Fechar</button>
+      </div>
+    </div>`);
+  document.body.appendChild(modal);
+  modal.querySelector('#soundToggle').addEventListener('change', (e)=>{
+    STATE.soundOn = e.target.checked; SFX.enabled = STATE.soundOn; saveGame();
+  });
+  modal.querySelector('#editAvatarBtn').addEventListener('click', ()=>{ modal.remove(); goTo('onboarding'); });
+  modal.querySelector('#resetBtn').addEventListener('click', ()=>{
+    if(confirm('Tem certeza? Isso vai apagar todo o progresso do jogo.')){
+      resetGame(); modal.remove(); goTo('onboarding');
+    }
+  });
+  modal.querySelector('#closeModal').addEventListener('click', ()=> modal.remove());
+  modal.addEventListener('click', (e)=>{ if(e.target===modal) modal.remove(); });
+}
+
+// ---------------------------- MAPA (ILHAS) ----------------------------
+function renderMap(){
+  root.innerHTML = '';
+  const wrap = el(`<div class="screen map-screen"></div>`);
+  wrap.insertAdjacentHTML('beforeend', topBarHtml());
+
+  const mascotMsg = el(`<div class="mascot-banner"><span class="mascot-emoji">${MASCOT}</span><span class="speech">${esc(pick(MASCOT_LINES.welcome))}</span></div>`);
+  wrap.appendChild(mascotMsg);
+
+  const grid = el(`<div class="island-grid"></div>`);
+  SUBJECTS.forEach(subject => {
+    const totalStars = subject.phases.length * 3;
+    const earned = subjectStars(subject);
+    const complete = isSubjectComplete(subject);
+    const card = el(`
+      <button class="island-card" data-subject="${subject.id}" style="--c:${subject.color}; --cd:${subject.colorDark}">
+        ${complete ? '<div class="island-badge">🏆</div>' : ''}
+        <div class="island-icon">${subject.icon}</div>
+        <div class="island-name">${esc(subject.name)}</div>
+        <div class="island-subtitle">${esc(subject.subtitle)}</div>
+        <div class="island-stars">⭐ ${earned}/${totalStars}</div>
+        <div class="island-progress-bar"><div class="island-progress-fill" style="width:${Math.round(earned/totalStars*100)}%"></div></div>
+      </button>`);
+    grid.appendChild(card);
+  });
+  wrap.appendChild(grid);
+
+  if (allSubjectsComplete()){
+    wrap.appendChild(el(`<div class="trophy-banner">🏆 Você é o <b>Mestre do 3º Trimestre</b>! Todas as ilhas concluídas! 🏆</div>`));
+  }
+
+  const badgesSection = renderBadgesSection();
+  wrap.appendChild(badgesSection);
+
+  root.appendChild(wrap);
+  wireTopBar(wrap);
+  wrap.querySelectorAll('.island-card').forEach(c => c.addEventListener('click', ()=>{
+    SFX.click();
+    goTo('island', { subjectId: c.dataset.subject });
+  }));
+}
+
+function renderBadgesSection(){
+  const defs = Object.assign({}, BADGE_DEFS);
+  SUBJECTS.forEach(s => { defs[subjectBadgeId(s.id)] = { icon:s.icon, name:'Ilha completa: '+s.subtitle, desc:'Completou todas as fases de '+s.subtitle }; });
+  const items = Object.keys(defs).map(id => {
+    const owned = STATE.badges.includes(id) || (id.startsWith('island_') && isSubjectComplete(findSubject(id.replace('island_',''))));
+    const d = defs[id];
+    return `<div class="badge-chip ${owned?'owned':'locked'}" title="${esc(d.desc)}">
+      <span class="badge-icon">${owned?d.icon:'🔒'}</span><span class="badge-name">${esc(d.name)}</span></div>`;
+  }).join('');
+  return el(`<div class="badges-section"><div class="section-label">Suas conquistas</div><div class="badge-row">${items}</div></div>`);
+}
+
+// ---------------------------- ILHA (TRILHA DE FASES) ----------------------------
+function renderIsland(){
+  const subject = findSubject(NAV.subjectId);
+  root.innerHTML = '';
+  const wrap = el(`<div class="screen island-screen" style="--c:${subject.color}; --cd:${subject.colorDark}"></div>`);
+  wrap.insertAdjacentHTML('beforeend', topBarHtml());
+
+  wrap.appendChild(el(`
+    <div class="island-header">
+      <button class="back-btn" id="backToMap">⬅ Mapa</button>
+      <div class="island-header-title">${subject.icon} ${esc(subject.name)}</div>
+    </div>`));
+
+  wrap.appendChild(el(`<div class="mascot-banner"><span class="mascot-emoji">${MASCOT}</span><span class="speech">${esc(pick(MASCOT_LINES.islandIntro))}</span></div>`));
+
+  const trail = el(`<div class="trail"></div>`);
+  subject.phases.forEach((phase, idx) => {
+    const unlocked = isPhaseUnlocked(subject, idx);
+    const result = STATE.phaseResults[phase.id];
+    const stars = result ? result.stars : 0;
+    const node = el(`
+      <div class="trail-node-wrap ${idx%2===0?'left':'right'}">
+        <button class="trail-node ${unlocked?'unlocked':'locked'} ${stars===3?'maxed':''}" data-phase="${phase.id}" ${unlocked?'':'disabled'}>
+          <span class="trail-node-num">${unlocked ? (idx+1) : '🔒'}</span>
+        </button>
+        <div class="trail-node-label">${esc(phase.name)}</div>
+        <div class="trail-node-stars">${renderStarsInline(stars)}</div>
+      </div>`);
+    trail.appendChild(node);
+  });
+  wrap.appendChild(trail);
+
+  root.appendChild(wrap);
+  wireTopBar(wrap);
+  wrap.querySelector('#backToMap').addEventListener('click', ()=>{ SFX.click(); goTo('map'); });
+  wrap.querySelectorAll('.trail-node.unlocked').forEach(b => b.addEventListener('click', ()=>{
+    SFX.click();
+    goTo('phaseIntro', { subjectId: subject.id, phaseId: b.dataset.phase });
+  }));
+}
+
+function renderStarsInline(stars){
+  let s = '';
+  for(let i=0;i<3;i++) s += `<span class="star ${i<stars?'filled':''}">★</span>`;
+  return s;
+}
+
+// ---------------------------- INTRO DA FASE ----------------------------
+function renderPhaseIntro(){
+  const subject = findSubject(NAV.subjectId);
+  const phase = findPhase(subject, NAV.phaseId);
+  const result = STATE.phaseResults[phase.id];
+  root.innerHTML = '';
+  const wrap = el(`
+    <div class="screen phase-intro-screen" style="--c:${subject.color}; --cd:${subject.colorDark}">
+      <div class="phase-intro-card">
+        <div class="phase-intro-icon">${subject.icon}</div>
+        <div class="phase-intro-cap">${esc(phase.cap)}</div>
+        <h2 class="phase-intro-title">${esc(phase.name)}</h2>
+        <div class="phase-intro-stars">${renderStarsInline(result?result.stars:0)}</div>
+        <div class="mascot-banner small"><span class="mascot-emoji">${MASCOT}</span><span class="speech">${esc(pick(MASCOT_LINES.phaseIntro))}</span></div>
+        <p class="phase-intro-sub">${phase.questions.length} perguntas • responda com calma!</p>
+        <button class="btn-primary btn-big" id="playBtn">${result?'Jogar de novo':'Jogar'} ▶️</button>
+        <button class="back-btn" id="backToIsland">⬅ Voltar para a ilha</button>
+      </div>
+    </div>`);
+  root.appendChild(wrap);
+  wrap.querySelector('#backToIsland').addEventListener('click', ()=>{ SFX.click(); goTo('island', { subjectId: subject.id }); });
+  wrap.querySelector('#playBtn').addEventListener('click', ()=>{
+    SFX.whoosh();
+    const scorable = phase.questions.filter(q => q.type !== 'reflection').length;
+    QUIZ = { subject, phase, index:0, correctCount:0, total: phase.questions.length, scorable, selected:null };
+    goTo('quiz', { subjectId: subject.id, phaseId: phase.id });
+  });
+}
+
+// ---------------------------- QUIZ ----------------------------
+function renderQuiz(){
+  const { subject, phase } = QUIZ;
+  const q = phase.questions[QUIZ.index];
+  root.innerHTML = '';
+  const progressPct = Math.round((QUIZ.index)/QUIZ.total*100);
+  const wrap = el(`
+    <div class="screen quiz-screen" style="--c:${subject.color}; --cd:${subject.colorDark}">
+      <div class="quiz-top">
+        <button class="back-btn" id="quitQuiz">✕</button>
+        <div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:${progressPct}%"></div></div>
+        <div class="quiz-counter">${QUIZ.index+1}/${QUIZ.total}</div>
+      </div>
+      <div class="quiz-card-area" id="quizCardArea"></div>
+    </div>`);
+  root.appendChild(wrap);
+  wrap.querySelector('#quitQuiz').addEventListener('click', ()=>{
+    if(confirm('Sair do quiz? Seu progresso nessa fase será perdido.')){ goTo('phaseIntro', { subjectId: subject.id, phaseId: phase.id }); }
+  });
+
+  const area = wrap.querySelector('#quizCardArea');
+  area.appendChild(renderQuestionCard(q));
+}
+
+function renderQuestionCard(q){
+  if (q.type === 'choice') return renderChoiceCard(q);
+  if (q.type === 'items') return renderItemsCard(q);
+  if (q.type === 'reflection') return renderReflectionCard(q);
+}
+
+function renderChoiceCard(q){
+  const card = el(`
+    <div class="q-card">
+      <div class="q-part">${esc(q.part)}</div>
+      <div class="q-prompt">${esc(q.prompt)}</div>
+      ${q.multi ? '<div class="q-hint">Marque todas as corretas</div>' : ''}
+      <div class="q-options" id="qOptions"></div>
+      <button class="btn-primary btn-big q-submit" id="qSubmit" disabled>Confirmar</button>
+    </div>`);
+  const optsWrap = card.querySelector('#qOptions');
+  let selected = new Set();
+  q.options.forEach((opt, i) => {
+    const b = el(`<button class="option-btn" data-i="${i}">${esc(opt)}</button>`);
+    b.addEventListener('click', ()=>{
+      if (card.classList.contains('answered')) return;
+      SFX.click();
+      if (q.multi){
+        if (selected.has(i)){ selected.delete(i); b.classList.remove('selected'); }
+        else { selected.add(i); b.classList.add('selected'); }
+      } else {
+        optsWrap.querySelectorAll('.option-btn').forEach(x=>x.classList.remove('selected'));
+        selected = new Set([i]);
+        b.classList.add('selected');
+      }
+      card.querySelector('#qSubmit').disabled = selected.size===0;
+    });
+    optsWrap.appendChild(b);
+  });
+  card.querySelector('#qSubmit').addEventListener('click', ()=>{
+    if (card.classList.contains('answered')) return;
+    card.classList.add('answered');
+    const correctSet = new Set(q.correct);
+    const isCorrect = selected.size===correctSet.size && [...selected].every(i=>correctSet.has(i));
+    optsWrap.querySelectorAll('.option-btn').forEach((b,i)=>{
+      if (correctSet.has(i)) b.classList.add('correct');
+      else if (selected.has(i)) b.classList.add('incorrect');
+    });
+    finishAnswer(isCorrect, card);
+  });
+  return card;
+}
+
+function renderItemsCard(q){
+  const card = el(`
+    <div class="q-card">
+      <div class="q-part">${esc(q.part)}</div>
+      <div class="q-prompt">${esc(q.prompt)}</div>
+      <div class="q-items" id="qItems"></div>
+      <button class="btn-primary btn-big q-submit" id="qSubmit" disabled>Confirmar</button>
+    </div>`);
+  const itemsWrap = card.querySelector('#qItems');
+  const answers = new Array(q.items.length).fill(null);
+  q.items.forEach((item, idx) => {
+    const row = el(`
+      <div class="q-item-row">
+        <div class="q-item-label">${esc(item.label)}</div>
+        <div class="q-item-opts">
+          ${item.options.map((o,oi)=>`<button class="mini-opt" data-item="${idx}" data-opt="${oi}">${esc(o)}</button>`).join('')}
+        </div>
+      </div>`);
+    itemsWrap.appendChild(row);
+  });
+  itemsWrap.querySelectorAll('.mini-opt').forEach(b => b.addEventListener('click', ()=>{
+    if (card.classList.contains('answered')) return;
+    SFX.click();
+    const itemIdx = +b.dataset.item;
+    answers[itemIdx] = +b.dataset.opt;
+    itemsWrap.querySelectorAll(`.mini-opt[data-item="${itemIdx}"]`).forEach(x=>x.classList.remove('selected'));
+    b.classList.add('selected');
+    card.querySelector('#qSubmit').disabled = answers.some(a=>a===null);
+  }));
+  card.querySelector('#qSubmit').addEventListener('click', ()=>{
+    if (card.classList.contains('answered')) return;
+    card.classList.add('answered');
+    let allCorrect = true;
+    q.items.forEach((item, idx) => {
+      const correct = item.correct === answers[idx];
+      if (!correct) allCorrect = false;
+      itemsWrap.querySelectorAll(`.mini-opt[data-item="${idx}"]`).forEach((b)=>{
+        const oi = +b.dataset.opt;
+        if (oi === item.correct) b.classList.add('correct');
+        else if (oi === answers[idx]) b.classList.add('incorrect');
+      });
+    });
+    finishAnswer(allCorrect, card);
+  });
+  return card;
+}
+
+function renderReflectionCard(q){
+  const card = el(`
+    <div class="q-card">
+      <div class="q-part">${esc(q.part)}</div>
+      <div class="q-prompt">${esc(q.prompt)}</div>
+      <div class="q-hint">Pergunta aberta — não vale ponto, é só para você refletir!</div>
+      <textarea id="qText" class="q-textarea" rows="4" placeholder="Escreva aqui o que você pensa..."></textarea>
+      <button class="btn-primary btn-big q-submit" id="qSubmit">Enviar</button>
+    </div>`);
+  card.querySelector('#qSubmit').addEventListener('click', ()=>{
+    if (card.classList.contains('answered')) return;
+    card.classList.add('answered');
+    finishAnswer(true, card, true);
+  });
+  return card;
+}
+
+function finishAnswer(isCorrect, card, isReflection){
+  if (!isReflection){
+    if (isCorrect){ SFX.correct(); QUIZ.correctCount++; }
+    else { SFX.wrong(); }
+    card.classList.add(isCorrect ? 'flash-correct' : 'flash-incorrect');
+    const banner = el(`<div class="feedback-banner ${isCorrect?'good':'bad'}">${isCorrect ? '✅ '+esc(pick(MASCOT_LINES.correct)) : '❌ '+esc(pick(MASCOT_LINES.wrong))}</div>`);
+    card.appendChild(banner);
+  } else {
+    const banner = el(`<div class="feedback-banner good">💬 Obrigado por compartilhar!</div>`);
+    card.appendChild(banner);
+  }
+  const nextBtn = el(`<button class="btn-primary btn-big next-btn">${QUIZ.index+1 < QUIZ.total ? 'Próxima' : 'Ver resultado'} ➡</button>`);
+  card.appendChild(nextBtn);
+  card.querySelector('.q-submit')?.remove();
+  nextBtn.addEventListener('click', ()=>{
+    SFX.click();
+    QUIZ.index++;
+    if (QUIZ.index >= QUIZ.total){ finishQuiz(); }
+    else { render(); }
+  });
+  nextBtn.scrollIntoView({behavior:'smooth', block:'end'});
+}
+
+function finishQuiz(){
+  const { subject, phase, correctCount, total, scorable } = QUIZ;
+  const stars = starsFor(correctCount, scorable || total);
+  const prev = STATE.phaseResults[phase.id];
+  const prevStars = prev ? prev.stars : 0;
+  const isFirstTime = !prev;
+  const improved = stars > prevStars;
+
+  const xpGained = correctCount*10 + (stars===3?20:stars===2?10:0);
+  const coinsGained = correctCount*5;
+  STATE.xp += xpGained;
+  STATE.coins += coinsGained;
+  STATE.phaseResults[phase.id] = {
+    stars: Math.max(stars, prevStars),
+    bestCorrect: Math.max(correctCount, prev?prev.bestCorrect:0),
+    total, attempts: (prev?prev.attempts:0)+1,
+  };
+  if (isFirstTime) awardBadge('firstPhase');
+  if (stars===3) awardBadge('allStars');
+
+  let subjectJustCompleted = false, gameJustCompleted = false;
+  if (isSubjectComplete(subject)) {
+    subjectJustCompleted = awardBadge(subjectBadgeId(subject.id));
+  }
+  if (allSubjectsComplete()) {
+    gameJustCompleted = awardBadge('gameComplete');
+  }
+  saveGame();
+
+  QUIZ.resultData = { stars, prevStars, correctCount, total, xpGained, coinsGained, subjectJustCompleted, gameJustCompleted, improved };
+  goTo('result', { subjectId: subject.id, phaseId: phase.id });
+}
+
+// ---------------------------- RESULTADO ----------------------------
+function renderResult(){
+  const { subject, phase, resultData } = QUIZ;
+  const { stars, correctCount, total, xpGained, coinsGained, subjectJustCompleted, gameJustCompleted } = resultData;
+  root.innerHTML = '';
+  const wrap = el(`
+    <div class="screen result-screen" style="--c:${subject.color}; --cd:${subject.colorDark}">
+      <div class="result-card">
+        <div class="result-stars" id="resultStars">
+          <span class="big-star s1">★</span><span class="big-star s2">★</span><span class="big-star s3">★</span>
+        </div>
+        <h2 class="result-title">${esc(phase.name)}</h2>
+        <div class="result-score">${correctCount}/${total} corretas</div>
+        <div class="mascot-banner"><span class="mascot-emoji">${MASCOT}</span><span class="speech">${esc(mascotResultLine(stars))}</span></div>
+        <div class="result-rewards">
+          <div class="reward-chip">✨ +${xpGained} XP</div>
+          <div class="reward-chip">🪙 +${coinsGained} moedas</div>
+        </div>
+        <button class="btn-primary btn-big" id="continueBtn">Continuar ➡</button>
+        <button class="btn-secondary" id="retryBtn">Jogar de novo 🔁</button>
+      </div>
+      <canvas id="confettiCanvas"></canvas>
+    </div>`);
+  root.appendChild(wrap);
+
+  // Anima as estrelas em sequência
+  const starEls = wrap.querySelectorAll('.big-star');
+  starEls.forEach((s,i)=>{ s.classList.remove('filled'); });
+  setTimeout(()=>{
+    for(let i=0;i<stars;i++){
+      setTimeout(()=>{ starEls[i].classList.add('filled','pop'); SFX.star(); }, i*350);
+    }
+    if (stars>0) setTimeout(()=> SFX.coin(), stars*350+150);
+  }, 300);
+
+  if (stars >= 2) burstConfetti(wrap.querySelector('#confettiCanvas'));
+  if (stars === 3) SFX.victory();
+
+  wrap.querySelector('#continueBtn').addEventListener('click', ()=>{
+    SFX.click();
+    if (gameJustCompleted){ showToast(pick(MASCOT_LINES.gameComplete)); }
+    else if (subjectJustCompleted){ showToast(pick(MASCOT_LINES.islandComplete)); }
+    goTo('island', { subjectId: subject.id });
+  });
+  wrap.querySelector('#retryBtn').addEventListener('click', ()=>{
+    SFX.click();
+    goTo('phaseIntro', { subjectId: subject.id, phaseId: phase.id });
+  });
+}
+
+function mascotResultLine(stars){
+  if (stars===3) return pick(MASCOT_LINES.threeStars);
+  if (stars===2) return pick(MASCOT_LINES.twoStars);
+  if (stars===1) return pick(MASCOT_LINES.oneStar);
+  return pick(MASCOT_LINES.zeroStars);
+}
+
+// ---------------------------- CONFETE (canvas) ----------------------------
+function burstConfetti(canvas){
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  function resize(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  resize();
+  const colors = ['#FF6B6B','#4ECDC4','#FFD93D','#6BCB77','#A78BFA','#FF8FAB','#5AC8FA'];
+  const particles = [];
+  const count = Math.min(140, Math.floor(window.innerWidth/4));
+  for(let i=0;i<count;i++){
+    particles.push({
+      x: Math.random()*canvas.width, y: -20 - Math.random()*canvas.height*0.5,
+      vx: (Math.random()-0.5)*3, vy: 2+Math.random()*4,
+      size: 4+Math.random()*6, color: colors[Math.floor(Math.random()*colors.length)],
+      rot: Math.random()*360, vr: (Math.random()-0.5)*10,
+      shape: Math.random()<0.5?'rect':'circle',
+    });
+  }
+  let frame = 0;
+  const maxFrames = 220;
+  function tick(){
+    frame++;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+      p.x += p.vx; p.y += p.vy; p.vy += 0.03; p.rot += p.vr;
+      ctx.save();
+      ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.color;
+      if (p.shape==='rect') ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.6);
+      else { ctx.beginPath(); ctx.arc(0,0,p.size/2,0,Math.PI*2); ctx.fill(); }
+      ctx.restore();
+    });
+    if (frame < maxFrames) requestAnimationFrame(tick);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  tick();
+}
+
+// ---------------------------- INIT ----------------------------
+window.addEventListener('DOMContentLoaded', ()=>{
+  SFX.enabled = STATE.soundOn !== false;
+  boot();
+});
+window.addEventListener('resize', ()=>{
+  const c = document.getElementById('confettiCanvas');
+  if (c){ c.width = window.innerWidth; c.height = window.innerHeight; }
+});
+
+</script>
+</body>
+</html>

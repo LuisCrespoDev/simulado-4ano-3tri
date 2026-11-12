@@ -75,7 +75,12 @@ h1,h2,h3{ margin:0; }
 .color-grid{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
 .color-pick{ width:34px; height:34px; border-radius:50%; border:3px solid rgba(255,255,255,.4); }
 .color-pick.selected{ border-color:#fff; box-shadow:0 0 0 3px var(--yellow); transform:scale(1.15); }
-.name-input{ width:100%; padding:14px 16px; border-radius:14px; border:none; font-size:1.1rem; text-align:center; font-weight:700; }
+.name-input{ width:100%; padding:14px 16px; border-radius:14px; border:none; font-size:1.1rem; text-align:center; font-weight:700; margin-bottom:4px; }
+.label-optional{ text-transform:none; letter-spacing:normal; font-weight:500; font-size:.78rem; color:#8A96B8; }
+.turma-grid{ display:flex; gap:10px; margin-bottom:6px; }
+.turma-pick{ flex:1; padding:13px 10px; border-radius:14px; border:3px solid transparent; background:rgba(255,255,255,.1); color:#fff; font-weight:800; font-size:.98rem; }
+.turma-pick.selected{ border-color:var(--yellow); background:rgba(255,217,61,.22); }
+.turma-pick:active{ transform:scale(.97); }
 
 /* ============== TOPBAR ============== */
 .topbar{ display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1); border-radius:18px; padding:10px 12px; margin-bottom:12px; backdrop-filter:blur(6px); position:sticky; top:8px; z-index:10; }
@@ -111,6 +116,9 @@ h1,h2,h3{ margin:0; }
 .ranking-cta:active{ transform:translateY(4px); box-shadow:0 1px 0 #C98A00; }
 
 /* ============== RANKING ============== */
+.ranking-tabs{ display:flex; gap:8px; margin-bottom:12px; }
+.ranking-tab{ flex:1; background:rgba(255,255,255,.1); color:#fff; font-weight:800; font-size:.85rem; padding:10px 6px; border-radius:12px; border:2px solid transparent; }
+.ranking-tab.selected{ background:#fff; color:var(--text); border-color:var(--yellow); }
 .ranking-list{ margin-top:14px; display:flex; flex-direction:column; gap:8px; }
 .ranking-loading, .ranking-empty{ background:#fff; border-radius:16px; padding:22px 16px; text-align:center; color:var(--text-soft); font-weight:700; box-shadow:var(--card-shadow); }
 .ranking-row{ display:flex; align-items:center; gap:10px; background:#fff; border-radius:16px; padding:10px 12px; box-shadow:var(--card-shadow); }
@@ -120,7 +128,10 @@ h1,h2,h3{ margin:0; }
 .rank-info{ flex:1; min-width:0; }
 .rank-name{ font-weight:800; font-size:.92rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .you-tag{ background:#FFD93D; color:#5A3E00; font-size:.65rem; padding:1px 6px; border-radius:999px; margin-left:4px; font-weight:800; }
+.rank-meta{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:2px; }
 .rank-stats{ font-size:.76rem; color:var(--text-soft); font-weight:700; }
+.turma-badge{ background:#E9F7FF; color:#0B6FB8; font-size:.68rem; font-weight:800; padding:2px 8px; border-radius:999px; white-space:nowrap; }
+.turma-badge.turma-unknown{ background:#F3F4F6; color:var(--text-soft); font-weight:700; }
 
 .badges-section{ margin-top:18px; }
 .badge-row{ display:flex; gap:8px; flex-wrap:wrap; }
@@ -1212,7 +1223,8 @@ const SAVE_KEY = 'quiz3tri_save_v1';
 function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
 function defaultSave(){
   return {
-    playerName: '', avatar: 'hero', avatarColor: AVATAR_COLORS[0],
+    playerName: '', lastName: '', avatar: 'hero', avatarColor: AVATAR_COLORS[0],
+    turma: null, // 'A' ou 'B' -- null = ainda não informada (jogador antigo ou pulou)
     xp: 0, coins: 0, streak: 0, lastPlayedDate: null,
     phaseResults: {}, // phaseId -> {stars, bestCorrect, total, attempts}
     badges: [], soundOn: true, createdAt: null,
@@ -1250,8 +1262,15 @@ function saveGame(){
   try{ localStorage.setItem(SAVE_KEY, JSON.stringify(STATE)); }catch(e){ /* ignore quota errors */ }
 }
 function resetGame(){
+  // Preserva o playerId através do reset: ele identifica o documento deste
+  // aparelho no ranking compartilhado (scores/{playerId}). Se trocasse aqui,
+  // o reset criaria um registro novo no Firestore e deixaria o antigo órfão
+  // (com dados desatualizados, exibido pra sempre no ranking de todo mundo).
+  const keepPlayerId = STATE.playerId;
   try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
   STATE = defaultSave();
+  STATE.playerId = keepPlayerId;
+  saveGame();
 }
 
 function registerPlayToday(){
@@ -1371,6 +1390,11 @@ function syncScoreToCloud(){
           updatedAt: (firebase.firestore && firebase.firestore.FieldValue)
             ? firebase.firestore.FieldValue.serverTimestamp() : Date.now(),
         };
+        // Sobrenome e turma são opcionais (jogadores antigos podem não ter preenchido
+        // ainda) -- só inclui a chave no documento quando há valor, pra não mandar um
+        // null que as regras do Firestore possam rejeitar.
+        if (STATE.lastName) data.lastName = String(STATE.lastName).slice(0, 30);
+        if (STATE.turma === 'A' || STATE.turma === 'B') data.turma = STATE.turma;
         db.collection('scores').doc(id).set(data, { merge: true })
           .catch(e=> console.warn('[ranking] falha ao enviar pontuação:', e));
       }catch(e){ console.warn('[ranking] erro ao montar dados de sincronização:', e); }
@@ -1478,6 +1502,7 @@ function render(){
 // ---------------------------- ONBOARDING ----------------------------
 let pendingAvatar = STATE.avatar || 'hero';
 let pendingColor = STATE.avatarColor || AVATAR_COLORS[0];
+let pendingTurma = (STATE.turma === 'A' || STATE.turma === 'B') ? STATE.turma : null;
 
 function renderOnboarding(){
   root.innerHTML = '';
@@ -1508,7 +1533,16 @@ function renderOnboarding(){
         <div class="section-label">Como podemos te chamar?</div>
         <input id="nameInput" class="name-input" maxlength="18" placeholder="Digite seu nome..." value="${esc(STATE.playerName||'')}" />
 
-        <button id="startBtn" class="btn-primary btn-big">Começar aventura 🚀</button>
+        <div class="section-label">Sobrenome <span class="label-optional">(opcional, ajuda a diferenciar colegas com o mesmo nome)</span></div>
+        <input id="lastNameInput" class="name-input" maxlength="24" placeholder="ex: Silva" value="${esc(STATE.lastName||'')}" />
+
+        <div class="section-label">Qual é a sua turma?</div>
+        <div class="turma-grid">
+          <button class="turma-pick ${pendingTurma==='A'?'selected':''}" data-turma="A">Turma A</button>
+          <button class="turma-pick ${pendingTurma==='B'?'selected':''}" data-turma="B">Turma B</button>
+        </div>
+
+        <button id="startBtn" class="btn-primary btn-big" ${pendingTurma?'':'disabled'}>Começar aventura 🚀</button>
       </div>
     </div>`);
   root.appendChild(card);
@@ -1527,10 +1561,20 @@ function renderOnboarding(){
     b.classList.add('selected');
     document.getElementById('avatarPreview').style.background = pendingColor;
   }));
+  card.querySelectorAll('.turma-pick').forEach(b => b.addEventListener('click', ()=>{
+    SFX.unlock(); SFX.click();
+    pendingTurma = b.dataset.turma;
+    card.querySelectorAll('.turma-pick').forEach(x=>x.classList.remove('selected'));
+    b.classList.add('selected');
+    card.querySelector('#startBtn').disabled = false;
+  }));
   card.querySelector('#startBtn').addEventListener('click', ()=>{
+    if (card.querySelector('#startBtn').disabled) return;
     SFX.unlock();
     const name = card.querySelector('#nameInput').value.trim() || 'Explorador(a)';
-    STATE.playerName = name; STATE.avatar = pendingAvatar; STATE.avatarColor = pendingColor;
+    const lastName = card.querySelector('#lastNameInput').value.trim();
+    STATE.playerName = name; STATE.lastName = lastName; STATE.avatar = pendingAvatar; STATE.avatarColor = pendingColor;
+    STATE.turma = pendingTurma;
     if(!STATE.createdAt) STATE.createdAt = Date.now();
     saveGame();
     syncScoreToCloud();
@@ -1653,6 +1697,14 @@ function renderRanking(){
 
   wrap.appendChild(el(`<div class="mascot-banner"><span class="mascot-emoji">${MASCOT}</span><span class="speech">Veja como você está em relação aos seus colegas! O ranking é o mesmo pra todo mundo, em qualquer celular.</span></div>`));
 
+  const tabsWrap = el(`
+    <div class="ranking-tabs" id="rankingTabs">
+      <button class="ranking-tab selected" data-filter="all">Geral</button>
+      <button class="ranking-tab" data-filter="A">Turma A</button>
+      <button class="ranking-tab" data-filter="B">Turma B</button>
+    </div>`);
+  wrap.appendChild(tabsWrap);
+
   const listWrap = el(`<div class="ranking-list" id="rankingList"><div class="ranking-loading">⏳ Carregando ranking...</div></div>`);
   wrap.appendChild(listWrap);
 
@@ -1664,27 +1716,56 @@ function renderRanking(){
     goTo('map');
   });
 
-  ensurePlayerId();
-  if (_rankingUnsub){ _rankingUnsub(); _rankingUnsub = null; }
-  _rankingUnsub = loadRanking((rows)=>{
+  let allRows = [];
+  let currentFilter = 'all';
+
+  function paintRanking(){
     const list = document.getElementById('rankingList');
     if (!list) return; // tela já trocou
-    if (!rows || !rows.length){
-      list.innerHTML = `<div class="ranking-empty">🌱 Ainda não há ninguém no ranking. Jogue uma fase para ser o primeiro a aparecer aqui!</div>`;
+    let rows = allRows;
+    if (currentFilter === 'A') rows = allRows.filter(r => r.turma === 'A');
+    else if (currentFilter === 'B') rows = allRows.filter(r => r.turma === 'B');
+    if (!rows.length){
+      list.innerHTML = currentFilter === 'all'
+        ? `<div class="ranking-empty">🌱 Ainda não há ninguém no ranking. Jogue uma fase para ser o primeiro a aparecer aqui!</div>`
+        : `<div class="ranking-empty">🌱 Ainda não há ninguém da Turma ${currentFilter} no ranking.</div>`;
       return;
     }
     list.innerHTML = rows.map((r, i)=>{
       const mine = r.id === STATE.playerId;
       const pos = i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'º';
+      const first = r.name || 'Explorador(a)';
+      const fullName = esc(r.lastName ? (first + ' ' + r.lastName) : first);
+      const turmaBadge = (r.turma === 'A' || r.turma === 'B')
+        ? `<span class="turma-badge">Turma ${r.turma}</span>`
+        : (currentFilter === 'all' ? `<span class="turma-badge turma-unknown">turma não informada</span>` : '');
       return `<div class="ranking-row ${mine?'mine':''}">
         <div class="rank-pos">${pos}</div>
         <div class="rank-avatar" style="background:${esc(r.color||'#FF6B6B')}">${esc(r.avatar||'🦸')}</div>
         <div class="rank-info">
-          <div class="rank-name">${esc(r.name||'Explorador(a)')}${mine?' <span class="you-tag">você</span>':''}</div>
-          <div class="rank-stats">⭐ ${r.stars||0} estrelas · ✨ ${r.xp||0} XP</div>
+          <div class="rank-name">${fullName}${mine?' <span class="you-tag">você</span>':''}</div>
+          <div class="rank-meta">
+            <span class="rank-stats">⭐ ${r.stars||0} estrelas · ✨ ${r.xp||0} XP</span>
+            ${turmaBadge}
+          </div>
         </div>
       </div>`;
     }).join('');
+  }
+
+  tabsWrap.querySelectorAll('.ranking-tab').forEach(btn => btn.addEventListener('click', ()=>{
+    SFX.click();
+    currentFilter = btn.dataset.filter;
+    tabsWrap.querySelectorAll('.ranking-tab').forEach(x=>x.classList.remove('selected'));
+    btn.classList.add('selected');
+    paintRanking();
+  }));
+
+  ensurePlayerId();
+  if (_rankingUnsub){ _rankingUnsub(); _rankingUnsub = null; }
+  _rankingUnsub = loadRanking((rows)=>{
+    allRows = rows || [];
+    paintRanking();
   }, (err)=>{
     const list = document.getElementById('rankingList');
     if (!list) return;

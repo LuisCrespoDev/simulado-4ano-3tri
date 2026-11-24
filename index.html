@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <title>Aventura do 3º Trimestre — 4º Ano</title>
 <meta name="description" content="Jogo educativo gamificado de revisão do 3º trimestre do 4º ano: Língua Portuguesa, Matemática, História, Geografia, Ciências e Inglês."/>
 <meta name="theme-color" content="#1B2A4A"/>
@@ -171,7 +171,7 @@ h1,h2,h3{ margin:0; }
 .quiz-progress-bar{ flex:1; background:rgba(255,255,255,.2); height:12px; border-radius:999px; overflow:hidden; }
 .quiz-progress-fill{ background:linear-gradient(90deg,#6BCB77,#4ECDC4); height:100%; border-radius:999px; transition:width .35s ease; }
 .quiz-counter{ color:#fff; font-weight:800; font-size:.9rem; min-width:42px; text-align:right; }
-#quitQuiz{ background:rgba(255,255,255,.12); border-radius:50%; width:36px; height:36px; color:#fff; font-size:1rem; }
+#quitQuiz{ background:rgba(255,255,255,.12); border-radius:50%; width:44px; height:44px; min-width:44px; color:#fff; font-size:1.1rem; }
 
 .q-card{ background:#fff; border-radius:var(--radius); padding:20px 18px 24px; box-shadow:var(--card-shadow); }
 .q-part{ color:var(--text-soft); font-weight:700; font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; }
@@ -230,7 +230,7 @@ h1,h2,h3{ margin:0; }
 
 /* ============== MODAL (CONFIGURAÇÕES) ============== */
 .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; z-index:100; padding:20px; }
-.modal{ background:#fff; border-radius:20px; padding:22px; width:100%; max-width:340px; }
+.modal{ background:#fff; border-radius:20px; padding:22px; width:100%; max-width:340px; max-height:88vh; overflow-y:auto; }
 .modal h2{ margin:0 0 14px; text-align:center; }
 .settings-row{ display:flex; justify-content:space-between; align-items:center; font-weight:700; margin-bottom:14px; }
 .settings-row input[type=checkbox]{ width:22px; height:22px; }
@@ -244,6 +244,19 @@ h1,h2,h3{ margin:0; }
   .title-xl{ font-size:1.5rem; }
   .island-icon{ font-size:2.2rem; }
 }
+
+/* -------- Etapa 1: código de recuperação, edição de perfil, avisos -------- */
+button{ touch-action: manipulation; }
+.field-hint{ min-height:1.2em; color:#FFE08A; font-weight:700; font-size:.9rem; text-align:center; margin:6px 0; }
+.modal .field-hint{ color:#B45309; }
+.link-btn{ background:transparent; color:#fff; text-decoration:underline; font-weight:700; padding:12px 6px; margin-top:6px; width:100%; font-size:.95rem; }
+.code-box{ background:#FFF8DB; border:2px dashed #F5C518; border-radius:16px; padding:12px; text-align:center; margin:4px 0 12px; }
+.code-label{ font-weight:800; color:#7A5B00; font-size:.9rem; }
+.code-value{ font-size:2rem; font-weight:900; letter-spacing:.25em; color:#1F2937; margin:2px 0; user-select:all; font-variant-numeric:tabular-nums; }
+.code-help{ font-size:.82rem; color:#5B6472; }
+.code-input{ letter-spacing:.3em; text-transform:uppercase; border:2px solid #E2E8F0; }
+.modal-text{ color:#5B6472; font-size:.92rem; margin:6px 0 10px; }
+.restore-preview{ display:flex; align-items:center; gap:12px; background:#F1F5F9; border-radius:14px; padding:10px 12px; text-align:left; margin:6px 0; }
 
 </style>
 </head>
@@ -1229,6 +1242,7 @@ function defaultSave(){
     phaseResults: {}, // phaseId -> {stars, bestCorrect, total, attempts}
     badges: [], soundOn: true, createdAt: null,
     playerId: null, // id anônimo estável neste aparelho, usado no ranking compartilhado
+    recoveryCode: null, // código curto para recuperar o progresso em outro aparelho
   };
 }
 
@@ -1241,6 +1255,57 @@ function ensurePlayerId(){
   STATE.playerId = id;
   saveGame();
   return id;
+}
+
+// ---------- Código de recuperação (6 caracteres, sem letras/números que confundem) ----------
+const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+function newRecoveryCode(){
+  let c = '';
+  try{
+    const a = new Uint32Array(6); crypto.getRandomValues(a);
+    for (let i=0;i<6;i++) c += CODE_ALPHABET[a[i] % CODE_ALPHABET.length];
+  }catch(e){
+    for (let i=0;i<6;i++) c += CODE_ALPHABET[Math.floor(Math.random()*CODE_ALPHABET.length)];
+  }
+  return c;
+}
+function ensureRecoveryCode(){
+  if (!STATE.recoveryCode){ STATE.recoveryCode = newRecoveryCode(); saveGame(); }
+  return STATE.recoveryCode;
+}
+function normalizeCode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,''); }
+
+// ---------- Nome com letras maiúsculas no lugar certo ("joão da silva" -> "João da Silva") ----------
+const NAME_PARTICLES = ['da','de','do','das','dos','e','di','du'];
+function normalizeName(s, surname){
+  const words = String(s||'').trim().replace(/\s+/g,' ').split(' ');
+  return words.map((w,i)=>{
+    const lw = w.toLocaleLowerCase('pt-BR');
+    if ((i>0 || (surname && words.length>1)) && NAME_PARTICLES.includes(lw)) return lw;
+    return lw.charAt(0).toLocaleUpperCase('pt-BR') + lw.slice(1);
+  }).join(' ');
+}
+
+// ---------- Juntar dois progressos sem perder nada (usado ao recuperar com código) ----------
+// Regra: para cada coisa, fica sempre o MAIOR valor. Nunca diminui estrela, XP, moeda ou medalha.
+function mergeProgress(local, cloud){
+  const out = Object.assign({}, local);
+  out.xp = Math.max(local.xp||0, cloud.xp||0);
+  out.coins = Math.max(local.coins||0, cloud.coins||0);
+  out.streak = Math.max(local.streak||0, cloud.streak||0);
+  out.badges = Array.from(new Set([].concat(local.badges||[], cloud.badges||[])));
+  out.phaseResults = Object.assign({}, local.phaseResults||{});
+  Object.keys(cloud.phaseResults||{}).forEach(id=>{
+    const a = out.phaseResults[id], b = cloud.phaseResults[id];
+    if (!a){ out.phaseResults[id] = Object.assign({}, b); return; }
+    out.phaseResults[id] = {
+      stars: Math.max(a.stars||0, b.stars||0),
+      bestCorrect: Math.max(a.bestCorrect||0, b.bestCorrect||0),
+      total: a.total || b.total,
+      attempts: Math.max(a.attempts||0, b.attempts||0),
+    };
+  });
+  return out;
 }
 
 // ---------- Total de estrelas (para o ranking) ----------
@@ -1268,8 +1333,11 @@ function resetGame(){
   // (com dados desatualizados, exibido pra sempre no ranking de todo mundo).
   const keepPlayerId = STATE.playerId;
   try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+  const keepCode = STATE.recoveryCode;
   STATE = defaultSave();
   STATE.playerId = keepPlayerId;
+  STATE.recoveryCode = keepCode;
+  STATE.pendingReset = true; // a próxima sincronização zera a nuvem em vez de juntar
   saveGame();
 }
 
@@ -1334,7 +1402,8 @@ if (typeof module !== 'undefined') {
     SAVE_KEY, defaultSave, loadSave, saveGame, resetGame, registerPlayToday,
     levelForXp, xpIntoLevel, BADGE_DEFS, subjectBadgeId, awardBadge, checkStreakBadges,
     starsFor, isPhaseUnlocked, isSubjectComplete, subjectStars, allSubjectsComplete,
-    ensurePlayerId, totalStarsEarned,
+    ensurePlayerId, totalStarsEarned, newRecoveryCode, ensureRecoveryCode, normalizeCode,
+    normalizeName, mergeProgress,
   };
 }
 
@@ -1379,6 +1448,25 @@ function syncScoreToCloud(){
     const id = ensurePlayerId();
     clearTimeout(_syncTimer);
     _syncTimer = setTimeout(()=>{
+      // Antes de escrever, junta com o que já está na nuvem (outro aparelho com o mesmo
+      // código pode ter avançado). Assim a nuvem nunca recebe menos progresso do que tem.
+      // Exceção: logo depois de "Reiniciar progresso" o jogador quer mesmo zerar.
+      const ref = db.collection('scores').doc(id);
+      const pull = STATE.pendingReset ? Promise.resolve(null) : ref.get().then(d => d.exists ? d.data() : null).catch(()=>null);
+      pull.then(cloud => {
+        if (cloud && !cloud.hidden){
+          const cp = cloud.progress || {};
+          const merged = mergeProgress(STATE, { xp: cloud.xp, coins: cp.coins, streak: cp.streak, badges: cp.badges, phaseResults: cp.phaseResults });
+          const changed = JSON.stringify([merged.xp, merged.coins, merged.badges, merged.phaseResults]) !== JSON.stringify([STATE.xp, STATE.coins, STATE.badges, STATE.phaseResults]);
+          if (changed){ Object.assign(STATE, merged); saveGame(); if (typeof onCloudMerged === 'function') onCloudMerged(); }
+        }
+        writeScore(db, id);
+      });
+    }, 350);
+  }catch(e){ console.warn('[ranking] syncScoreToCloud falhou:', e); }
+}
+
+function writeScore(db, id){
       try{
         const avatarEmoji = (AVATARS.find(a=>a.id===STATE.avatar)||{}).emoji || '🦸';
         const data = {
@@ -1395,11 +1483,23 @@ function syncScoreToCloud(){
         // null que as regras do Firestore possam rejeitar.
         if (STATE.lastName) data.lastName = String(STATE.lastName).slice(0, 30);
         if (STATE.turma === 'A' || STATE.turma === 'B') data.turma = STATE.turma;
+        // Cópia de segurança do progresso + código de recuperação. Campos extras: as regras
+        // atuais do Firestore já aceitam (só validam nome/xp/estrelas/avatar/cor).
+        data.code = ensureRecoveryCode();
+        data.progress = {
+          v: 1,
+          phaseResults: STATE.phaseResults || {},
+          coins: Math.max(0, Math.round(STATE.coins || 0)),
+          badges: STATE.badges || [],
+          streak: STATE.streak || 0,
+          lastPlayedDate: STATE.lastPlayedDate || null,
+          createdAt: STATE.createdAt || null,
+          avatarId: STATE.avatar || 'hero',
+        };
         db.collection('scores').doc(id).set(data, { merge: true })
+          .then(()=>{ if (STATE.pendingReset){ STATE.pendingReset = false; saveGame(); } })
           .catch(e=> console.warn('[ranking] falha ao enviar pontuação:', e));
       }catch(e){ console.warn('[ranking] erro ao montar dados de sincronização:', e); }
-    }, 350);
-  }catch(e){ console.warn('[ranking] syncScoreToCloud falhou:', e); }
 }
 
 // ---------- Buscar o ranking (tempo real, com fallback de leitura única) ----------
@@ -1408,7 +1508,8 @@ function loadRanking(onData, onError){
   try{
     const db = getDb();
     if (!db){ onError && onError(new Error('Firebase indisponível')); return unsub; }
-    const q = db.collection('scores').orderBy('xp', 'desc').limit(50);
+    // Sem o antigo limite de 50: com duas turmas, alunos sumiam das abas Turma A/B.
+    const q = db.collection('scores').orderBy('xp', 'desc').limit(500);
     try{
       const stop = q.onSnapshot(
         snap => {
@@ -1440,8 +1541,33 @@ function loadRanking(onData, onError){
   return unsub;
 }
 
+// ---------- Recuperar progresso com código ----------
+// Devolve { id, data } do jogador com esse código, ou null. Rejeita se a nuvem estiver fora.
+function findPlayerByCode(code){
+  const db = getDb();
+  if (!db) return Promise.reject(new Error('offline'));
+  return db.collection('scores').where('code', '==', code).limit(5).get().then(snap=>{
+    const rows = [];
+    snap.forEach(doc => rows.push({ id: doc.id, data: doc.data() }));
+    if (!rows.length) return null;
+    rows.sort((a,b)=> (b.data.xp||0) - (a.data.xp||0));
+    return rows[0];
+  });
+}
+// O registro antigo deste aparelho deixa de aparecer no ranking (não apaga nada).
+function markMergedInto(oldId, newId){
+  try{
+    const db = getDb();
+    if (!db || !oldId || oldId === newId) return Promise.resolve();
+    return db.collection('scores').doc(oldId).get().then(d=>{
+      if (!d.exists) return;
+      return db.collection('scores').doc(oldId).set({ mergedInto: newId, hidden: true }, { merge: true });
+    }).catch(e=> console.warn('[ranking] não foi possível esconder o registro antigo:', e));
+  }catch(e){ return Promise.resolve(); }
+}
+
 if (typeof module !== 'undefined') {
-  module.exports = { FIREBASE_CONFIG, getDb, syncScoreToCloud, loadRanking };
+  module.exports = { FIREBASE_CONFIG, getDb, syncScoreToCloud, loadRanking, findPlayerByCode, markMergedInto };
 }
 
 </script>
@@ -1476,6 +1602,7 @@ function showToast(msg){
 function boot(){
   registerPlayToday();
   ensurePlayerId();
+  ensureRecoveryCode();
   if (!STATE.playerName) { goTo('onboarding'); }
   else { goTo('map'); syncScoreToCloud(); }
 }
@@ -1483,9 +1610,45 @@ function boot(){
 function goTo(screen, params){
   if (NAV.screen === 'ranking' && screen !== 'ranking' && _rankingUnsub){ _rankingUnsub(); _rankingUnsub = null; }
   NAV = Object.assign({ screen }, params||{});
+  syncHistory();
   render();
   window.scrollTo(0,0);
 }
+
+// ---------------------------- BOTÃO "VOLTAR" DO CELULAR ----------------------------
+// Antes, o gesto de voltar fechava o site. Agora mantemos uma entrada extra no histórico
+// sempre que a criança está fora do mapa: o "voltar" leva para a tela anterior do jogo.
+const ROOT_SCREENS = ['map', 'onboarding', 'boot'];
+function syncHistory(){
+  try{
+    const away = !ROOT_SCREENS.includes(NAV.screen) || (NAV.screen === 'onboarding' && NAV.edit);
+    if (away && !(history.state && history.state.app)) history.pushState({ app: true }, '');
+  }catch(e){}
+}
+function parentOf(nav){
+  switch (nav.screen){
+    case 'island': return { screen:'map' };
+    case 'phaseIntro': return { screen:'island', subjectId: nav.subjectId };
+    case 'result': return { screen:'island', subjectId: nav.subjectId };
+    case 'ranking': return { screen:'map' };
+    case 'onboarding': return nav.edit ? { screen:'map' } : null;
+    default: return { screen:'map' };
+  }
+}
+window.addEventListener('popstate', ()=>{
+  if (ROOT_SCREENS.includes(NAV.screen) && !NAV.edit) return; // no mapa, o "voltar" sai do site normalmente
+  if (NAV.screen === 'quiz'){
+    if (!confirm('Sair do quiz? Seu progresso nessa fase será perdido.')){
+      try{ history.pushState({ app: true }, ''); }catch(e){}
+      return;
+    }
+    const p = { screen:'phaseIntro', subjectId: NAV.subjectId, phaseId: NAV.phaseId };
+    goTo(p.screen, p);
+    return;
+  }
+  const p = parentOf(NAV);
+  if (p) goTo(p.screen, p);
+});
 
 function render(){
   root.classList.add('fade');
@@ -1506,6 +1669,7 @@ let pendingTurma = (STATE.turma === 'A' || STATE.turma === 'B') ? STATE.turma : 
 
 function renderOnboarding(){
   root.innerHTML = '';
+  const editing = !!NAV.edit;
   const avatarsHtml = AVATARS.map(a => `
     <button class="avatar-pick ${a.id===pendingAvatar?'selected':''}" data-avatar="${a.id}" aria-label="Avatar ${a.id}">
       <span class="avatar-emoji">${a.emoji}</span>
@@ -1517,8 +1681,11 @@ function renderOnboarding(){
     <div class="screen onboarding-screen">
       <div class="onboarding-card">
         <div class="mascot-big">${MASCOT}</div>
-        <h1 class="title-xl">Bem-vindo(a) à<br/><span class="accent">Ilha do Conhecimento</span>!</h1>
-        <p class="subtitle">Crie seu explorador para começar a aventura do 3º trimestre!</p>
+        ${editing
+          ? `<h1 class="title-xl">Editar <span class="accent">perfil</span></h1>
+             <p class="subtitle">Seu progresso continua salvo. Mude o que quiser e toque em Salvar.</p>`
+          : `<h1 class="title-xl">Bem-vindo(a) à<br/><span class="accent">Ilha do Conhecimento</span>!</h1>
+             <p class="subtitle">Crie seu explorador para começar a aventura do 3º trimestre!</p>`}
 
         <div class="avatar-preview" id="avatarPreview" style="background:${pendingColor}">
           <span>${AVATARS.find(a=>a.id===pendingAvatar).emoji}</span>
@@ -1542,7 +1709,11 @@ function renderOnboarding(){
           <button class="turma-pick ${pendingTurma==='B'?'selected':''}" data-turma="B">Turma B</button>
         </div>
 
-        <button id="startBtn" class="btn-primary btn-big" ${pendingTurma?'':'disabled'}>Começar aventura 🚀</button>
+        <div class="field-hint" id="startHint"></div>
+        <button id="startBtn" class="btn-primary btn-big" disabled>${editing ? 'Salvar ✅' : 'Começar aventura 🚀'}</button>
+        ${editing
+          ? `<button class="btn-secondary" id="cancelEdit">Cancelar</button>`
+          : `<button class="link-btn" id="restoreLink">🔑 Já jogou em outro celular? Recuperar com código</button>`}
       </div>
     </div>`);
   root.appendChild(card);
@@ -1566,22 +1737,97 @@ function renderOnboarding(){
     pendingTurma = b.dataset.turma;
     card.querySelectorAll('.turma-pick').forEach(x=>x.classList.remove('selected'));
     b.classList.add('selected');
-    card.querySelector('#startBtn').disabled = false;
+    updateStart();
   }));
+  // O botão só libera com nome e turma: antes dava para entrar sem nome e virar "Explorador(a)".
+  function updateStart(){
+    const hasName = card.querySelector('#nameInput').value.trim().length > 0;
+    card.querySelector('#startBtn').disabled = !(hasName && pendingTurma);
+    card.querySelector('#startHint').textContent = !hasName ? 'Digite seu nome para continuar' : (!pendingTurma ? 'Escolha sua turma para continuar' : '');
+  }
+  card.querySelector('#nameInput').addEventListener('input', updateStart);
+  updateStart();
   card.querySelector('#startBtn').addEventListener('click', ()=>{
     if (card.querySelector('#startBtn').disabled) return;
     SFX.unlock();
-    const name = card.querySelector('#nameInput').value.trim() || 'Explorador(a)';
-    const lastName = card.querySelector('#lastNameInput').value.trim();
-    STATE.playerName = name; STATE.lastName = lastName; STATE.avatar = pendingAvatar; STATE.avatarColor = pendingColor;
+    STATE.playerName = normalizeName(card.querySelector('#nameInput').value).slice(0, 18);
+    STATE.lastName = normalizeName(card.querySelector('#lastNameInput').value, true).slice(0, 24);
+    STATE.avatar = pendingAvatar; STATE.avatarColor = pendingColor;
     STATE.turma = pendingTurma;
     if(!STATE.createdAt) STATE.createdAt = Date.now();
     saveGame();
     syncScoreToCloud();
     SFX.whoosh();
-    showToast(pick(MASCOT_LINES.welcome));
+    showToast(editing ? 'Perfil salvo!' : pick(MASCOT_LINES.welcome));
     goTo('map');
   });
+  card.querySelector('#cancelEdit')?.addEventListener('click', ()=>{ SFX.click(); goTo('map'); });
+  card.querySelector('#restoreLink')?.addEventListener('click', ()=>{ SFX.click(); openRestore(); });
+}
+
+// ---------------------------- RECUPERAR PROGRESSO COM CÓDIGO ----------------------------
+function openRestore(){
+  const modal = el(`
+    <div class="modal-backdrop">
+      <div class="modal">
+        <h2>🔑 Recuperar progresso</h2>
+        <p class="modal-text">Digite o código de 6 letras que aparece em ⚙️ Configurações no celular onde você já jogava.</p>
+        <input id="codeInput" class="name-input code-input" maxlength="8" autocomplete="off" autocapitalize="characters" placeholder="Ex: K7P2QX" />
+        <div class="field-hint" id="codeMsg"></div>
+        <div id="codeFound"></div>
+        <button class="btn-primary" id="codeSearch" disabled>Procurar</button>
+        <button class="btn-secondary" id="codeClose">Cancelar</button>
+      </div>
+    </div>`);
+  document.body.appendChild(modal);
+  const input = modal.querySelector('#codeInput'), msg = modal.querySelector('#codeMsg'), btn = modal.querySelector('#codeSearch');
+  input.addEventListener('input', ()=>{ btn.disabled = normalizeCode(input.value).length !== 6; msg.textContent=''; });
+  modal.querySelector('#codeClose').addEventListener('click', ()=> modal.remove());
+  btn.addEventListener('click', ()=>{
+    const code = normalizeCode(input.value);
+    if (code === STATE.recoveryCode){ msg.textContent = 'Esse já é o código deste celular 🙂'; return; }
+    btn.disabled = true; msg.textContent = '⏳ Procurando...';
+    findPlayerByCode(code).then(found=>{
+      if (!found){ msg.textContent = 'Não achei esse código. Confira as letras e tente de novo.'; btn.disabled = false; return; }
+      const d = found.data;
+      msg.textContent = '';
+      modal.querySelector('#codeFound').innerHTML = `
+        <div class="restore-preview">
+          <div class="rank-avatar" style="background:${esc(d.color||'#FF6B6B')}">${esc(d.avatar||'🦸')}</div>
+          <div><b>${esc(normalizeName(d.name||'') + ' ' + normalizeName(d.lastName||'', true))}</b><br/>⭐ ${d.stars||0} estrelas · ✨ ${d.xp||0} XP</div>
+        </div>
+        <p class="modal-text">É você? O progresso deste celular também fica guardado: juntamos os dois e fica o melhor de cada fase.</p>`;
+      btn.textContent = 'Sim, sou eu! Recuperar';
+      btn.disabled = false;
+      btn.onclick = (ev)=>{ ev.stopImmediatePropagation(); applyRestore(found); modal.remove(); };
+    }).catch(()=>{ msg.textContent = 'Sem internet agora. Tente de novo quando estiver conectado.'; btn.disabled = false; });
+  });
+}
+function applyRestore(found){
+  const d = found.data, cp = d.progress || {};
+  const oldId = STATE.playerId;
+  const merged = mergeProgress(STATE, { xp: d.xp, coins: cp.coins, streak: cp.streak, badges: cp.badges, phaseResults: cp.phaseResults });
+  Object.assign(STATE, merged);
+  STATE.playerId = found.id;
+  STATE.recoveryCode = d.code;
+  STATE.playerName = d.name || STATE.playerName;
+  STATE.lastName = d.lastName || STATE.lastName;
+  if (d.turma === 'A' || d.turma === 'B') STATE.turma = d.turma;
+  if (cp.avatarId && AVATARS.some(a=>a.id===cp.avatarId)) STATE.avatar = cp.avatarId;
+  if (d.color) STATE.avatarColor = d.color;
+  if (!STATE.createdAt) STATE.createdAt = cp.createdAt || Date.now();
+  STATE.pendingReset = false;
+  saveGame();
+  markMergedInto(oldId, found.id);
+  syncScoreToCloud();
+  SFX.victory();
+  showToast('Progresso recuperado! 🎉');
+  pendingAvatar = STATE.avatar; pendingColor = STATE.avatarColor; pendingTurma = STATE.turma;
+  goTo('map');
+}
+// Chamado quando a sincronização trouxe progresso de outro aparelho com o mesmo código.
+function onCloudMerged(){
+  if (['map','island'].includes(NAV.screen)) render();
 }
 
 // ---------------------------- TOP BAR ----------------------------
@@ -1615,7 +1861,13 @@ function openSettings(){
         <label class="settings-row"><span>Som 🔊</span>
           <input type="checkbox" id="soundToggle" ${STATE.soundOn?'checked':''}/>
         </label>
-        <button class="btn-secondary" id="editAvatarBtn">Editar avatar/nome</button>
+        <div class="code-box">
+          <div class="code-label">🔑 Seu código de recuperação</div>
+          <div class="code-value">${esc(ensureRecoveryCode())}</div>
+          <div class="code-help">Anote ou tire um print. Se trocar de celular ou o app apagar, use esse código para recuperar seu progresso.</div>
+        </div>
+        <button class="btn-secondary" id="editAvatarBtn">Editar perfil</button>
+        <button class="btn-secondary" id="restoreBtn">Recuperar progresso com código</button>
         <button class="btn-danger" id="resetBtn">Reiniciar progresso</button>
         <button class="btn-primary" id="closeModal">Fechar</button>
       </div>
@@ -1624,10 +1876,16 @@ function openSettings(){
   modal.querySelector('#soundToggle').addEventListener('change', (e)=>{
     STATE.soundOn = e.target.checked; SFX.enabled = STATE.soundOn; saveGame();
   });
-  modal.querySelector('#editAvatarBtn').addEventListener('click', ()=>{ modal.remove(); goTo('onboarding'); });
+  modal.querySelector('#editAvatarBtn').addEventListener('click', ()=>{
+    modal.remove();
+    pendingAvatar = STATE.avatar; pendingColor = STATE.avatarColor;
+    pendingTurma = (STATE.turma === 'A' || STATE.turma === 'B') ? STATE.turma : null;
+    goTo('onboarding', { edit: true });
+  });
+  modal.querySelector('#restoreBtn').addEventListener('click', ()=>{ modal.remove(); openRestore(); });
   modal.querySelector('#resetBtn').addEventListener('click', ()=>{
     if(confirm('Tem certeza? Isso vai apagar todo o progresso do jogo.')){
-      resetGame(); modal.remove(); goTo('onboarding');
+      resetGame(); modal.remove(); pendingTurma = null; goTo('onboarding');
     }
   });
   modal.querySelector('#closeModal').addEventListener('click', ()=> modal.remove());
@@ -1722,7 +1980,9 @@ function renderRanking(){
   function paintRanking(){
     const list = document.getElementById('rankingList');
     if (!list) return; // tela já trocou
-    let rows = allRows;
+    // Some do ranking: registros que foram juntados com outro (recuperação por código) e
+    // cadastros que nunca jogaram nenhuma fase. O seu sempre aparece.
+    let rows = allRows.filter(r => r.id === STATE.playerId || (!r.hidden && !r.mergedInto && ((r.xp||0) > 0 || (r.stars||0) > 0)));
     if (currentFilter === 'A') rows = allRows.filter(r => r.turma === 'A');
     else if (currentFilter === 'B') rows = allRows.filter(r => r.turma === 'B');
     if (!rows.length){
@@ -1734,8 +1994,8 @@ function renderRanking(){
     list.innerHTML = rows.map((r, i)=>{
       const mine = r.id === STATE.playerId;
       const pos = i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'º';
-      const first = r.name || 'Explorador(a)';
-      const fullName = esc(r.lastName ? (first + ' ' + r.lastName) : first);
+      const first = normalizeName(r.name || 'Explorador(a)');
+      const fullName = esc(r.lastName ? (first + ' ' + normalizeName(r.lastName, true)) : first);
       const turmaBadge = (r.turma === 'A' || r.turma === 'B')
         ? `<span class="turma-badge">Turma ${r.turma}</span>`
         : (currentFilter === 'all' ? `<span class="turma-badge turma-unknown">turma não informada</span>` : '');
@@ -2071,7 +2331,7 @@ function renderResult(){
           <span class="big-star s1">★</span><span class="big-star s2">★</span><span class="big-star s3">★</span>
         </div>
         <h2 class="result-title">${esc(phase.name)}</h2>
-        <div class="result-score">${correctCount}/${total} corretas</div>
+        <div class="result-score">${correctCount}/${QUIZ.scorable || total} corretas</div>
         <div class="mascot-banner"><span class="mascot-emoji">${MASCOT}</span><span class="speech">${esc(mascotResultLine(stars))}</span></div>
         <div class="result-rewards">
           <div class="reward-chip">✨ +${xpGained} XP</div>

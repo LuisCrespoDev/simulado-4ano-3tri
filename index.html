@@ -293,6 +293,25 @@ button{ touch-action: manipulation; }
 .modal-close{ position:absolute; top:8px; right:10px; width:40px; height:40px; border-radius:50%; background:#E2E8F0; font-size:1rem; font-weight:800; }
 .study-item{ display:flex; gap:10px; align-items:center; width:100%; text-align:left; background:#F1F5F9; border-radius:14px; padding:12px 14px; font-weight:700; margin-bottom:8px; color:var(--text); }
 
+/* -------- Etapa 4: painel da turma -------- */
+.panel-screen{ color:#fff; }
+.panel-title{ margin:6px 0 4px; font-size:1.5rem; }
+.panel-sub{ margin:0 0 12px; color:#CBD5E1; font-size:.95rem; }
+.panel-kpis{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:6px 0 14px; }
+.kpi{ background:#fff; color:var(--text); border-radius:16px; padding:12px; text-align:center; }
+.kpi b{ display:block; font-size:1.8rem; font-variant-numeric:tabular-nums; }
+.kpi span{ font-size:.8rem; color:var(--text-soft); font-weight:700; }
+.panel-h2{ font-size:1.05rem; margin:16px 0 8px; }
+.panel-row{ display:flex; gap:12px; align-items:flex-start; background:#fff; color:var(--text); border-radius:14px; padding:10px 12px; margin-bottom:8px; }
+.panel-rate{ min-width:54px; text-align:center; font-weight:900; font-size:1.1rem; background:#FEF3C7; color:#92400E; border-radius:10px; padding:6px 4px; font-variant-numeric:tabular-nums; }
+.panel-rate.hot{ background:#FEE2E2; color:#991B1B; }
+.panel-q{ min-width:0; }
+.panel-prompt{ font-weight:700; margin:2px 0; }
+.panel-meta{ font-size:.8rem; color:var(--text-soft); }
+.panel-study{ background:#fff; color:var(--text); border-radius:14px; padding:6px 12px; }
+.panel-study-row{ display:flex; justify-content:space-between; gap:10px; padding:7px 0; border-bottom:1px solid #EEF2F7; font-size:.9rem; }
+.panel-study-row:last-child{ border-bottom:none; }
+
 </style>
 </head>
 <body>
@@ -1906,6 +1925,7 @@ function boot(){
   registerPlayToday();
   ensurePlayerId();
   ensureRecoveryCode();
+  if (location.hash === '#painel') { goTo('panel'); return; }
   if (!STATE.playerName) { goTo('onboarding'); }
   else { goTo('map'); syncScoreToCloud(); }
 }
@@ -1921,7 +1941,7 @@ function goTo(screen, params){
 // ---------------------------- BOTÃO "VOLTAR" DO CELULAR ----------------------------
 // Antes, o gesto de voltar fechava o site. Agora mantemos uma entrada extra no histórico
 // sempre que a criança está fora do mapa: o "voltar" leva para a tela anterior do jogo.
-const ROOT_SCREENS = ['map', 'onboarding', 'boot'];
+const ROOT_SCREENS = ['map', 'onboarding', 'boot', 'panel'];
 function syncHistory(){
   try{
     const away = !ROOT_SCREENS.includes(NAV.screen) || (NAV.screen === 'onboarding' && NAV.edit);
@@ -1963,6 +1983,7 @@ function render(){
   if (NAV.screen === 'island') return renderIsland();
   if (NAV.screen === 'phaseIntro') return renderPhaseIntro();
   if (NAV.screen === 'lesson') return renderLessonScreen();
+  if (NAV.screen === 'panel') return renderPanel();
   if (NAV.screen === 'quiz') return renderQuiz();
   if (NAV.screen === 'result') return renderResult();
   if (NAV.screen === 'ranking') return renderRanking();
@@ -2069,6 +2090,71 @@ function renderOnboarding(){
   });
   card.querySelector('#cancelEdit')?.addEventListener('click', ()=>{ SFX.click(); goTo('map'); });
   card.querySelector('#restoreLink')?.addEventListener('click', ()=>{ SFX.click(); openRestore(); });
+}
+
+// ---------------------------- PAINEL DOS PAIS/PROFESSORA (#painel) ----------------------------
+// Não aparece para as crianças: abre só pelo link .../#painel. Mostra, a partir da 1ª tentativa
+// de cada aluno, quais questões a turma mais erra e quantos estudaram os cartões de cada fase.
+function renderPanel(){
+  root.innerHTML = '';
+  const wrap = el(`
+    <div class="screen panel-screen">
+      <h1 class="panel-title">📊 Painel da turma</h1>
+      <p class="panel-sub">Questões que a turma mais erra na primeira tentativa. Use para saber o que revisar antes da prova.</p>
+      <div class="ranking-tabs" id="panelTabs">
+        <button class="ranking-tab selected" data-filter="all">Geral</button>
+        <button class="ranking-tab" data-filter="A">Turma A</button>
+        <button class="ranking-tab" data-filter="B">Turma B</button>
+      </div>
+      <div id="panelBody"><div class="ranking-loading">⏳ Carregando dados...</div></div>
+      <button class="link-btn" id="panelExit">Ir para o jogo</button>
+    </div>`);
+  root.appendChild(wrap);
+  wrap.querySelector('#panelExit').addEventListener('click', ()=>{ history.replaceState(null, '', location.pathname); boot(); });
+  const qIndex = {};
+  SUBJECTS.forEach(s => s.phases.forEach(p => p.questions.forEach(q => { qIndex[q.id] = { q, phase: p, subject: s }; })));
+  let rows = [], filter = 'all';
+  function paint(){
+    const body = document.getElementById('panelBody'); if (!body) return;
+    const players = rows.filter(r => !r.hidden && !r.mergedInto && (filter === 'all' || r.turma === filter));
+    const withData = players.filter(r => r.progress && r.progress.firstTry && Object.keys(r.progress.firstTry).length);
+    const stat = {};
+    withData.forEach(r => Object.entries(r.progress.firstTry).forEach(([id, ok]) => {
+      if (!qIndex[id]) return;
+      stat[id] = stat[id] || { n: 0, wrong: 0 }; stat[id].n++; if (!ok) stat[id].wrong++;
+    }));
+    const MIN = 3;
+    const list = Object.entries(stat).filter(([, v]) => v.n >= MIN).map(([id, v]) => ({ id, ...v, rate: v.wrong / v.n })).sort((a, b) => b.rate - a.rate || b.n - a.n).slice(0, 15);
+    const studiedBy = {};
+    players.forEach(r => Object.keys((r.progress && r.progress.studied) || {}).forEach(ph => { studiedBy[ph] = (studiedBy[ph] || 0) + 1; }));
+    const plain = (h) => { const d = document.createElement('div'); d.innerHTML = h; return d.textContent; };
+    body.innerHTML = `
+      <div class="panel-kpis">
+        <div class="kpi"><b>${players.filter(r => (r.xp || 0) > 0).length}</b><span>alunos jogando</span></div>
+        <div class="kpi"><b>${withData.length}</b><span>com respostas registradas</span></div>
+      </div>
+      <h2 class="panel-h2">Questões mais erradas</h2>
+      ${list.length ? list.map(x => {
+        const info = qIndex[x.id];
+        return `<div class="panel-row">
+          <div class="panel-rate ${x.rate >= .5 ? 'hot' : ''}">${Math.round(x.rate * 100)}%</div>
+          <div class="panel-q"><div class="panel-meta">${info.subject.icon} ${esc(info.subject.subtitle)} · ${esc(info.phase.name)}</div>
+            <div class="panel-prompt">${esc(plain(info.q.prompt))}</div>
+            <div class="panel-meta">${x.wrong} de ${x.n} erraram na 1ª tentativa</div></div>
+        </div>`;
+      }).join('') : `<div class="ranking-empty">Ainda há poucos dados. As respostas começam a aparecer aqui conforme os alunos jogam (cada questão precisa de pelo menos ${MIN} alunos).</div>`}
+      <h2 class="panel-h2">Quem estudou os cartões de cada fase</h2>
+      <div class="panel-study">${SUBJECTS.map(s => s.phases.map(p => `<div class="panel-study-row"><span>${s.icon} ${esc(p.name)}</span><b>${studiedBy[p.id] || 0}</b></div>`).join('')).join('')}</div>`;
+  }
+  wrap.querySelectorAll('.ranking-tab').forEach(b => b.addEventListener('click', ()=>{
+    filter = b.dataset.filter;
+    wrap.querySelectorAll('.ranking-tab').forEach(x => x.classList.toggle('selected', x === b));
+    paint();
+  }));
+  loadRanking(r => { rows = r || []; paint(); }, () => {
+    const body = document.getElementById('panelBody');
+    if (body) body.innerHTML = `<div class="ranking-empty">😕 Sem conexão com a nuvem agora. Tente de novo mais tarde.</div>`;
+  });
 }
 
 // ---------------------------- RECUPERAR PROGRESSO COM CÓDIGO ----------------------------

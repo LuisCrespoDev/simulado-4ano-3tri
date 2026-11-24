@@ -312,6 +312,13 @@ button{ touch-action: manipulation; }
 .panel-study-row{ display:flex; justify-content:space-between; gap:10px; padding:7px 0; border-bottom:1px solid #EEF2F7; font-size:.9rem; }
 .panel-study-row:last-child{ border-bottom:none; }
 
+/* -------- Fase Desafio -------- */
+.island-new{ position:absolute; top:-8px; left:50%; transform:translateX(-50%); background:#FF5C5C; color:#fff; font-size:.7rem; font-weight:900; padding:3px 8px; border-radius:999px; white-space:nowrap; box-shadow:0 2px 0 rgba(0,0,0,.2); }
+
+.fbar{ display:flex; gap:3px; margin:10px auto 2px; max-width:300px; }
+.fbar-cell{ flex:1; height:34px; border:2px solid #334155; border-radius:4px; background:#fff; }
+.fbar-cell.on{ background:#FFC93C; }
+
 </style>
 </head>
 <body>
@@ -327,6 +334,8 @@ button{ touch-action: manipulation; }
 // Fração empilhada (numerador em cima, traço, denominador embaixo) para questões de
 // Matemática — muito mais clara para crianças de 10 anos do que "2/3" em texto corrido.
 function F(n, d){ return '<span class="frac"><span class="num">'+n+'</span><span class="den">'+d+'</span></span>'; }
+// Barra dividida em d partes iguais, com n partes pintadas (para "que fração está pintada?").
+function BAR(n, d){ let c=''; for (let i=0;i<d;i++) c += '<span class="fbar-cell'+(i<n?' on':'')+'"></span>'; return '<span class="fbar" role="img" aria-label="barra com '+d+' partes, '+n+' pintadas">'+c+'</span>'; }
 
 const SUBJECTS = [
   // ============================= LÍNGUA PORTUGUESA =============================
@@ -483,11 +492,64 @@ const SUBJECTS = [
             options:[`${F(3,4)} é maior que ${F(1,4)}`,`${F(2,5)} é menor que ${F(1,5)}`,`${F(5,8)} é maior que ${F(3,8)}`,`${F(1,2)} é menor que ${F(1,3)}`],
             correct:[0,2],
             explain:`${F(3,4)} é maior que ${F(1,4)} e ${F(5,8)} é maior que ${F(3,8)} porque, com o mesmo denominador, vale a fração de maior numerador.` },
-          { id:'mat-1-6', part:'Comparando frações', type:'choice',
-            prompt:'Para comparar frações com denominadores diferentes, uma boa estratégia é:',
-            options:["Comparar só os numeradores, sem olhar o resto", "Deixá-las com o mesmo denominador antes de comparar", "Somar o numerador com o denominador de cada uma", "Escolher sempre a que tem o maior denominador"],
-            correct:[1],
-            explain:"Para comparar frações com denominadores diferentes, o mais seguro é transformá-las em frações equivalentes com o mesmo denominador." },
+          { id:'mat-1-6', part:"Comparando frações", type:'choice',
+            prompt:"Entre frações com o MESMO numerador, é maior a que tem:",
+            options:["O menor denominador", "O maior denominador", "O maior numerador", "O numerador igual a 1"],
+            correct:[0],
+            explain:"Com o mesmo numerador, o menor denominador divide o inteiro em menos partes, então cada parte é maior." },
+          { id:'mat-1-7', part:"Comparando frações", type:'choice',
+            prompt:"Como se lê a fração "+F(3,8)+"?",
+            options:["Três oitavos", "Oito terços", "Três quartos", "Oito sextos"],
+            correct:[0],
+            explain:"O numerador 3 diz quantas partes; o denominador 8 dá o nome \"oitavos\": três oitavos." },
+          { id:'mat-1-8', part:"Comparando frações", type:'choice',
+            prompt:"Que fração da barra está pintada?"+BAR(5,8),
+            options:[F(5,8), F(3,8), F(8,5), F(5,3)],
+            correct:[0],
+            explain:"A barra tem 8 partes iguais e 5 estão pintadas: 5/8." },
+          { id:'mat-1-9', part:"Comparando frações", type:'choice',
+            prompt:"Qual é a ordem do MENOR para o MAIOR: "+F(1,2)+", "+F(1,8)+" e "+F(1,4)+"?",
+            options:[F(1,8)+" , "+F(1,4)+" , "+F(1,2), F(1,2)+" , "+F(1,4)+" , "+F(1,8), F(1,4)+" , "+F(1,8)+" , "+F(1,2), F(1,8)+" , "+F(1,2)+" , "+F(1,4)],
+            correct:[0],
+            explain:"Com o mesmo numerador, quanto maior o denominador, menores são as partes. Então 1/8 < 1/4 < 1/2." },
+          { id:'mat-1-10', part:"Comparando frações", type:'choice',
+            prompt:"Qual destas frações é MAIOR que 1 inteiro?",
+            options:[F(7,5), F(5,7), F(4,4), F(1,5)],
+            correct:[0],
+            explain:"Em 7/5 o numerador é maior que o denominador: passa de 1 inteiro." },
+          { id:'mat-1-11', part:"Comparando frações", type:'choice',
+            prompt:"A fração "+F(6,6)+" representa:",
+            options:["Exatamente 1 inteiro", "Metade do inteiro", "Mais que 1 inteiro", "Nenhuma parte do inteiro"],
+            correct:[0],
+            explain:"Quando numerador e denominador são iguais, a fração vale 1 inteiro: pegamos todas as 6 partes." },
+          { id:'mat-1-12', part:"Comparando frações", type:'items',
+            prompt:"Essa fração é menor, igual ou maior que 1 inteiro?",
+            items:[
+              { label:F(3,4), options:["Menor que 1", "Igual a 1", "Maior que 1"], correct:0 },
+              { label:F(9,4), options:["Menor que 1", "Igual a 1", "Maior que 1"], correct:2 },
+              { label:F(5,5), options:["Menor que 1", "Igual a 1", "Maior que 1"], correct:1 },
+            ],
+            explain:"Numerador menor que o denominador: menor que 1. Iguais: 1 inteiro. Numerador maior: mais que 1." },
+          { id:'mat-1-13', part:"Comparando frações", type:'choice',
+            prompt:"Ana comeu "+F(2,6)+" de uma pizza e Beto comeu "+F(4,6)+" da mesma pizza. Quem comeu mais?",
+            options:["Beto", "Ana", "Os dois comeram igual", "Não dá para saber"],
+            correct:[0],
+            explain:"Os denominadores são iguais (6), então ganha o maior numerador: 4/6 é mais que 2/6." },
+          { id:'mat-1-14', part:"Comparando frações", type:'choice',
+            prompt:"Lia correu "+F(1,3)+" de uma pista e Rui correu "+F(1,5)+" da mesma pista. Quem correu mais?",
+            options:["Lia", "Rui", "Os dois correram igual", "Não dá para saber"],
+            correct:[0],
+            explain:"Os numeradores são iguais (1), então é maior a fração com o MENOR denominador: 1/3 > 1/5." },
+          { id:'mat-1-15', part:"Comparando frações", type:'choice', multi:true,
+            prompt:"Marque as frações MENORES que "+F(1,2)+":",
+            options:[F(1,3), F(1,4), F(2,2), F(3,4)],
+            correct:[0, 1],
+            explain:"1/3 e 1/4 são menores que 1/2 (mesmo numerador, denominador maior). 2/2 é 1 inteiro e 3/4 é maior que metade." },
+          { id:'mat-1-16', part:"Comparando frações", type:'choice',
+            prompt:"Como se lê a fração "+F(7,12)+"?",
+            options:["Sete doze avos", "Doze sétimos", "Sete décimos", "Sete dozes"],
+            correct:[0],
+            explain:"Quando o denominador é maior que 10 (e não é 100 ou 1000), lemos com \"avos\": sete doze avos." },
         ],
       },
       {
@@ -525,6 +587,59 @@ const SUBJECTS = [
             options:[F(1,2),F(1,3),F(2,3),F(1,6)],
             correct:[0],
             explain:`Dividindo ${F(3,6)} por 3 (numerador e denominador), chegamos a ${F(1,2)}.` },
+          { id:'mat-2-7', part:"Frações equivalentes", type:'choice',
+            prompt:"Qual fração representa a mesma parte pintada?"+BAR(2,4),
+            options:[F(1,2), F(1,4), F(2,8), F(4,2)],
+            correct:[0],
+            explain:"2 de 4 partes é a metade da barra: 2/4 = 1/2." },
+          { id:'mat-2-8', part:"Frações equivalentes", type:'choice',
+            prompt:"Complete: "+F(2,3)+" é equivalente a ? nonos.",
+            options:[F(6,9), F(3,9), F(5,9), F(2,9)],
+            correct:[0],
+            explain:"De 3 para 9 multiplicamos por 3. Então o numerador também: 2 × 3 = 6. Fica 6/9." },
+          { id:'mat-2-9', part:"Frações equivalentes", type:'choice',
+            prompt:F(1,2)+" de 12 bonecos são 6 bonecos. Quantos bonecos são "+F(2,4)+" de 12?",
+            options:["6", "8", "3", "12"],
+            correct:[0],
+            explain:"12 ÷ 4 = 3, e 2 × 3 = 6. Dá o mesmo que 1/2 de 12, porque 1/2 e 2/4 são equivalentes." },
+          { id:'mat-2-10', part:"Frações equivalentes", type:'choice',
+            prompt:"Qual fração NÃO é equivalente a "+F(1,2)+"?",
+            options:[F(2,6), F(3,6), F(4,8), F(5,10)],
+            correct:[0],
+            explain:"2/6 é equivalente a 1/3, não a 1/2. Nas outras, o numerador é a metade do denominador." },
+          { id:'mat-2-11', part:"Frações equivalentes", type:'items',
+            prompt:"As duas frações são equivalentes?",
+            items:[
+              { label:F(2,3)+" e "+F(4,6), options:["Sim", "Não"], correct:0 },
+              { label:F(1,4)+" e "+F(2,4), options:["Sim", "Não"], correct:1 },
+              { label:F(3,5)+" e "+F(6,10), options:["Sim", "Não"], correct:0 },
+            ],
+            explain:"2/3 = 4/6 e 3/5 = 6/10 (multiplicando por 2). Já 1/4 e 2/4 são diferentes: 2/4 é o dobro." },
+          { id:'mat-2-12', part:"Frações equivalentes", type:'choice',
+            prompt:"Multiplicando o numerador e o denominador de "+F(3,4)+" por 3, obtemos:",
+            options:[F(9,12), F(9,4), F(3,12), F(6,7)],
+            correct:[0],
+            explain:"3 × 3 = 9 e 4 × 3 = 12: a fração equivalente é 9/12." },
+          { id:'mat-2-13', part:"Frações equivalentes", type:'choice',
+            prompt:"Dividindo o numerador e o denominador de "+F(10,15)+" por 5, obtemos:",
+            options:[F(2,3), F(2,15), F(10,3), F(5,10)],
+            correct:[0],
+            explain:"10 ÷ 5 = 2 e 15 ÷ 5 = 3: fica 2/3." },
+          { id:'mat-2-14', part:"Frações equivalentes", type:'choice', multi:true,
+            prompt:"Marque as frações equivalentes a "+F(2,5)+":",
+            options:[F(4,10), F(6,15), F(4,5), F(2,10)],
+            correct:[0, 1],
+            explain:"Multiplicando 2/5 por 2 temos 4/10, e por 3 temos 6/15." },
+          { id:'mat-2-15', part:"Frações equivalentes", type:'choice',
+            prompt:"Uma barra de chocolate tem 8 pedaços iguais e Caio comeu 4. Que fração mais simples representa o que ele comeu?",
+            options:[F(1,2), F(1,4), F(4,4), F(1,8)],
+            correct:[0],
+            explain:"Ele comeu 4/8, que é o mesmo que 1/2 (metade da barra)." },
+          { id:'mat-2-16', part:"Frações equivalentes", type:'choice',
+            prompt:"Joana pintou "+F(3,6)+" de um muro e Léo pintou "+F(1,2)+" de um muro igual. Quem pintou mais?",
+            options:["Os dois pintaram a mesma parte", "Joana", "Léo", "Não dá para saber"],
+            correct:[0],
+            explain:"3/6 e 1/2 são frações equivalentes: os dois pintaram metade do muro." },
         ],
       },
       {
@@ -562,6 +677,59 @@ const SUBJECTS = [
             options:[F(2,3),F(4,6),F(3,5),F(5,10)],
             correct:[0,2],
             explain:`${F(2,3)} e ${F(3,5)} já são irredutíveis; ${F(4,6)} e ${F(5,10)} ainda podem ser simplificadas (por 2 e por 5).` },
+          { id:'mat-3-7', part:"Simplificação de frações", type:'choice',
+            prompt:"Qual é a forma simplificada de "+F(12,16)+"?",
+            options:[F(3,4), F(6,4), F(2,3), F(4,3)],
+            correct:[0],
+            explain:"Dividindo 12 e 16 por 4, temos 3/4." },
+          { id:'mat-3-8', part:"Simplificação de frações", type:'choice',
+            prompt:"Qual é a forma simplificada de "+F(15,20)+"?",
+            options:[F(3,4), F(5,4), F(3,5), F(1,5)],
+            correct:[0],
+            explain:"Dividindo 15 e 20 por 5, temos 3/4." },
+          { id:'mat-3-9', part:"Simplificação de frações", type:'choice',
+            prompt:"Para simplificar "+F(8,12)+", podemos dividir os dois termos por:",
+            options:["4", "3", "5", "7"],
+            correct:[0],
+            explain:"O 4 divide o 8 e o 12 ao mesmo tempo: 8/12 = 2/3." },
+          { id:'mat-3-10', part:"Simplificação de frações", type:'items',
+            prompt:"Simplifique cada fração:",
+            items:[
+              { label:F(2,4), options:[F(1,2), F(2,1)], correct:0 },
+              { label:F(3,9), options:[F(3,1), F(1,3)], correct:1 },
+              { label:F(4,10), options:[F(2,5), F(5,2)], correct:0 },
+            ],
+            explain:"2/4 = 1/2 (÷2), 3/9 = 1/3 (÷3) e 4/10 = 2/5 (÷2)." },
+          { id:'mat-3-11', part:"Simplificação de frações", type:'choice',
+            prompt:"Quando simplificamos uma fração, o valor dela:",
+            options:["Continua o mesmo", "Fica maior", "Fica menor", "Vira um número inteiro"],
+            correct:[0],
+            explain:"Simplificar só muda a forma de escrever: a fração representa a mesma parte do inteiro." },
+          { id:'mat-3-12', part:"Simplificação de frações", type:'choice', multi:true,
+            prompt:"Marque as frações que ainda podem ser simplificadas:",
+            options:[F(6,8), F(10,12), F(3,7), F(5,9)],
+            correct:[0, 1],
+            explain:"6/8 vira 3/4 e 10/12 vira 5/6 (dividindo por 2). 3/7 e 5/9 já estão na forma mais simples." },
+          { id:'mat-3-13', part:"Simplificação de frações", type:'choice',
+            prompt:"Qual destas frações já está na forma mais simples?",
+            options:[F(4,9), F(4,8), F(6,9), F(2,10)],
+            correct:[0],
+            explain:"Só o 1 divide o 4 e o 9 ao mesmo tempo. As outras ainda podem ser divididas." },
+          { id:'mat-3-14', part:"Simplificação de frações", type:'choice',
+            prompt:"Pedro simplificou "+F(18,24)+" dividindo os dois termos por 6. Que fração ele obteve?",
+            options:[F(3,4), F(3,6), F(4,3), F(6,8)],
+            correct:[0],
+            explain:"18 ÷ 6 = 3 e 24 ÷ 6 = 4: fica 3/4." },
+          { id:'mat-3-15', part:"Simplificação de frações", type:'choice',
+            prompt:"Em uma turma de 20 alunos, 10 são meninas. A fração de meninas, simplificada, é:",
+            options:[F(1,2), F(10,20), F(2,10), F(1,10)],
+            correct:[0],
+            explain:"10/20 simplificado (÷10) é 1/2: metade da turma." },
+          { id:'mat-3-16', part:"Simplificação de frações", type:'choice',
+            prompt:"Ao simplificar "+F(9,12)+" e "+F(6,8)+", o que acontece?",
+            options:["As duas viram "+F(3,4), "Viram "+F(3,4)+" e "+F(2,3), "As duas viram "+F(1,2), "Nenhuma pode ser simplificada"],
+            correct:[0],
+            explain:"9/12 (÷3) = 3/4 e 6/8 (÷2) = 3/4. São frações equivalentes." },
         ],
       },
       {
@@ -589,17 +757,73 @@ const SUBJECTS = [
               { label:`${F(5,8)} - ${F(2,8)} = ?`, options:[F(3,8),F(3,16)], correct:0 },
             ],
             explain:`Somando os numeradores: ${F(2,6)}+${F(3,6)}=${F(5,6)}; subtraindo: ${F(5,8)}-${F(2,8)}=${F(3,8)} — sempre mantendo o denominador.` },
-          { id:'mat-4-5', part:'Operações com frações', type:'choice',
-            prompt:'Para somar frações com denominadores diferentes, primeiro precisamos:',
-            options:["Somar os numeradores e os denominadores direto", "Encontrar frações equivalentes com o mesmo denominador", "Simplificar as duas até o numerador virar 1", "Multiplicar só os denominadores e manter os numeradores"],
-            correct:[1],
-            explain:"Para somar frações com denominadores diferentes, primeiro encontramos frações equivalentes com o mesmo denominador." },
+          { id:'mat-4-5', part:"Operações com frações", type:'choice',
+            prompt:"Para subtrair frações com o mesmo denominador:",
+            options:["Mantemos o denominador e subtraímos os numeradores", "Subtraímos os numeradores e também os denominadores", "Mantemos o numerador e subtraímos os denominadores", "Somamos os denominadores e subtraímos os numeradores"],
+            correct:[0],
+            explain:"Assim como na soma, o denominador fica igual: só os numeradores são subtraídos." },
           { id:'mat-4-6', part:'Operações com frações', type:'choice', multi:true,
             prompt:'Marque as operações corretas:',
             options:[`${F(1,4)} + ${F(1,4)} = ${F(2,4)}`,`${F(1,3)} + ${F(1,3)} = ${F(2,6)}`,`${F(3,5)} - ${F(1,5)} = ${F(2,5)}`,`${F(2,9)} - ${F(1,9)} = ${F(1,0)}`],
             correct:[0,2],
             explain:`${F(1,4)}+${F(1,4)}=${F(2,4)} e ${F(3,5)}-${F(1,5)}=${F(2,5)} estão certas, somando/subtraindo só os numeradores e mantendo o denominador.` },
+          { id:'mat-4-7', part:"Operações com frações", type:'choice',
+            prompt:"Quanto é "+F(3,8)+" + "+F(4,8)+"?",
+            options:[F(7,8), F(7,16), F(1,8), F(12,8)],
+            correct:[0],
+            explain:"Mantemos o denominador 8 e somamos os numeradores: 3 + 4 = 7." },
+          { id:'mat-4-8', part:"Operações com frações", type:'choice',
+            prompt:"Quanto é "+F(9,10)+" − "+F(4,10)+"?",
+            options:[F(5,10), F(13,10), F(5,20), F(4,10)],
+            correct:[0],
+            explain:"Mantemos o denominador 10 e subtraímos os numeradores: 9 − 4 = 5." },
+          { id:'mat-4-9', part:"Operações com frações", type:'choice',
+            prompt:"Rita comeu "+F(2,8)+" de uma torta e o irmão comeu "+F(3,8)+". Juntos, eles comeram:",
+            options:[F(5,8), F(5,16), F(6,8), F(1,8)],
+            correct:[0],
+            explain:"2/8 + 3/8 = 5/8 da torta." },
+          { id:'mat-4-10', part:"Operações com frações", type:'choice',
+            prompt:"Uma garrafa tinha "+F(5,6)+" de suco. Bebi "+F(2,6)+". Quanto sobrou?",
+            options:[F(3,6), F(7,6), F(3,12), F(2,6)],
+            correct:[0],
+            explain:"5/6 − 2/6 = 3/6 (que também é metade da garrafa)." },
+          { id:'mat-4-11', part:"Operações com frações", type:'choice',
+            prompt:"Quanto é "+F(1,4)+" de 12 bonecos?",
+            options:["3", "4", "6", "48"],
+            correct:[0],
+            explain:"Dividimos 12 em 4 partes iguais: 12 ÷ 4 = 3 bonecos." },
+          { id:'mat-4-12', part:"Operações com frações", type:'choice',
+            prompt:"Se 12 bolinhas são "+F(1,4)+" da coleção de Murilo, quantas bolinhas ele tem ao todo?",
+            options:["48", "36", "16", "3"],
+            correct:[0],
+            explain:"Se 1 parte de 4 tem 12, as 4 partes têm 4 × 12 = 48 bolinhas." },
+          { id:'mat-4-13', part:"Operações com frações", type:'choice',
+            prompt:"Quanto é "+F(2,3)+" de 9?",
+            options:["6", "3", "2", "18"],
+            correct:[0],
+            explain:"9 ÷ 3 = 3 (cada terço) e 2 × 3 = 6." },
+          { id:'mat-4-14', part:"Operações com frações", type:'items',
+            prompt:"Resolva:",
+            items:[
+              { label:F(1,5)+" + "+F(3,5), options:[F(4,5), F(4,10)], correct:0 },
+              { label:F(7,9)+" − "+F(2,9), options:[F(5,18), F(5,9)], correct:1 },
+            ],
+            explain:"Com o mesmo denominador, ele não muda: 1/5 + 3/5 = 4/5 e 7/9 − 2/9 = 5/9." },
+          { id:'mat-4-15', part:"Operações com frações", type:'choice',
+            prompt:"Quanto é "+F(4,4)+" − "+F(1,4)+"?",
+            options:[F(3,4), F(5,4), F(3,8), F(1,4)],
+            correct:[0],
+            explain:"4/4 é o inteiro. Tirando 1/4, sobram 3/4." },
+          { id:'mat-4-16', part:"Operações com frações", type:'choice', multi:true,
+            prompt:"Marque as contas que estão certas:",
+            options:[F(2,6)+" + "+F(2,6)+" = "+F(4,6), F(5,7)+" − "+F(1,7)+" = "+F(4,7), F(1,3)+" + "+F(1,3)+" = "+F(2,6), F(6,8)+" − "+F(2,8)+" = "+F(4,16)],
+            correct:[0, 1],
+            explain:"O denominador se mantém: 2/6 + 2/6 = 4/6 e 5/7 − 1/7 = 4/7. Nas outras, mudaram o denominador por engano." },
         ],
+      },
+      {
+        id:'mat-desafio', name:'Desafio da Ilha', cap:'Simulado · todas as fases', challenge:true,
+        questions: [], // sorteado na hora, de todas as fases da ilha (ver drawQuestions em engine.js)
       },
     ],
   },
@@ -753,6 +977,10 @@ const SUBJECTS = [
             correct:[1],
             explain:"Graças aos aviões, viagens que antes levavam meses hoje podem ser feitas em poucas horas." },
         ],
+      },
+      {
+        id:'hist-desafio', name:'Desafio da Ilha', cap:'Simulado · todas as fases', challenge:true,
+        questions: [], // sorteado na hora, de todas as fases da ilha (ver drawQuestions em engine.js)
       },
     ],
   },
@@ -909,6 +1137,10 @@ const SUBJECTS = [
             ],
             explain:"Um vulcão em erupção transforma o relevo rapidamente; a água desgastando uma rocha por séculos é um processo bem lento (erosão)." },
         ],
+      },
+      {
+        id:'geo-desafio', name:'Desafio da Ilha', cap:'Simulado · todas as fases', challenge:true,
+        questions: [], // sorteado na hora, de todas as fases da ilha (ver drawQuestions em engine.js)
       },
     ],
   },
@@ -1067,6 +1299,10 @@ const SUBJECTS = [
             ],
             explain:"Lavar as mãos antes de comer ajuda a prevenir verminose; andar descalço perto de esgoto aumenta o risco de contaminação por vermes." },
         ],
+      },
+      {
+        id:'cien-desafio', name:'Desafio da Ilha', cap:'Simulado · todas as fases', challenge:true,
+        questions: [], // sorteado na hora, de todas as fases da ilha (ver drawQuestions em engine.js)
       },
     ],
   },
@@ -1702,11 +1938,39 @@ function isPhaseUnlocked(subject, phaseIndex){
   const prevResult = STATE.phaseResults[prevPhase.id];
   return !!(prevResult && prevResult.stars >= 1);
 }
+// A fase Desafio (challenge) é extra: não entra no "ilha completa" nem na barra da ilha,
+// para quem já tinha completado não perder o troféu quando o Desafio foi criado.
+function corePhases(subject){ return subject.phases.filter(p => !p.challenge); }
 function isSubjectComplete(subject){
-  return subject.phases.every(p => STATE.phaseResults[p.id] && STATE.phaseResults[p.id].stars >= 1);
+  return corePhases(subject).every(p => STATE.phaseResults[p.id] && STATE.phaseResults[p.id].stars >= 1);
 }
 function subjectStars(subject){
-  return subject.phases.reduce((a,p)=> a + (STATE.phaseResults[p.id] ? STATE.phaseResults[p.id].stars : 0), 0);
+  return corePhases(subject).reduce((a,p)=> a + (STATE.phaseResults[p.id] ? STATE.phaseResults[p.id].stars : 0), 0);
+}
+function challengePhase(subject){ return subject.phases.find(p => p.challenge) || null; }
+
+// ---------- Sorteio das questões de uma partida ----------
+// Fase normal: sorteia PHASE_DRAW questões do banco da fase (se o banco tiver mais que isso).
+// Desafio: sorteia CHALLENGE_DRAW questões de todas as fases da ilha.
+// Pergunta aberta (reflexão) não é sorteada: entra sempre no fim, quando a fase tem uma.
+const PHASE_DRAW = 6, CHALLENGE_DRAW = 8;
+function drawQuestions(subject, phase, firstTime){
+  if (phase.challenge){
+    const pool = [];
+    corePhases(subject).forEach(p => p.questions.forEach(q => { if (q.type !== 'reflection') pool.push(Object.assign({}, q, { __phaseId: p.id })); }));
+    return shuffleArr(pool).slice(0, CHALLENGE_DRAW);
+  }
+  const scorable = phase.questions.filter(q => q.type !== 'reflection');
+  const refl = phase.questions.filter(q => q.type === 'reflection');
+  let picked;
+  if (scorable.length <= PHASE_DRAW) picked = firstTime ? scorable.slice() : shuffleArr(scorable);
+  else picked = shuffleArr(scorable).slice(0, PHASE_DRAW);
+  return picked.concat(refl);
+}
+function shuffleArr(arr){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
 }
 function allSubjectsComplete(){ return SUBJECTS.every(isSubjectComplete); }
 
@@ -1716,6 +1980,7 @@ if (typeof module !== 'undefined') {
     SAVE_KEY, defaultSave, loadSave, saveGame, resetGame, registerPlayToday,
     levelForXp, xpIntoLevel, BADGE_DEFS, subjectBadgeId, awardBadge, checkStreakBadges,
     starsFor, isPhaseUnlocked, isSubjectComplete, subjectStars, allSubjectsComplete,
+    corePhases, challengePhase, drawQuestions, PHASE_DRAW, CHALLENGE_DRAW,
     ensurePlayerId, totalStarsEarned, newRecoveryCode, ensureRecoveryCode, normalizeCode,
     normalizeName, mergeProgress,
   };
@@ -2144,7 +2409,7 @@ function renderPanel(){
         </div>`;
       }).join('') : `<div class="ranking-empty">Ainda há poucos dados. As respostas começam a aparecer aqui conforme os alunos jogam (cada questão precisa de pelo menos ${MIN} alunos).</div>`}
       <h2 class="panel-h2">Quem estudou os cartões de cada fase</h2>
-      <div class="panel-study">${SUBJECTS.map(s => s.phases.map(p => `<div class="panel-study-row"><span>${s.icon} ${esc(p.name)}</span><b>${studiedBy[p.id] || 0}</b></div>`).join('')).join('')}</div>`;
+      <div class="panel-study">${SUBJECTS.map(s => corePhases(s).map(p => `<div class="panel-study-row"><span>${s.icon} ${esc(p.name)}</span><b>${studiedBy[p.id] || 0}</b></div>`).join('')).join('')}</div>`;
   }
   wrap.querySelectorAll('.ranking-tab').forEach(b => b.addEventListener('click', ()=>{
     filter = b.dataset.filter;
@@ -2304,12 +2569,15 @@ function renderMap(){
 
   const grid = el(`<div class="island-grid"></div>`);
   SUBJECTS.forEach(subject => {
-    const totalStars = subject.phases.length * 3;
+    const totalStars = corePhases(subject).length * 3;
+    const ch = challengePhase(subject);
+    const chNew = ch && !STATE.phaseResults[ch.id];
     const earned = subjectStars(subject);
     const complete = isSubjectComplete(subject);
     const card = el(`
       <button class="island-card" data-subject="${subject.id}" style="--c:${subject.color}; --cd:${subject.colorDark}">
         ${complete ? '<div class="island-badge">🏆</div>' : ''}
+        ${chNew ? '<div class="island-new">NOVO: Desafio!</div>' : ''}
         <div class="island-icon">${subject.icon}</div>
         <div class="island-name">${esc(subject.name)}</div>
         <div class="island-subtitle">${esc(subject.subtitle)}</div>
@@ -2434,6 +2702,7 @@ function renderRanking(){
 function renderBadgesSection(){
   const defs = Object.assign({}, BADGE_DEFS);
   SUBJECTS.forEach(s => { defs[subjectBadgeId(s.id)] = { icon:s.icon, name:'Ilha completa: '+s.subtitle, desc:'Completou todas as fases de '+s.subtitle }; });
+  SUBJECTS.forEach(s => { if (challengePhase(s)) defs['challenge_'+s.id] = { icon:'🏆', name:'Desafio vencido: '+s.subtitle, desc:'Conseguiu 2 ou mais estrelas no Desafio de '+s.subtitle }; });
   const items = Object.keys(defs).map(id => {
     const owned = STATE.badges.includes(id) || (id.startsWith('island_') && isSubjectComplete(findSubject(id.replace('island_',''))));
     const d = defs[id];
@@ -2467,7 +2736,7 @@ function renderIsland(){
     const node = el(`
       <div class="trail-node-wrap ${idx%2===0?'left':'right'}">
         <button class="trail-node ${unlocked?'unlocked':'locked'} ${stars===3?'maxed':''}" data-phase="${phase.id}" ${unlocked?'':'disabled'}>
-          <span class="trail-node-num">${unlocked ? (idx+1) : '🔒'}</span>
+          <span class="trail-node-num">${unlocked ? (phase.challenge ? '🏆' : (idx+1)) : '🔒'}</span>
         </button>
         <div class="trail-node-label">${esc(phase.name)}</div>
         <div class="trail-node-stars">${renderStarsInline(stars)}</div>
@@ -2508,7 +2777,11 @@ function renderPhaseIntro(){
         <h2 class="phase-intro-title">${esc(phase.name)}</h2>
         <div class="phase-intro-stars">${renderStarsInline(result?result.stars:0)}</div>
         <div class="mascot-banner small"><span class="mascot-emoji">${MASCOT}</span><span class="speech">${esc(pick(MASCOT_LINES.phaseIntro))}</span></div>
-        <p class="phase-intro-sub">${phase.questions.length} perguntas • responda com calma!</p>
+        <p class="phase-intro-sub">${phase.challenge
+          ? `${CHALLENGE_DRAW} perguntas sorteadas de todas as fases da ilha • um simulado da prova!`
+          : (phase.questions.filter(q => q.type !== 'reflection').length > PHASE_DRAW
+              ? `${PHASE_DRAW} perguntas sorteadas de ${phase.questions.filter(q => q.type !== 'reflection').length} • a cada vez muda!`
+              : `${phase.questions.length} perguntas • responda com calma!`)}</p>
         ${lesson && !studied
           ? `<button class="btn-primary btn-big" id="learnBtn">📚 Aprender primeiro <span class="btn-badge">+10 XP</span></button>
              <button class="btn-secondary" id="playBtn">Já sei, quero jogar ▶️</button>`
@@ -2543,11 +2816,9 @@ function startReview(){
 
 function startPhase(subject, phase){
   const result = STATE.phaseResults[phase.id];
-  const scorable = phase.questions.filter(q => q.type !== 'reflection').length;
-  const questions = result
-    ? shuffled(phase.questions.filter(q => q.type !== 'reflection')).concat(phase.questions.filter(q => q.type === 'reflection'))
-    : phase.questions.slice();
-  QUIZ = { subject, phase, questions, index:0, correctCount:0, total: phase.questions.length, scorable, selected:null };
+  const questions = drawQuestions(subject, phase, !result);
+  const scorable = questions.filter(q => q.type !== 'reflection').length;
+  QUIZ = { subject, phase, questions, index:0, correctCount:0, total: questions.length, scorable, selected:null };
   goTo('quiz', { subjectId: subject.id, phaseId: phase.id });
 }
 
@@ -2789,6 +3060,12 @@ function renderChoiceCard(q){
   return card;
 }
 
+// Opções que têm uma ordem natural (Sim/Não, Menor/Igual/Maior) não são embaralhadas.
+function isOrderedScale(opts){
+  const t = opts.map(o => String(o).replace(/<[^>]+>/g,'').trim().toLowerCase());
+  return (t.length === 2 && t[0] === 'sim' && t[1] === 'não') || t.some(x => x.startsWith('igual a'));
+}
+
 function renderItemsCard(q){
   const card = el(`
     <div class="q-card">
@@ -2804,7 +3081,7 @@ function renderItemsCard(q){
       <div class="q-item-row">
         <div class="q-item-label">${rich(item.label)}</div>
         <div class="q-item-opts">
-          ${shuffled(item.options.map((o,oi)=>oi)).map(oi=>`<button class="mini-opt" data-item="${idx}" data-opt="${oi}">${rich(item.options[oi])}</button>`).join('')}
+          ${(isOrderedScale(item.options) ? item.options.map((o,oi)=>oi) : shuffled(item.options.map((o,oi)=>oi))).map(oi=>`<button class="mini-opt" data-item="${idx}" data-opt="${oi}">${rich(item.options[oi])}</button>`).join('')}
         </div>
       </div>`);
     itemsWrap.appendChild(row);
@@ -2933,6 +3210,7 @@ function finishQuiz(){
     total, attempts: (prev?prev.attempts:0)+1,
   };
   if (isFirstTime) awardBadge('firstPhase');
+  if (phase.challenge && stars >= 2) awardBadge('challenge_'+subject.id);
   if (stars===3) awardBadge('allStars');
 
   let subjectJustCompleted = false, gameJustCompleted = false;

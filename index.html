@@ -258,6 +258,40 @@ button{ touch-action: manipulation; }
 .modal-text{ color:#5B6472; font-size:.92rem; margin:6px 0 10px; }
 .restore-preview{ display:flex; align-items:center; gap:12px; background:#F1F5F9; border-radius:14px; padding:10px 12px; text-align:left; margin:6px 0; }
 .xp-note{ background:#F1F5F9; color:#334155; border-radius:12px; padding:10px 12px; font-weight:700; font-size:.9rem; margin:4px 0 12px; text-align:center; }
+/* -------- Etapa 3: Aprender, Revisar meus erros -------- */
+.btn-badge{ display:inline-block; background:rgba(0,0,0,.14); border-radius:999px; padding:1px 8px; font-size:.8rem; margin-left:6px; vertical-align:middle; }
+.review-cta{ display:block; width:100%; background:linear-gradient(135deg,#7DD3FC,#5AC8FA); color:#073B5A; font-weight:800; font-size:1rem; text-align:center; padding:13px; border:none; border-radius:16px; box-shadow:0 5px 0 #2C9AD1; margin-bottom:12px; }
+.review-cta:active{ transform:translateY(4px); box-shadow:0 1px 0 #2C9AD1; }
+.study-btn{ margin-left:auto; background:#fff; color:var(--text); font-weight:800; border:none; border-radius:12px; padding:9px 12px; box-shadow:0 3px 0 rgba(0,0,0,.18); font-size:.9rem; white-space:nowrap; }
+.phase-intro-card .btn-secondary{ width:100%; margin-top:10px; }
+.lesson-screen{ display:flex; flex-direction:column; }
+.lesson-head{ color:#fff; font-weight:800; font-size:1rem; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.lesson{ display:flex; flex-direction:column; gap:12px; }
+.lesson-dots{ display:flex; gap:6px; justify-content:center; }
+.lesson-dots .dot{ width:10px; height:10px; border-radius:50%; background:rgba(255,255,255,.3); transition:background .2s, transform .2s; }
+.lesson-dots .dot.on{ background:var(--yellow); }
+.modal-lesson .lesson-dots .dot{ background:#E2E8F0; } .modal-lesson .lesson-dots .dot.on{ background:#F5C518; }
+.lesson-stage{ touch-action: pan-y; }
+.lesson-card{ background:#fff; border-radius:var(--radius); padding:22px 20px 20px; box-shadow:var(--card-shadow); text-align:center; min-height:300px; display:flex; flex-direction:column; align-items:center; gap:8px; animation: cardIn .25s ease; }
+@keyframes cardIn{ from{ transform:translateX(18px); opacity:.4; } to{ transform:none; opacity:1; } }
+@media (prefers-reduced-motion: reduce){ .lesson-card{ animation:none; } }
+.lesson-icon{ font-size:3rem; line-height:1; }
+.lesson-count{ font-size:.78rem; font-weight:800; color:var(--text-soft); text-transform:uppercase; letter-spacing:.05em; }
+.lesson-title{ margin:2px 0 0; font-size:1.35rem; color:var(--text); text-wrap:balance; }
+.lesson-text{ margin:0; font-size:1.12rem; line-height:1.5; color:#334155; font-weight:600; max-width:34ch; }
+.lesson-ex{ background:#FFF8DB; border-radius:14px; padding:10px 14px; color:#5A3E00; font-weight:700; font-size:1rem; line-height:1.5; width:100%; }
+.listen-btn{ margin-top:auto; background:#EEF2FF; color:#3730A3; border:2px solid #C7D2FE; border-radius:999px; padding:10px 18px; font-weight:800; font-size:.95rem; min-height:44px; }
+.lesson-card.check .check-opts{ display:flex; flex-direction:column; gap:10px; width:100%; margin-top:6px; }
+.lesson-card.check .option-btn{ text-align:center; }
+.lesson-card.check #checkFeedback{ width:100%; text-align:left; }
+.lesson-nav{ display:flex; gap:10px; }
+.lesson-nav button{ flex:1; min-height:52px; }
+.lesson-nav .lesson-next:disabled{ opacity:.5; }
+.review-lesson-link{ display:inline-block; margin-top:8px; background:#fff; color:#4338CA; border:2px solid #C7D2FE; border-radius:999px; padding:6px 12px; font-weight:800; font-size:.88rem; min-height:36px; }
+.modal-lesson{ max-width:400px; position:relative; padding-top:44px; background:#F8FAFC; }
+.modal-lesson .lesson-card{ box-shadow:0 4px 14px rgba(0,0,0,.08); min-height:260px; }
+.modal-close{ position:absolute; top:8px; right:10px; width:40px; height:40px; border-radius:50%; background:#E2E8F0; font-size:1rem; font-weight:800; }
+.study-item{ display:flex; gap:10px; align-items:center; width:100%; text-align:left; background:#F1F5F9; border-radius:14px; padding:12px 14px; font-weight:700; margin-bottom:8px; color:var(--text); }
 
 </style>
 </head>
@@ -344,10 +378,10 @@ const SUBJECTS = [
             ],
             explain:"\"Primeiro\" indica ordem (numeral ordinal) e \"três\" indica quantidade (numeral cardinal)." },
           { id:'port-2-5', part:'Cartazes, numeral e a letra H', type:'choice',
-            prompt:'Em qual palavra a letra H aparece formando um dígrafo (duas letras, um só som)?',
-            options:['hoje','chuva','hora','honesto'],
-            correct:[1],
-            explain:"Em \"chuva\", o CH forma um dígrafo: duas letras juntas representando um só som." },
+            prompt:'Leia em voz alta: "homenagem", "herói", "hino". O que acontece com a letra H no início dessas palavras?',
+            options:["Ela não representa nenhum som", "Ela tem som de \"r\" forte", "Ela tem o som da letra \"a\"", "Ela deve ser falada bem alto"],
+            correct:[0],
+            explain:"No início da palavra, a letra H não representa nenhum som: falamos \"omenagem\", \"erói\", \"ino\"." },
           { id:'port-2-6', part:'Cartazes, numeral e a letra H', type:'choice',
             prompt:'A letra H, quando sozinha no início da palavra, geralmente:',
             options:["Tem som bem forte", "Não tem som (é muda)", "Soa como \"rr\" de carro", "Soa como o \"f\" de faca"],
@@ -582,10 +616,10 @@ const SUBJECTS = [
             ],
             explain:"Perder a casa em um desastre leva a buscar abrigo; já querer um emprego melhor é migrar à procura de oportunidades." },
           { id:'hist-1-5', part:'Por que as pessoas migram?', type:'choice',
-            prompt:'Buscar um novo lar pode significar mudar-se para:',
-            options:["Somente para outro país, nunca dentro do Brasil", "Outra cidade, outro estado ou outro país", "Somente para a capital do próprio estado", "Apenas para lugares que ficam perto do mar"],
-            correct:[1],
-            explain:"Buscar um novo lar pode significar mudar para outra cidade, outro estado ou outro país." },
+            prompt:"Quando uma pessoa se muda para outro país, essa mudança:",
+            options:["Pode durar alguns meses ou anos, ou ser para sempre", "É sempre para o resto da vida, sem volta", "Dura no máximo uma semana", "Só pode acontecer uma vez na vida"],
+            correct:[0],
+            explain:"Dependendo do motivo, a mudança pode durar só um período (meses ou anos) ou ser definitiva." },
           { id:'hist-1-6', part:'Por que as pessoas migram?', type:'reflection',
             prompt:'Por que você acha importante acolher bem as pessoas que migram para uma nova cidade ou país?' },
         ],
@@ -594,15 +628,15 @@ const SUBJECTS = [
         id:'hist-2', name:'Escolhendo o destino e entrando no país', cap:'Capítulo 8',
         questions: [
           { id:'hist-2-1', part:'Escolhendo o destino e entrando no país', type:'choice',
-            prompt:'O que pode influenciar a escolha do destino de quem migra?',
-            options:["Apenas o clima e a temperatura do lugar novo", "Trabalho, segurança e familiares no local", "Só o sabor da comida e as festas da região", "Somente o tamanho e a beleza da cidade"],
-            correct:[1],
-            explain:"A escolha do destino é influenciada por oportunidades de trabalho, segurança e presença de familiares no local." },
+            prompt:"O que as pessoas podem levar em conta para escolher o país para onde vão migrar?",
+            options:["Se há guerras e desastres, o trabalho, a distância e o transporte", "Apenas a cor da bandeira do país", "Só o time de futebol mais famoso do lugar", "Somente o tamanho e a beleza das praias"],
+            correct:[0],
+            explain:"A escolha pode depender de o país ter paz, das condições econômicas e de emprego, da distância e dos meios de transporte disponíveis." },
           { id:'hist-2-2', part:'Escolhendo o destino e entrando no país', type:'choice', multi:true,
-            prompt:'Marque fatores que podem pesar na escolha de para onde migrar:',
-            options:['Ter parentes ou amigos no local','Possibilidade de trabalho','Segurança','Time de futebol da região'],
-            correct:[0,1,2],
-            explain:"Ter parentes, trabalho e segurança pesam na escolha do destino; o time de futebol não é um fator real." },
+            prompt:"Marque fatores que pesam na escolha do destino de quem migra:",
+            options:["Oportunidades de emprego", "Não ter guerras nem catástrofes frequentes", "Distância e meios de transporte", "O time de futebol da região"],
+            correct:[0, 1, 2],
+            explain:"Emprego, segurança (sem guerras e desastres), distância e transporte pesam na escolha. O time de futebol não é um fator." },
           { id:'hist-2-3', part:'Escolhendo o destino e entrando no país', type:'choice',
             prompt:"'Basta entrar?' nos ensina que, para migrar para outro país, geralmente é preciso:",
             options:["Apenas querer e comprar uma passagem de avião", "Seguir as regras e documentos do país de destino", "Nada: qualquer pessoa entra em qualquer país", "Pedir permissão aos vizinhos do novo endereço"],
@@ -621,10 +655,10 @@ const SUBJECTS = [
             ],
             explain:"O passaporte comprova identidade para viajar entre países; o visto é a permissão oficial para entrar e ficar em um país." },
           { id:'hist-2-6', part:'Escolhendo o destino e entrando no país', type:'choice',
-            prompt:'Uma dificuldade comum enfrentada por quem migra é:',
-            options:['Ser sempre muito bem recebido sem nenhum desafio','Adaptar-se a uma nova língua, cultura ou costumes','Não precisar se adaptar a nada','Nenhuma dificuldade existe'],
-            correct:[1],
-            explain:"Quem migra costuma enfrentar o desafio de se adaptar a uma nova língua, cultura ou costumes." },
+            prompt:"A maioria das pessoas que fogem de perseguições e ameaças vai morar:",
+            options:["Em países vizinhos ao seu país de origem", "Sempre do outro lado do mundo", "Em ilhas desertas, longe de todos", "No mesmo bairro onde morava antes"],
+            correct:[0],
+            explain:"Segundo a ACNUR, 73% das pessoas que fogem de perseguições e ameaças estão em territórios vizinhos aos seus países de origem." },
         ],
       },
       {
@@ -875,9 +909,9 @@ const SUBJECTS = [
             explain:"Vírus precisam de uma célula hospedeira para conseguir se multiplicar." },
           { id:'cien-1-2', part:'Doenças causadas por vírus', type:'choice', multi:true,
             prompt:'Marque doenças causadas por vírus:',
-            options:['Gripe','Covid-19','Tétano','Sarampo'],
-            correct:[0,1,3],
-            explain:"Gripe, Covid-19 e sarampo são causadas por vírus; o tétano é causado por uma bactéria." },
+            options:["Gripe", "Cárie", "Sarampo", "Dengue"],
+            correct:[0,2,3],
+            explain:"Gripe, sarampo e dengue são causadas por vírus. A cárie é causada por bactérias." },
           { id:'cien-1-3', part:'Doenças causadas por vírus', type:'choice',
             prompt:'Uma das formas de prevenir doenças causadas por vírus é:',
             options:["Tomar vacinas e lavar as mãos", "Tomar antibiótico sempre que tossir", "Ficar perto de pessoas gripadas", "Comer doces para ficar mais forte"],
@@ -906,74 +940,76 @@ const SUBJECTS = [
         id:'cien-2', name:'Doenças causadas por bactérias', cap:'Capítulo 13',
         questions: [
           { id:'cien-2-1', part:'Doenças causadas por bactérias', type:'choice',
-            prompt:'Bactérias são seres vivos:',
-            options:["Sempre prejudiciais, nunca fazem bem ao corpo", "Microscópicos, podem ser prejudiciais ou úteis ao corpo", "Grandes o bastante para serem vistos a olho nu", "Iguais aos vírus, que só vivem dentro de células"],
-            correct:[1],
-            explain:"Bactérias são seres microscópicos que podem ser prejudiciais ou úteis ao nosso corpo." },
+            prompt:'Sobre as bactérias, é correto dizer que:',
+            options:["A maior parte delas não faz mal, mas algumas causam doenças", "Todas as bactérias causam doenças nas pessoas", "Elas são grandes e podem ser vistas a olho nu", "Elas só existem em lugares muito sujos"],
+            correct:[0],
+            explain:"A maior parte das bactérias não faz mal à saúde, mas algumas podem ser perigosas e causar doenças, como a cárie e a tuberculose." },
           { id:'cien-2-2', part:'Doenças causadas por bactérias', type:'choice', multi:true,
-            prompt:'Marque doenças causadas por bactérias:',
-            options:['Tétano','Tuberculose','Gripe','Faringite bacteriana'],
-            correct:[0,1,3],
-            explain:"Tétano, tuberculose e faringite bacteriana são causadas por bactérias; a gripe é causada por vírus." },
+            prompt:'Marque as doenças causadas por bactérias:',
+            options:["Gripe", "Cárie", "Sarampo", "Tuberculose"],
+            correct:[1,3],
+            explain:"A cárie e a tuberculose são causadas por bactérias. A gripe e o sarampo são causados por vírus." },
           { id:'cien-2-3', part:'Doenças causadas por bactérias', type:'choice',
-            prompt:'Uma forma de evitar o tétano é:',
-            options:["Cuidar bem de ferimentos e manter a vacina em dia", "Deixar o machucado aberto, sem lavar, até sarar", "Tomar antibiótico por conta própria toda semana", "Andar descalço em terreno com pregos e ferrugem"],
+            prompt:'Como a cárie se forma?',
+            options:["Bactérias da boca comem restos de comida e soltam um ácido que fura o dente", "O dente fica fraco porque bebemos muita água gelada", "Um vírus entra no dente quando a pessoa espirra", "Um verme entra pela boca e come o dente por dentro"],
             correct:[0],
-            explain:"Cuidar bem de ferimentos e manter a vacina em dia ajuda a prevenir o tétano." },
+            explain:"Bactérias da boca se alimentam dos restos de comida (principalmente doces), formam a placa bacteriana e produzem um ácido que vai furando o dente." },
           { id:'cien-2-4', part:'Doenças causadas por bactérias', type:'choice',
-            prompt:'Diferente dos vírus, muitas bactérias podem ser combatidas com:',
-            options:['Antibióticos','Repouso sem remédio nenhum','Sorvete','Nada, são invencíveis'],
+            prompt:'A melhor forma de evitar a cárie é:',
+            options:["Escovar os dentes depois das refeições, ao acordar e antes de dormir", "Comer doces só à noite, antes de dormir", "Escovar os dentes só uma vez por semana", "Beber bastante refrigerante depois de comer"],
             correct:[0],
-            explain:"Diferente dos vírus, muitas infecções bacterianas podem ser tratadas com antibióticos." },
+            explain:"Escovar os dentes e a língua depois das refeições, ao acordar e antes de dormir impede que os restos de comida se acumulem na boca." },
           { id:'cien-2-5', part:'Doenças causadas por bactérias', type:'choice',
-            prompt:'Boas práticas de higiene, como lavar as mãos, ajudam a:',
-            options:['Aumentar o número de bactérias prejudiciais no corpo','Reduzir o risco de infecções bacterianas','Não fazer diferença nenhuma','Causar mais doenças'],
-            correct:[1],
-            explain:"Lavar as mãos reduz o risco de infecções causadas por bactérias." },
+            prompt:'A tuberculose afeta principalmente os pulmões. Como ela passa de uma pessoa para outra?',
+            options:["Por gotinhas de saliva no ar e por objetos usados pelo doente", "Pela picada do mosquito que vive em água parada", "Por andar descalço em terra úmida e contaminada", "Por comer frutas que não foram lavadas"],
+            correct:[0],
+            explain:"Ao tossir, espirrar e falar, a pessoa doente solta gotículas com bactérias. Copos, talheres e toalhas usados por ela também podem transmitir a doença." },
           { id:'cien-2-6', part:'Doenças causadas por bactérias', type:'items',
-            prompt:'Classifique a afirmação:',
+            prompt:'Essas atitudes ajudam a prevenir a tuberculose?',
             items:[
-              { label:'Algumas bactérias ajudam na digestão dos alimentos', options:['Verdadeiro','Falso'], correct:0 },
-              { label:'Todas as bactérias fazem mal ao corpo', options:['Verdadeiro','Falso'], correct:1 },
+              { label:'Deixar janelas e cortinas abertas', options:['Ajuda a prevenir','Não ajuda'], correct:0 },
+              { label:'Usar o mesmo copo de quem está doente', options:['Ajuda a prevenir','Não ajuda'], correct:1 },
+              { label:'Tomar a vacina, que é gratuita no Brasil', options:['Ajuda a prevenir','Não ajuda'], correct:0 },
             ],
-            explain:"Algumas bactérias realmente ajudam na digestão (verdadeiro); nem todas as bactérias fazem mal ao corpo, por isso a segunda afirmação é falsa." },
+            explain:"Ambientes arejados, lavar as mãos, não usar os objetos do doente e tomar a vacina ajudam a prevenir a tuberculose." },
         ],
       },
       {
         id:'cien-3', name:'Outros microrganismos', cap:'Capítulo 13',
         questions: [
-          { id:'cien-3-1', part:'Outros microrganismos', type:'choice',
-            prompt:'Além de vírus e bactérias, outros microrganismos que podem causar doenças são, por exemplo:',
-            options:["Protozoários e fungos", "Peixes e aves pequenas", "Cachorros e gatos", "Árvores e plantas grandes"],
-            correct:[0],
-            explain:"Protozoários e fungos são outros exemplos de microrganismos que podem causar doenças." },
+          { id:'cien-3-1', part:'Outros microrganismos', type:'choice', multi:true,
+            prompt:'Além dos vírus e das bactérias, outros microrganismos causam doenças. Marque os exemplos:',
+            options:["Giárdia", "Lombriga", "Ameba", "Ancilóstomo"],
+            correct:[0,2],
+            explain:"A giárdia e a ameba são microrganismos. A lombriga e o ancilóstomo são vermes, que são animais." },
           { id:'cien-3-2', part:'Outros microrganismos', type:'choice',
-            prompt:'A malária é uma doença causada por um:',
-            options:["Vírus, que passa de pessoa para pessoa no ar", "Protozoário, transmitido pelo mosquito Anopheles", "Verme, que entra pela pele quando andamos descalços", "Bactéria, que entra no corpo por ferimentos"],
-            correct:[1],
-            explain:"A malária é causada por um protozoário, transmitido pela picada do mosquito Anopheles." },
-          { id:'cien-3-3', part:'Outros microrganismos', type:'choice',
-            prompt:'Micoses de pele são causadas por:',
-            options:['Vírus','Fungos','Vermes','Bactérias apenas'],
-            correct:[1],
-            explain:"As micoses de pele são causadas por fungos." },
-          { id:'cien-3-4', part:'Outros microrganismos', type:'choice', multi:true,
-            prompt:'Marque cuidados que ajudam a prevenir doenças causadas por fungos e protozoários:',
-            options:['Manter a pele limpa e seca','Eliminar água parada que atrai mosquitos','Nunca tomar banho','Usar repelente contra mosquitos'],
-            correct:[0,1,3],
-            explain:"Manter a pele limpa e seca, eliminar água parada e usar repelente ajudam a prevenir doenças causadas por fungos e protozoários." },
-          { id:'cien-3-5', part:'Outros microrganismos', type:'choice',
-            prompt:'Protozoários são seres:',
-            options:["Unicelulares (uma só célula) e microscópicos", "Sempre grandes e visíveis a olho nu, sem lupa", "Formados por muitas células, como as plantas", "Plantas pequenas que têm flores e sementes"],
+            prompt:'Como as pessoas pegam giardíase?',
+            options:["Engolindo água ou comida contaminada com giárdias", "Sendo picadas pelo mosquito Aedes aegypti", "Respirando perto de alguém com tosse", "Pisando descalças na terra úmida"],
             correct:[0],
-            explain:"Protozoários são seres unicelulares (uma só célula) e microscópicos." },
+            explain:"As giárdias vivem na água. Quem bebe essa água ou come alimentos lavados com ela engole as giárdias, que vão para o intestino." },
+          { id:'cien-3-3', part:'Outros microrganismos', type:'choice',
+            prompt:'Onde a giárdia e a ameba se instalam no corpo humano?',
+            options:["No intestino", "Nos pulmões", "Nos dentes", "Na pele dos pés"],
+            correct:[0],
+            explain:"Tanto a giárdia quanto a ameba se instalam no intestino e causam diarreia e dor de barriga." },
+          { id:'cien-3-4', part:'Outros microrganismos', type:'choice', multi:true,
+            prompt:'Marque o que ajuda a prevenir a giardíase e a amebíase:',
+            options:["Lavar as mãos depois de usar o banheiro e antes de comer", "Beber só água tratada", "Comer verduras cruas sem lavar", "Lavar bem frutas, verduras e legumes com água potável"],
+            correct:[0,1,3],
+            explain:"Boa higiene, água tratada e alimentos bem lavados evitam essas doenças." },
+          { id:'cien-3-5', part:'Outros microrganismos', type:'choice',
+            prompt:'Qual doença causa diarreia forte com sangue, febre e fraqueza, e pode até levar à morte?',
+            options:["Amebíase", "Cárie", "Gripe", "Sarampo"],
+            correct:[0],
+            explain:"A amebíase, causada pela ameba, provoca diarreia intensa com sangue, febre, fraqueza e fortes dores na barriga." },
           { id:'cien-3-6', part:'Outros microrganismos', type:'items',
-            prompt:'Classifique o microrganismo causador:',
+            prompt:'Qual é o causador de cada doença?',
             items:[
-              { label:'Micose de pele', options:['Fungo','Protozoário'], correct:0 },
-              { label:'Malária', options:['Fungo','Protozoário'], correct:1 },
+              { label:'Giardíase', options:['Giárdia','Vírus'], correct:0 },
+              { label:'Amebíase', options:['Bactéria','Ameba'], correct:1 },
+              { label:'Tuberculose', options:['Bactéria','Ameba'], correct:0 },
             ],
-            explain:"Micoses de pele são causadas por fungos; a malária é causada por um protozoário." },
+            explain:"A giardíase é causada pela giárdia, a amebíase pela ameba e a tuberculose por uma bactéria." },
         ],
       },
       {
@@ -1177,6 +1213,258 @@ if (typeof module !== 'undefined') { module.exports = { SUBJECTS }; }
 
 </script>
 <script>
+/* Cartões "Aprender" — mini-lições antes de cada fase.
+   Texto ESCRITO POR NÓS, com base nos capítulos do livro (sem copiar o texto nem as imagens do livro).
+   Cada cartão: no máximo 2 frases curtas + um exemplo. Cada lição termina com uma pergunta-relâmpago
+   que não vale ponto (só para a criança se lembrar do que acabou de ler).
+   Fase sem lição simplesmente não mostra o botão "Aprender". */
+
+// F(a, b) = fração empilhada, definida em questions.js (carregado antes deste arquivo).
+
+const LESSONS = {
+  // ============================= LÍNGUA PORTUGUESA =============================
+  'port-1': {
+    cards: [
+      { icon: '🎨', title: 'Poema visual', text: 'É um poema feito para ser lido e também visto. As palavras são arrumadas no papel para formar um desenho.', ex: 'No poema "Aranha", as letras desenham o corpo e as patas do bicho.' },
+      { icon: '👀', title: 'A forma também conta', text: 'No poema visual, o lugar e o formato das palavras ajudam a entender o que o poema quer dizer.', ex: 'Palavras em zigue-zague podem mostrar peixes nadando de um lado para o outro.' },
+      { icon: '🔁', title: 'Repetir sons', text: 'Os poemas costumam repetir letras e sons para criar ritmo e significado.', ex: '"arrrranha": o R repetido faz a gente falar devagar, como a aranha arranhando.' },
+      { icon: '🔄', title: 'Palíndromo', text: 'É uma palavra ou frase que pode ser lida da esquerda para a direita e da direita para a esquerda.', ex: '"Rio: o ir" e "Irene ri" são palíndromos.' },
+      { icon: '🌸', title: 'Linguagem figurada', text: 'É quando as palavras criam uma imagem na nossa imaginação, com um sentido diferente do sentido comum.', ex: '"Ela é uma flor de pessoa" quer dizer que ela é delicada e gentil.' },
+      { icon: '🐟', title: 'Animais que falam', text: 'Dar voz a animais ou coisas, que na vida real não falam, também é usar o sentido figurado.', ex: 'No poema "Zigue-zague", os peixes Zig e Zag conversam.' },
+    ],
+    check: { prompt: '"Fulano tem um coração de ouro." Essa frase usa:', options: ['Linguagem figurada', 'Um palíndromo', 'Um numeral'], correct: 0, explain: 'O coração não é de ouro de verdade: a frase cria uma imagem para dizer que a pessoa é muito boa.' },
+  },
+  'port-2': {
+    cards: [
+      { icon: '📢', title: 'Cartaz de conscientização', text: 'É um cartaz que convida as pessoas a pensar sobre um tema importante e a mudar de atitude.', ex: 'Ex.: respeitar as diferenças, cuidar da água, combater a dengue.' },
+      { icon: '🖍️', title: 'Como ele chama atenção', text: 'Usa imagens, frases curtas, cores e letras de tamanhos diferentes para destacar a mensagem principal.', ex: 'A frase mais importante costuma aparecer bem grande.' },
+      { icon: '🔢', title: 'Numeral', text: 'É a palavra que indica quantidade ou ordem. Pode ser escrita com algarismos (11) ou por extenso (onze).', ex: '"Leonardo treina três horas por dia."' },
+      { icon: '🧮', title: 'Tipos de numeral', text: 'Cardinal: um, dois, três. Ordinal: primeiro, segundo. Multiplicativo: dobro, triplo. Fracionário: meio, um terço.', ex: '"Bia foi a terceira colocada" → terceira é ordinal.' },
+      { icon: '🤫', title: 'A letra H no começo', text: 'Quando a palavra começa com H, essa letra não tem som nenhum. Mas ela precisa ser escrita!', ex: 'hino, herói, homenagem, higiene.' },
+    ],
+    check: { prompt: '"O evento teve o dobro de voluntários." A palavra "dobro" é um numeral:', options: ['Multiplicativo', 'Ordinal', 'Fracionário'], correct: 0, explain: 'Dobro quer dizer duas vezes a quantidade: é um numeral multiplicativo.' },
+  },
+  'port-3': {
+    cards: [
+      { icon: '🗣️', title: 'Depoimento', text: 'É um texto em que alguém conta publicamente o que viveu ou o que achou de algo ou de alguém.', ex: '"Nós adoramos a festa! Os monitores foram muito atenciosos."' },
+      { icon: '👤', title: 'Eu e nós, no passado', text: 'O depoimento costuma ser escrito na 1ª pessoa (eu, nós) e com verbos no passado, porque conta algo que já aconteceu.', ex: '(eu) comemorei, (nós) comemoramos.' },
+      { icon: '⏪', title: 'Terminação -am', text: 'Nos verbos no plural, -am geralmente indica o passado. É falado de um jeito mais fraco.', ex: 'Ontem, eles brincaram muito.' },
+      { icon: '⏩', title: 'Terminação -ão', text: 'Nos verbos no plural, -ão geralmente indica o futuro. É falado de um jeito mais forte.', ex: 'Amanhã, eles brincarão de novo.' },
+      { icon: '🤝', title: 'Concordância verbal', text: 'O verbo combina com quem faz a ação, em número (singular ou plural) e em pessoa (eu, nós, eles).', ex: 'O menino corre. Os meninos correm.' },
+    ],
+    check: { prompt: '"No ano que vem, os alunos ___ uma nova festa." Qual verbo completa?', options: ['farão', 'fizeram', 'faz'], correct: 0, explain: '"No ano que vem" indica futuro, e "os alunos" está no plural: farão.' },
+  },
+
+  // ============================= MATEMÁTICA =============================
+  'mat-1': {
+    cards: [
+      { icon: '🍕', title: 'O que a fração mostra', text: `O número de baixo (denominador) diz em quantas partes iguais o inteiro foi dividido. O de cima (numerador) diz quantas partes pegamos.`, ex: `${F(3, 8)} → pizza em 8 pedaços, comemos 3.` },
+      { icon: '⚖️', title: 'Mesmo denominador', text: 'Se os denominadores são iguais, a maior fração é a que tem o MAIOR numerador.', ex: `${F(5, 8)} > ${F(3, 8)}` },
+      { icon: '🔍', title: 'Mesmo numerador', text: 'Se os numeradores são iguais, a maior fração é a que tem o MENOR denominador, porque as partes são maiores.', ex: `${F(1, 2)} > ${F(1, 4)} (metade é maior que um quarto)` },
+      { icon: '1️⃣', title: 'Menor, igual ou maior que 1', text: 'Se o numerador é menor que o denominador, a fração é menor que 1 inteiro. Se são iguais, vale 1 inteiro.', ex: `${F(3, 4)} < 1 · ${F(4, 4)} = 1 · ${F(5, 4)} > 1` },
+    ],
+    check: { prompt: `Qual fração é maior: ${F(2, 6)} ou ${F(5, 6)}?`, options: [`${F(5, 6)}`, `${F(2, 6)}`, 'São iguais'], correct: 0, explain: 'Os denominadores são iguais (6), então ganha quem tem o maior numerador: 5.' },
+  },
+  'mat-2': {
+    cards: [
+      { icon: '🟰', title: 'Frações equivalentes', text: 'São frações diferentes que representam a mesma parte do inteiro.', ex: `${F(1, 2)} = ${F(2, 4)} = ${F(4, 8)}` },
+      { icon: '🧮', title: 'Multiplicando', text: 'Para achar uma fração equivalente, multiplique o numerador e o denominador pelo MESMO número.', ex: `${F(1, 3)} → ×2 → ${F(2, 6)}` },
+      { icon: '➗', title: 'Dividindo', text: 'Também dá para dividir o numerador e o denominador pelo mesmo número.', ex: `${F(6, 8)} → ÷2 → ${F(3, 4)}` },
+      { icon: '🍫', title: 'Na prática', text: 'Comer 2 pedaços de uma barra dividida em 4 é o mesmo que comer metade da barra.', ex: `${F(2, 4)} = ${F(1, 2)}` },
+    ],
+    check: { prompt: `Qual fração é equivalente a ${F(1, 4)}?`, options: [`${F(2, 8)}`, `${F(2, 4)}`, `${F(1, 8)}`], correct: 0, explain: 'Multiplicando 1 e 4 por 2, obtemos 2/8.' },
+  },
+  'mat-3': {
+    cards: [
+      { icon: '✂️', title: 'Simplificar', text: 'Simplificar é escrever a fração com números menores, sem mudar o valor dela.', ex: `${F(4, 8)} = ${F(1, 2)}` },
+      { icon: '➗', title: 'Como fazer', text: 'Divida o numerador e o denominador pelo mesmo número.', ex: `${F(6, 9)} → ÷3 → ${F(2, 3)}` },
+      { icon: '🔁', title: 'Pode repetir', text: 'Dá para simplificar mais de uma vez, até não dar mais para dividir os dois pelo mesmo número.', ex: `${F(8, 16)} → ÷2 → ${F(4, 8)} → ÷4 → ${F(1, 2)}` },
+      { icon: '🏁', title: 'Forma mais simples', text: 'Quando o numerador e o denominador só podem ser divididos juntos por 1, a fração está na forma mais simples.', ex: `${F(3, 5)} já está simplificada.` },
+    ],
+    check: { prompt: `Qual é a forma simplificada de ${F(5, 10)}?`, options: [`${F(1, 2)}`, `${F(5, 2)}`, `${F(1, 5)}`], correct: 0, explain: 'Dividindo 5 e 10 por 5, chegamos a 1/2.' },
+  },
+  'mat-4': {
+    cards: [
+      { icon: '➕', title: 'Somar com o mesmo denominador', text: 'Mantenha o denominador e some só os numeradores.', ex: `${F(2, 7)} + ${F(3, 7)} = ${F(5, 7)}` },
+      { icon: '➖', title: 'Subtrair com o mesmo denominador', text: 'Mantenha o denominador e subtraia só os numeradores.', ex: `${F(6, 9)} − ${F(4, 9)} = ${F(2, 9)}` },
+      { icon: '🚫', title: 'Erro comum', text: 'Não some os denominadores! O tamanho das partes não muda, só a quantidade de partes.', ex: `${F(1, 4)} + ${F(1, 4)} = ${F(2, 4)}, e não 2/8.` },
+      { icon: '🧺', title: 'Fração de uma quantidade', text: 'Para achar uma fração de um número, divida pelo denominador e multiplique pelo numerador.', ex: `${F(1, 4)} de 12 = 12 ÷ 4 = 3` },
+    ],
+    check: { prompt: `Quanto é ${F(3, 5)} + ${F(1, 5)}?`, options: [`${F(4, 5)}`, `${F(4, 10)}`, `${F(3, 5)}`], correct: 0, explain: 'Mantemos o 5 e somamos os numeradores: 3 + 1 = 4.' },
+  },
+
+  // ============================= HISTÓRIA (cap. 8) =============================
+  'hist-1': {
+    cards: [
+      { icon: '🧳', title: 'Migrar', text: 'Migrar é deixar o lugar onde se vive para morar em outro. Pode ser por escolha ou por necessidade.', ex: 'A mudança pode durar alguns meses, anos ou ser para sempre.' },
+      { icon: '📈', title: 'Cada vez mais migrantes', text: 'O número de pessoas vivendo fora do seu país cresceu muito.', ex: 'Eram 84 milhões em 1970 e mais de 280 milhões em 2020.' },
+      { icon: '💼', title: 'À procura de oportunidades', text: 'Algumas pessoas se mudam para estudar ou trabalhar, porque não encontram boas oportunidades no seu país.', ex: 'Falta de emprego e salários baixos pesam nessa decisão.' },
+      { icon: '🏚️', title: 'Procurando abrigo', text: 'Desastres naturais, como terremotos, tsunamis e tempestades, destroem casas e cidades. Muitas pessoas precisam buscar um lugar seguro.', ex: 'Ex.: terremotos no Haiti (2010 e 2021) e na Turquia (2023).' },
+      { icon: '🛡️', title: 'Buscando segurança', text: 'Guerras, conflitos e perseguições fazem pessoas fugirem em busca de proteção. Elas são chamadas de refugiados.', ex: 'Ex.: pessoas da Síria e do Afeganistão.' },
+    ],
+    check: { prompt: 'Uma família que foge de uma guerra no seu país em busca de proteção é chamada de:', options: ['Refugiada', 'Turista', 'Exploradora'], correct: 0, explain: 'Refugiados são pessoas que deixam seu país em busca de proteção contra guerras e perseguições.' },
+  },
+  'hist-2': {
+    cards: [
+      { icon: '🧭', title: 'Escolher o destino', text: 'Quem migra pensa em vários pontos: se o país tem paz, se tem trabalho, a distância e os meios de transporte.' },
+      { icon: '🏘️', title: 'Perto de casa', text: 'Muitas pessoas que fogem de perigos vão para países vizinhos.', ex: '73% delas estão em territórios vizinhos aos seus países.' },
+      { icon: '🌎', title: 'Onde vivem mais imigrantes', text: 'Hoje, os países onde mais vivem imigrantes são Estados Unidos, Alemanha e Arábia Saudita.' },
+      { icon: '📜', title: 'Basta entrar?', text: 'Não! Cada país tem leis com regras de entrada, direitos e deveres para os imigrantes.' },
+      { icon: '🛂', title: 'Passaporte e visto', text: 'O passaporte identifica o viajante em outros países. O visto é a autorização para entrar no país de forma legal.', ex: 'Para ter o visto: formulário, entrevista e documentos.' },
+    ],
+    check: { prompt: 'Qual documento autoriza a entrada de um estrangeiro em um país de forma legal?', options: ['O visto', 'A carteira de estudante', 'O boletim escolar'], correct: 0, explain: 'O visto é o documento que autoriza a entrada do estrangeiro no país de forma legal.' },
+  },
+
+  // ============================= HISTÓRIA (cap. 9) =============================
+  'hist-3': {
+    cards: [
+      { icon: '🚶', title: 'Viajar no passado', text: 'Antigamente, viajar era uma aventura lenta e cansativa. As pessoas iam a pé, em animais ou em barcos simples.', ex: 'Cavalos, bois e camelos carregavam pessoas e cargas.' },
+      { icon: '🐎', title: 'A carruagem', text: 'Era um transporte de luxo puxado por animais, como cavalos e mulas. Era usado por pessoas que tinham muito dinheiro.' },
+      { icon: '⛵', title: 'A caravela', text: 'Era uma embarcação movida pela força do vento nas velas. No passado, era considerada rápida e levava pessoas e mercadorias.' },
+      { icon: '🐫', title: 'Caravanas', text: 'Para ir longe, as pessoas usavam vários transportes na mesma viagem e viajavam em grupo, as caravanas.', ex: 'As viagens eram demoradas, desconfortáveis e perigosas.' },
+    ],
+    check: { prompt: 'O que fazia a caravela se mover?', options: ['A força do vento nas velas', 'Um motor a gasolina', 'Cavalos puxando'], correct: 0, explain: 'A caravela era movida pelo vento que batia nas velas.' },
+  },
+  'hist-4': {
+    cards: [
+      { icon: '🏙️', title: 'Por que mudou?', text: 'As cidades cresceram e o comércio aumentou. Então as pessoas precisaram de transportes mais rápidos.' },
+      { icon: '🚂', title: 'Novos transportes', text: 'Foram criados o trem, o automóvel e o avião. Os primeiros motores funcionavam com vapor.', ex: 'Depois vieram a eletricidade e a gasolina.' },
+      { icon: '✈️', title: 'Mais rápido', text: 'Com os motores, dá para ir mais longe em menos tempo. Uma viagem que levava meses hoje pode levar algumas horas.' },
+      { icon: '🛵', title: 'Evolução continua', text: 'Os transportes seguem mudando. A motocicleta, por exemplo, hoje tem modelos elétricos, que poluem menos.' },
+      { icon: '🛤️', title: 'Transformar para se deslocar', text: 'Para os transportes circularem, construímos estradas, ferrovias e portos. Essas obras mudam a paisagem e podem causar impactos no ambiente.' },
+    ],
+    check: { prompt: 'Qual foi a primeira fonte de energia dos motores dos novos transportes?', options: ['O vapor', 'A energia solar', 'O vento'], correct: 0, explain: 'Os primeiros motores funcionavam com vapor. Depois vieram a eletricidade e a gasolina.' },
+  },
+
+  // ============================= GEOGRAFIA =============================
+  'geo-1': {
+    cards: [
+      { icon: '📦', title: 'Circulação de mercadorias', text: 'É o caminho que os produtos fazem desde onde são feitos até onde são vendidos.', ex: 'Um celular pode ter peças feitas em vários países!' },
+      { icon: '✈️', title: 'Vias aéreas', text: 'Aviões e helicópteros. É o transporte mais rápido, mas é caro, então leva poucas mercadorias.' },
+      { icon: '🚢', title: 'Vias aquáticas', text: 'Barcos e navios em rios, mares e oceanos. Levam muita carga de uma vez para lugares longe.', ex: 'Grãos, minério de ferro e combustíveis vão muito de navio.' },
+      { icon: '🚆', title: 'Ferroviário', text: 'Trens sobre trilhos. Bom para levar cargas pesadas por longas distâncias, em países grandes.' },
+      { icon: '🚚', title: 'Rodoviário', text: 'Caminhões, carros e ônibus em estradas. Chega a quase todos os lugares e é o mais usado no Brasil.' },
+    ],
+    check: { prompt: 'Qual transporte é o mais rápido, mas também o mais caro?', options: ['Aéreo', 'Ferroviário', 'Aquático'], correct: 0, explain: 'O avião é o mais rápido, mas por ser caro é pouco usado para mercadorias.' },
+  },
+  'geo-2': {
+    cards: [
+      { icon: '🌍', title: 'Comércio internacional', text: 'É a troca de produtos entre países. Ele tem duas partes: exportar e importar.' },
+      { icon: '📤', title: 'Exportar', text: 'É quando um país VENDE produtos para outro país.', ex: 'O Brasil exporta soja, minério de ferro e café.' },
+      { icon: '📥', title: 'Importar', text: 'É quando um país COMPRA produtos de outro país.', ex: 'O Brasil importa produtos industrializados, como remédios e máquinas.' },
+      { icon: '🤝', title: 'Brasil e o mundo', text: 'O Brasil vende principalmente matérias-primas e compra principalmente produtos industrializados.', ex: 'Grandes parceiros: China e Estados Unidos.' },
+      { icon: '⚓', title: 'Como as mercadorias viajam', text: 'Entre países, o mais usado é o navio, porque leva muita carga por longas distâncias.' },
+    ],
+    check: { prompt: 'Quando o Brasil vende soja para a China, isso é:', options: ['Exportação', 'Importação', 'Consumo interno'], correct: 0, explain: 'Vender para outro país é exportar.' },
+  },
+  'geo-3': {
+    cards: [
+      { icon: '⛰️', title: 'Relevo', text: 'É o conjunto das formas da superfície da Terra: umas mais altas, outras mais baixas.', ex: 'No Brasil, os tipos principais são planalto, depressão e planície.' },
+      { icon: '🟩', title: 'Planície', text: 'Terreno plano e baixo, perto do nível do mar, de rios ou de lagos. Recebe materiais trazidos pela água e pelo vento.', ex: 'Ex.: Pantanal, em Mato Grosso do Sul.' },
+      { icon: '🟧', title: 'Depressão', text: 'Área mais baixa que os terrenos em volta, ou abaixo do nível do mar. Formada pelo desgaste do vento e da água.', ex: 'Ex.: Vale do Pati, na Bahia.' },
+      { icon: '🟪', title: 'Planalto', text: 'Superfície elevada, mais ou menos plana. Tem chapadas, serras e morros.', ex: 'Brasília fica num planalto: por isso o Palácio do Planalto!' },
+      { icon: '🏔️', title: 'Montanha', text: 'Relevo muito alto e inclinado. Várias montanhas seguidas formam uma cordilheira.', ex: 'Serra da Mantiqueira, Cordilheira dos Andes, Himalaia.' },
+    ],
+    check: { prompt: 'Um terreno elevado e mais ou menos plano, com chapadas e serras, é:', options: ['Planalto', 'Planície', 'Depressão'], correct: 0, explain: 'O planalto é elevado e mais ou menos plano.' },
+  },
+  'geo-4': {
+    cards: [
+      { icon: '🐢', title: 'Mudanças lentas', text: 'A maior parte das mudanças no relevo acontece devagar, durante milhões de anos.' },
+      { icon: '💧', title: 'Águas e ventos', text: 'A água da chuva, dos rios e do mar desgasta e leva pedacinhos do solo e das rochas. O vento também molda as rochas, mais devagar.' },
+      { icon: '🌡️', title: 'Temperatura', text: 'O calor e o frio fazem as rochas aumentarem e diminuírem de tamanho. Com o tempo, elas racham e quebram.' },
+      { icon: '🌋', title: 'Mudanças rápidas', text: 'Vulcões e terremotos mudam o relevo depressa. A lava esfria e vira rocha nova; os terremotos movem pedaços da crosta terrestre.' },
+      { icon: '🏗️', title: 'Ação humana', text: 'As pessoas também mudam o relevo: derrubam morros, aterram áreas alagadas, abrem estradas e fazem mineração.' },
+    ],
+    check: { prompt: 'Qual destes muda o relevo de forma RÁPIDA?', options: ['Um terremoto', 'O vento', 'A água da chuva'], correct: 0, explain: 'Terremotos e vulcões mudam o relevo rápido. Vento e chuva agem devagar.' },
+  },
+
+  // ============================= CIÊNCIAS =============================
+  'cien-1': {
+    cards: [
+      { icon: '🦠', title: 'Seres que causam doenças', text: 'Vírus, bactérias, vermes e outros microrganismos podem causar doenças. Quem causa doença é chamado de patogênico.' },
+      { icon: '🧬', title: 'Vírus', text: 'São tão pequenos que só aparecem em microscópios potentes. Só conseguem se multiplicar dentro das células de outro ser vivo.' },
+      { icon: '🤧', title: 'Doenças por vírus', text: 'Gripe, sarampo, dengue, zika e chikungunya são causadas por vírus.', ex: 'Sarampo: manchas vermelhas na pele, febre alta e tosse.' },
+      { icon: '🦟', title: 'Dengue, zika e chikungunya', text: 'São transmitidas pela picada do mosquito Aedes aegypti, que nasce em água parada.', ex: 'Não deixar água parada ajuda a combater o mosquito.' },
+      { icon: '💉', title: 'Vacina', text: 'A vacina ensina o corpo a criar defesas antes de ficarmos doentes. Assim ele reage mais rápido se o vírus aparecer.' },
+    ],
+    check: { prompt: 'Qual destas doenças é causada por vírus?', options: ['Sarampo', 'Cárie', 'Amebíase'], correct: 0, explain: 'O sarampo é causado por vírus. A cárie é por bactéria e a amebíase, pela ameba.' },
+  },
+  'cien-2': {
+    cards: [
+      { icon: '🔬', title: 'Bactérias', text: 'A maioria das bactérias não faz mal. Mas algumas podem causar doenças.', ex: 'Exemplos: cárie e tuberculose.' },
+      { icon: '🦷', title: 'Cárie', text: 'Bactérias da boca comem restos de comida, principalmente doces, e soltam um ácido que fura o dente.' },
+      { icon: '🪥', title: 'Evitar a cárie', text: 'Escove os dentes e a língua depois das refeições, ao acordar e antes de dormir.' },
+      { icon: '🫁', title: 'Tuberculose', text: 'Ataca principalmente os pulmões. Causa tosse por várias semanas, febre e perda de peso. Passa por gotinhas de saliva e por objetos do doente.' },
+      { icon: '🪟', title: 'Evitar a tuberculose', text: 'Deixe o ambiente arejado, lave as mãos, não use objetos do doente e tome a vacina, que é gratuita no Brasil.' },
+    ],
+    check: { prompt: 'O que causa a cárie?', options: ['Bactérias da boca', 'Um vírus', 'Um verme'], correct: 0, explain: 'As bactérias da boca se alimentam dos restos de comida e produzem o ácido que fura o dente.' },
+  },
+  'cien-3': {
+    cards: [
+      { icon: '🔬', title: 'Outros microrganismos', text: 'Além de vírus e bactérias, há outros seres microscópicos que causam doenças, como a giárdia e a ameba.' },
+      { icon: '💧', title: 'Giardíase', text: 'A giárdia vive na água. Quem bebe água contaminada engole a giárdia, que vai para o intestino e causa diarreia e dor de barriga.' },
+      { icon: '🤢', title: 'Amebíase', text: 'A ameba passa por água ou comida contaminada. Causa diarreia forte com sangue, febre e fraqueza.' },
+      { icon: '🧼', title: 'Como prevenir', text: 'Lave as mãos depois do banheiro e antes de comer, beba só água tratada e lave bem frutas e verduras.', ex: 'Não existe vacina para a giardíase.' },
+    ],
+    check: { prompt: 'Como a giárdia entra no nosso corpo?', options: ['Pela água ou comida contaminada', 'Pela picada de mosquito', 'Pela pele dos pés'], correct: 0, explain: 'A giárdia vive na água e é engolida com água ou alimentos contaminados.' },
+  },
+  'cien-4': {
+    cards: [
+      { icon: '🪱', title: 'Vermes', text: 'São animais de corpo mole e comprido, sem olhos nem patas. Alguns causam doenças, as verminoses.', ex: 'Não existe vacina contra vermes. O remédio se chama vermífugo.' },
+      { icon: '🥗', title: 'Lombriga (ascaridíase)', text: 'Entra quando a pessoa come ou bebe algo com ovos de lombriga. Causa dor de barriga, diarreia, febre e vômito.' },
+      { icon: '🦶', title: 'Ancilóstomo', text: 'É um verme pequeno que entra pela pele de quem pisa descalço na terra úmida contaminada. Ele se alimenta do sangue da pessoa.' },
+      { icon: '👟', title: 'Como prevenir', text: 'Lave as mãos, lave bem os alimentos crus, beba água tratada e ande sempre calçado na terra.' },
+    ],
+    check: { prompt: 'Qual atitude ajuda a evitar o ancilóstomo?', options: ['Andar calçado na terra', 'Tomar vacina', 'Usar repelente'], correct: 0, explain: 'O ancilóstomo entra pela pele dos pés descalços. Por isso, use calçado na terra.' },
+  },
+
+  // ============================= INGLÊS =============================
+  'ing-1': {
+    lang: 'en',
+    cards: [
+      { icon: '🐯', title: 'Animals', text: 'tiger (tigre), lion (leão), leopard (leopardo), zebra, panda, rhino (rinoceronte).', say: 'tiger, lion, leopard, zebra, panda, rhino' },
+      { icon: '🐧', title: 'More animals', text: 'penguin (pinguim), monkey (macaco), snake (cobra), parrot (papagaio).', say: 'penguin, monkey, snake, parrot' },
+      { icon: '🐆', title: 'Body parts', text: 'spots (pintas), stripes (listras), fur (pelo), tail (rabo), feathers (penas), wings (asas).', say: 'spots, stripes, fur, tail, feathers, wings' },
+      { icon: '🦓', title: 'Examples', text: 'Zebras have stripes. Leopards have spots. Parrots have feathers and wings.', say: 'Zebras have stripes. Leopards have spots. Parrots have feathers and wings.' },
+    ],
+    check: { prompt: 'Which animal has stripes?', options: ['Zebra', 'Penguin', 'Snake'], correct: 0, explain: 'Zebras have stripes (listras).' },
+  },
+  'ing-2': {
+    lang: 'en',
+    cards: [
+      { icon: '✅', title: 'can', text: '"can" = consegue / sabe fazer.', ex: 'Monkeys can climb. (Macacos conseguem escalar.)', say: 'Monkeys can climb.' },
+      { icon: '❌', title: "can't", text: '"can\'t" = não consegue.', ex: "Penguins can't fly. (Pinguins não conseguem voar.)", say: "Penguins can't fly." },
+      { icon: '❓', title: 'Can they...?', text: 'Para perguntar, o "can" vem antes: Can they...? Resposta: Yes, they can. / No, they can\'t.', ex: "Can parrots fly? Yes, they can.", say: "Can parrots fly? Yes, they can." },
+      { icon: '🐾', title: "have / don't have", text: '"have" = têm. "don\'t have" = não têm.', ex: "Lions have fur. Snakes don't have legs.", say: "Lions have fur. Snakes don't have legs." },
+      { icon: '🤔', title: 'Do they have...?', text: 'Para perguntar: Do they have...? Resposta: Yes, they do. / No, they don\'t.', ex: "Do zebras have stripes? Yes, they do.", say: "Do zebras have stripes? Yes, they do." },
+    ],
+    check: { prompt: 'Do penguins have wings?', options: ['Yes, they do.', 'Yes, they can.', "No, they can't."], correct: 0, explain: 'Pergunta com "Do they have" → resposta com "do": Yes, they do.' },
+  },
+  'ing-3': {
+    lang: 'en',
+    cards: [
+      { icon: '🧺', title: 'Outdoor activities', text: 'having a picnic (fazer piquenique), building a fort (construir um forte), fishing (pescar).', say: 'having a picnic, building a fort, fishing' },
+      { icon: '🚲', title: 'On wheels', text: 'riding a bike (andar de bicicleta), skateboarding (andar de skate).', say: 'riding a bike, skateboarding' },
+      { icon: '🗺️', title: 'Adventure', text: 'reading a map (ler um mapa), sailing (velejar), hiking a nature trail (fazer trilha), rock-climbing (escalar rochas).', say: 'reading a map, sailing, hiking a nature trail, rock-climbing' },
+      { icon: '✏️', title: 'And...', text: 'drawing (desenhar).', say: 'drawing' },
+    ],
+    check: { prompt: '"Sailing" significa:', options: ['Velejar', 'Pescar', 'Desenhar'], correct: 0, explain: 'Sailing = velejar, andar de barco a vela.' },
+  },
+  'ing-4': {
+    lang: 'en',
+    cards: [
+      { icon: '🎣', title: 'She is + ing', text: 'Para dizer o que alguém está fazendo agora: She is / He is + verbo com -ing.', ex: 'She is fishing. (Ela está pescando.)', say: 'She is fishing.' },
+      { icon: '🚫', title: "He isn't + ing", text: '"isn\'t" = não está.', ex: "He isn't drawing. (Ele não está desenhando.)", say: "He isn't drawing." },
+      { icon: '❓', title: 'Is she...?', text: 'Para perguntar, o "Is" vem primeiro. Resposta: Yes, she is. / No, she isn\'t.', ex: 'Is she sailing? Yes, she is.', say: 'Is she sailing? Yes, she is.' },
+    ],
+    check: { prompt: 'Is he riding a bike? (Sim)', options: ['Yes, he is.', 'Yes, he does.', 'Yes, he can.'], correct: 0, explain: 'Pergunta com "Is" → resposta com "is": Yes, he is.' },
+  },
+};
+
+if (typeof module !== 'undefined') { module.exports = { LESSONS }; }
+
+</script>
+<script>
 /* Motor do jogo - Simulado Gamificado 3º Trimestre
    UX/UI pensado para crianças de 10 anos, mobile-first, estilo "mapa de fases". */
 
@@ -1244,6 +1532,9 @@ function defaultSave(){
     badges: [], soundOn: true, createdAt: null,
     playerId: null, // id anônimo estável neste aparelho, usado no ranking compartilhado
     recoveryCode: null, // código curto para recuperar o progresso em outro aparelho
+    studied: {},   // phaseId -> true quando a criança concluiu os cartões "Aprender"
+    mistakes: {},  // questionId -> 1 enquanto a questão estiver errada (para "Revisar meus erros")
+    firstTry: {},  // questionId -> 1/0, resultado da 1ª tentativa (para o painel de questões mais erradas)
   };
 }
 
@@ -1295,6 +1586,9 @@ function mergeProgress(local, cloud){
   out.coins = Math.max(local.coins||0, cloud.coins||0);
   out.streak = Math.max(local.streak||0, cloud.streak||0);
   out.badges = Array.from(new Set([].concat(local.badges||[], cloud.badges||[])));
+  out.studied = Object.assign({}, cloud.studied||{}, local.studied||{});
+  out.firstTry = Object.assign({}, cloud.firstTry||{}, local.firstTry||{}); // a 1ª tentativa registrada primeiro vale
+  out.mistakes = Object.assign({}, local.mistakes||{});
   out.phaseResults = Object.assign({}, local.phaseResults||{});
   Object.keys(cloud.phaseResults||{}).forEach(id=>{
     const a = out.phaseResults[id], b = cloud.phaseResults[id];
@@ -1457,8 +1751,8 @@ function syncScoreToCloud(){
       pull.then(cloud => {
         if (cloud && !cloud.hidden){
           const cp = cloud.progress || {};
-          const merged = mergeProgress(STATE, { xp: cloud.xp, coins: cp.coins, streak: cp.streak, badges: cp.badges, phaseResults: cp.phaseResults });
-          const changed = JSON.stringify([merged.xp, merged.coins, merged.badges, merged.phaseResults]) !== JSON.stringify([STATE.xp, STATE.coins, STATE.badges, STATE.phaseResults]);
+          const merged = mergeProgress(STATE, { xp: cloud.xp, coins: cp.coins, streak: cp.streak, badges: cp.badges, phaseResults: cp.phaseResults, studied: cp.studied, firstTry: cp.firstTry });
+          const changed = JSON.stringify([merged.xp, merged.coins, merged.badges, merged.phaseResults, merged.studied]) !== JSON.stringify([STATE.xp, STATE.coins, STATE.badges, STATE.phaseResults, STATE.studied]);
           if (changed){ Object.assign(STATE, merged); saveGame(); if (typeof onCloudMerged === 'function') onCloudMerged(); }
         }
         writeScore(db, id);
@@ -1496,6 +1790,8 @@ function writeScore(db, id){
           lastPlayedDate: STATE.lastPlayedDate || null,
           createdAt: STATE.createdAt || null,
           avatarId: STATE.avatar || 'hero',
+          studied: STATE.studied || {},
+          firstTry: STATE.firstTry || {},
         };
         db.collection('scores').doc(id).set(data, { merge: true })
           .then(()=>{ if (STATE.pendingReset){ STATE.pendingReset = false; saveGame(); } })
@@ -1636,7 +1932,8 @@ function parentOf(nav){
   switch (nav.screen){
     case 'island': return { screen:'map' };
     case 'phaseIntro': return { screen:'island', subjectId: nav.subjectId };
-    case 'result': return { screen:'island', subjectId: nav.subjectId };
+    case 'lesson': return { screen:'phaseIntro', subjectId: nav.subjectId, phaseId: nav.phaseId };
+    case 'result': return nav.review ? { screen:'map' } : { screen:'island', subjectId: nav.subjectId };
     case 'ranking': return { screen:'map' };
     case 'onboarding': return nav.edit ? { screen:'map' } : null;
     default: return { screen:'map' };
@@ -1649,6 +1946,7 @@ window.addEventListener('popstate', ()=>{
       try{ history.pushState({ app: true }, ''); }catch(e){}
       return;
     }
+    if (NAV.review){ goTo('map'); return; }
     const p = { screen:'phaseIntro', subjectId: NAV.subjectId, phaseId: NAV.phaseId };
     goTo(p.screen, p);
     return;
@@ -1664,6 +1962,7 @@ function render(){
   if (NAV.screen === 'map') return renderMap();
   if (NAV.screen === 'island') return renderIsland();
   if (NAV.screen === 'phaseIntro') return renderPhaseIntro();
+  if (NAV.screen === 'lesson') return renderLessonScreen();
   if (NAV.screen === 'quiz') return renderQuiz();
   if (NAV.screen === 'result') return renderResult();
   if (NAV.screen === 'ranking') return renderRanking();
@@ -1813,7 +2112,7 @@ function openRestore(){
 function applyRestore(found){
   const d = found.data, cp = d.progress || {};
   const oldId = STATE.playerId;
-  const merged = mergeProgress(STATE, { xp: d.xp, coins: cp.coins, streak: cp.streak, badges: cp.badges, phaseResults: cp.phaseResults });
+  const merged = mergeProgress(STATE, { xp: d.xp, coins: cp.coins, streak: cp.streak, badges: cp.badges, phaseResults: cp.phaseResults, studied: cp.studied, firstTry: cp.firstTry });
   Object.assign(STATE, merged);
   STATE.playerId = found.id;
   STATE.recoveryCode = d.code;
@@ -1908,6 +2207,12 @@ function renderMap(){
   const mascotMsg = el(`<div class="mascot-banner"><span class="mascot-emoji">${MASCOT}</span><span class="speech">${esc(pick(MASCOT_LINES.welcome))}</span></div>`);
   wrap.appendChild(mascotMsg);
 
+  const nMistakes = mistakeQuestions().length;
+  if (nMistakes > 0){
+    const reviewCta = el(`<button class="review-cta" id="reviewCta">🔁 Revisar meus erros <span class="btn-badge">${nMistakes}</span></button>`);
+    wrap.appendChild(reviewCta);
+    reviewCta.addEventListener('click', ()=>{ SFX.click(); startReview(); });
+  }
   const rankingCta = el(`<button class="ranking-cta" id="rankingCta">🏆 Ver Ranking da Turma</button>`);
   wrap.appendChild(rankingCta);
 
@@ -2063,6 +2368,7 @@ function renderIsland(){
     <div class="island-header">
       <button class="back-btn" id="backToMap">⬅ Mapa</button>
       <div class="island-header-title">${subject.icon} ${esc(subject.name)}</div>
+      ${subject.phases.some(p => LESSONS[p.id]) ? `<button class="study-btn" id="studyBtn">📚 Estudar</button>` : ''}
     </div>`));
 
   wrap.appendChild(el(`<div class="mascot-banner"><span class="mascot-emoji">${MASCOT}</span><span class="speech">${esc(pick(MASCOT_LINES.islandIntro))}</span></div>`));
@@ -2087,6 +2393,7 @@ function renderIsland(){
   root.appendChild(wrap);
   wireTopBar(wrap);
   wrap.querySelector('#backToMap').addEventListener('click', ()=>{ SFX.click(); goTo('map'); });
+  wrap.querySelector('#studyBtn')?.addEventListener('click', ()=>{ SFX.click(); openStudyList(subject); });
   wrap.querySelectorAll('.trail-node.unlocked').forEach(b => b.addEventListener('click', ()=>{
     SFX.click();
     goTo('phaseIntro', { subjectId: subject.id, phaseId: b.dataset.phase });
@@ -2104,6 +2411,8 @@ function renderPhaseIntro(){
   const subject = findSubject(NAV.subjectId);
   const phase = findPhase(subject, NAV.phaseId);
   const result = STATE.phaseResults[phase.id];
+  const lesson = (typeof LESSONS !== 'undefined') ? LESSONS[phase.id] : null;
+  const studied = !!(STATE.studied && STATE.studied[phase.id]);
   root.innerHTML = '';
   const wrap = el(`
     <div class="screen phase-intro-screen" style="--c:${subject.color}; --cd:${subject.colorDark}">
@@ -2114,21 +2423,207 @@ function renderPhaseIntro(){
         <div class="phase-intro-stars">${renderStarsInline(result?result.stars:0)}</div>
         <div class="mascot-banner small"><span class="mascot-emoji">${MASCOT}</span><span class="speech">${esc(pick(MASCOT_LINES.phaseIntro))}</span></div>
         <p class="phase-intro-sub">${phase.questions.length} perguntas • responda com calma!</p>
-        <button class="btn-primary btn-big" id="playBtn">${result?'Jogar de novo':'Jogar'} ▶️</button>
+        ${lesson && !studied
+          ? `<button class="btn-primary btn-big" id="learnBtn">📚 Aprender primeiro <span class="btn-badge">+10 XP</span></button>
+             <button class="btn-secondary" id="playBtn">Já sei, quero jogar ▶️</button>`
+          : `<button class="btn-primary btn-big" id="playBtn">${result?'Jogar de novo':'Jogar'} ▶️</button>
+             ${lesson ? `<button class="btn-secondary" id="learnBtn">📚 Rever a lição</button>` : ''}`}
         <button class="back-btn" id="backToIsland">⬅ Voltar para a ilha</button>
       </div>
     </div>`);
   root.appendChild(wrap);
   wrap.querySelector('#backToIsland').addEventListener('click', ()=>{ SFX.click(); goTo('island', { subjectId: subject.id }); });
-  wrap.querySelector('#playBtn').addEventListener('click', ()=>{
-    SFX.whoosh();
-    const scorable = phase.questions.filter(q => q.type !== 'reflection').length;
-    const questions = result
-      ? shuffled(phase.questions.filter(q => q.type !== 'reflection')).concat(phase.questions.filter(q => q.type === 'reflection'))
-      : phase.questions.slice();
-    QUIZ = { subject, phase, questions, index:0, correctCount:0, total: phase.questions.length, scorable, selected:null };
-    goTo('quiz', { subjectId: subject.id, phaseId: phase.id });
+  wrap.querySelector('#learnBtn')?.addEventListener('click', ()=>{ SFX.click(); goTo('lesson', { subjectId: subject.id, phaseId: phase.id }); });
+  wrap.querySelector('#playBtn').addEventListener('click', ()=>{ SFX.whoosh(); startPhase(subject, phase); });
+}
+
+// ---------------------------- REVISAR MEUS ERROS ----------------------------
+const REVIEW_SUBJECT = { id:'review', name:'Revisão', icon:'🔁', color:'#5AC8FA', colorDark:'#2C9AD1' };
+function mistakeQuestions(){
+  const ids = Object.keys(STATE.mistakes || {});
+  const out = [];
+  SUBJECTS.forEach(s => s.phases.forEach(p => p.questions.forEach(q => {
+    if (ids.includes(q.id) && q.type !== 'reflection') out.push(Object.assign({}, q, { __phaseId: p.id }));
+  })));
+  return out;
+}
+function startReview(){
+  const qs = shuffled(mistakeQuestions()).slice(0, 8);
+  if (!qs.length) return;
+  const phase = { id:'review', name:'Revisar meus erros', cap:'Revisão', questions: qs };
+  QUIZ = { subject: REVIEW_SUBJECT, phase, questions: qs, index:0, correctCount:0, total: qs.length, scorable: qs.length, review: true };
+  goTo('quiz', { review: true });
+}
+
+function startPhase(subject, phase){
+  const result = STATE.phaseResults[phase.id];
+  const scorable = phase.questions.filter(q => q.type !== 'reflection').length;
+  const questions = result
+    ? shuffled(phase.questions.filter(q => q.type !== 'reflection')).concat(phase.questions.filter(q => q.type === 'reflection'))
+    : phase.questions.slice();
+  QUIZ = { subject, phase, questions, index:0, correctCount:0, total: phase.questions.length, scorable, selected:null };
+  goTo('quiz', { subjectId: subject.id, phaseId: phase.id });
+}
+
+// ---------------------------- APRENDER (cartões antes da fase) ----------------------------
+// Cartões curtos que a criança passa com o dedo (ou botões), com "Ouvir" em voz alta e uma
+// pergunta-relâmpago no fim que não vale ponto. Na 1ª vez que termina a lição: +10 XP (só 1 vez).
+const TTS = {
+  ok: typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined',
+  speak(text, lang){
+    if (!this.ok) return false;
+    try{
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = lang === 'en' ? 'en-US' : 'pt-BR';
+      const v = speechSynthesis.getVoices().find(v => v.lang && v.lang.toLowerCase().startsWith(lang === 'en' ? 'en' : 'pt'));
+      if (v) u.voice = v;
+      u.rate = 0.95;
+      speechSynthesis.speak(u);
+      return true;
+    }catch(e){ return false; }
+  },
+  stop(){ try{ if (this.ok) speechSynthesis.cancel(); }catch(e){} },
+};
+function plainText(html){ const d = document.createElement('div'); d.innerHTML = html; return d.textContent.replace(/\s+/g,' ').trim(); }
+
+// Monta o leitor de cartões dentro de `host`. opts.onFinish(firstTime) é chamado ao concluir.
+function mountLesson(host, phaseId, opts){
+  opts = opts || {};
+  const lesson = LESSONS[phaseId];
+  const cards = lesson.cards;
+  const total = cards.length + (opts.skipCheck ? 0 : 1);
+  let i = 0, answered = false;
+  host.innerHTML = `
+    <div class="lesson">
+      <div class="lesson-dots">${Array.from({length: total}, (_, k)=>`<span class="dot" data-k="${k}"></span>`).join('')}</div>
+      <div class="lesson-stage" id="lessonStage"></div>
+      <div class="lesson-nav">
+        <button class="btn-secondary lesson-prev" id="lessonPrev">⬅ Voltar</button>
+        <button class="btn-primary lesson-next" id="lessonNext">Próximo ➡</button>
+      </div>
+    </div>`;
+  const stage = host.querySelector('#lessonStage');
+  const prev = host.querySelector('#lessonPrev'), next = host.querySelector('#lessonNext');
+  function paint(){
+    TTS.stop();
+    host.querySelectorAll('.dot').forEach((d, k)=> d.classList.toggle('on', k <= i));
+    prev.style.visibility = i === 0 ? 'hidden' : 'visible';
+    if (i < cards.length){
+      const c = cards[i];
+      stage.innerHTML = `
+        <div class="lesson-card">
+          <div class="lesson-icon">${c.icon}</div>
+          <div class="lesson-count">${i+1} de ${cards.length}</div>
+          <h3 class="lesson-title">${rich(c.title)}</h3>
+          <p class="lesson-text">${rich(c.text)}</p>
+          ${c.ex ? `<div class="lesson-ex">${rich(c.ex)}</div>` : ''}
+          ${TTS.ok ? `<button class="listen-btn" id="listenBtn">🔊 Ouvir</button>` : ''}
+        </div>`;
+      stage.querySelector('#listenBtn')?.addEventListener('click', ()=>{
+        SFX.click();
+        const txt = lesson.lang === 'en' && c.say ? c.say : plainText(c.title + '. ' + c.text + (c.ex ? '. ' + c.ex : ''));
+        TTS.speak(txt, lesson.lang === 'en' && c.say ? 'en' : 'pt');
+      });
+      next.textContent = (i === cards.length - 1) ? (opts.skipCheck ? 'Concluir ✅' : 'Pergunta-relâmpago ⚡') : 'Próximo ➡';
+      next.disabled = false;
+    } else {
+      const q = lesson.check;
+      answered = false;
+      stage.innerHTML = `
+        <div class="lesson-card check">
+          <div class="lesson-icon">⚡</div>
+          <div class="lesson-count">Pergunta-relâmpago · não vale ponto</div>
+          <h3 class="lesson-title">${rich(q.prompt)}</h3>
+          <div class="check-opts">${shuffled(q.options.map((o,k)=>k)).map(k=>`<button class="option-btn" data-k="${k}">${rich(q.options[k])}</button>`).join('')}</div>
+          <div id="checkFeedback"></div>
+        </div>`;
+      stage.querySelectorAll('.option-btn').forEach(b => b.addEventListener('click', ()=>{
+        if (answered) return;
+        answered = true;
+        const right = +b.dataset.k === q.correct;
+        right ? SFX.correct() : SFX.wrong();
+        stage.querySelectorAll('.option-btn').forEach(x => { if (+x.dataset.k === q.correct) x.classList.add('correct'); else if (x === b) x.classList.add('incorrect'); });
+        stage.querySelector('#checkFeedback').innerHTML = `<div class="explain-box"><div class="explain-icon">${right?'✅':'💡'}</div><div class="explain-text"><b>${right?'Isso!':'Quase!'}</b>${rich(q.explain)}</div></div>`;
+        next.disabled = false;
+      }));
+      next.textContent = opts.finishLabel || 'Jogar agora ▶️';
+      next.disabled = true;
+    }
+  }
+  function finish(){
+    TTS.stop();
+    if (!STATE.studied) STATE.studied = {};
+    const firstTime = !STATE.studied[phaseId];
+    if (firstTime){
+      STATE.studied[phaseId] = true;
+      STATE.xp += 10;
+      saveGame();
+      syncScoreToCloud();
+    }
+    opts.onFinish && opts.onFinish(firstTime);
+  }
+  next.addEventListener('click', ()=>{
+    SFX.click();
+    if (i < total - 1){ i++; paint(); }
+    else finish();
   });
+  prev.addEventListener('click', ()=>{ SFX.click(); if (i > 0){ i--; paint(); } });
+  // deslizar com o dedo
+  let x0 = null;
+  stage.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+  stage.addEventListener('touchend', e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0; x0 = null;
+    if (Math.abs(dx) < 50) return;
+    if (dx < 0 && !next.disabled && i < total - 1){ i++; paint(); }
+    else if (dx > 0 && i > 0){ i--; paint(); }
+  });
+  paint();
+}
+
+function renderLessonScreen(){
+  const subject = findSubject(NAV.subjectId);
+  const phase = findPhase(subject, NAV.phaseId);
+  root.innerHTML = '';
+  const wrap = el(`
+    <div class="screen lesson-screen" style="--c:${subject.color}; --cd:${subject.colorDark}">
+      <div class="quiz-top">
+        <button class="back-btn" id="quitLesson" aria-label="Fechar lição">✕</button>
+        <div class="lesson-head">📚 ${esc(phase.name)}</div>
+      </div>
+      <div id="lessonHost"></div>
+    </div>`);
+  root.appendChild(wrap);
+  wrap.querySelector('#quitLesson').addEventListener('click', ()=>{ TTS.stop(); goTo('phaseIntro', { subjectId: subject.id, phaseId: phase.id }); });
+  mountLesson(wrap.querySelector('#lessonHost'), phase.id, {
+    onFinish(firstTime){
+      if (firstTime) showToast('+10 XP por estudar! 📚');
+      startPhase(subject, phase);
+    },
+  });
+}
+
+// Lição em janela por cima do quiz (botão "Rever a lição" na explicação), sem perder a questão.
+function openLessonModal(phaseId){
+  const modal = el(`<div class="modal-backdrop lesson-modal"><div class="modal modal-lesson"><button class="modal-close" aria-label="Fechar">✕</button><div id="lessonModalHost"></div></div></div>`);
+  document.body.appendChild(modal);
+  const close = ()=>{ TTS.stop(); modal.remove(); };
+  modal.querySelector('.modal-close').addEventListener('click', close);
+  modal.addEventListener('click', (e)=>{ if (e.target === modal) close(); });
+  mountLesson(modal.querySelector('#lessonModalHost'), phaseId, { skipCheck: true, onFinish: close });
+}
+
+// Lista das lições da ilha (botão "Estudar" na ilha)
+function openStudyList(subject){
+  const items = subject.phases.filter(p => LESSONS[p.id]).map(p => `
+    <button class="study-item" data-phase="${p.id}">
+      <span>${(STATE.studied && STATE.studied[p.id]) ? '✅' : '📚'}</span><span>${esc(p.name)}</span>
+    </button>`).join('');
+  const modal = el(`<div class="modal-backdrop"><div class="modal"><h2>📚 Estudar</h2><p class="modal-text">Escolha um assunto para rever os cartões.</p>${items || '<p class="modal-text">Ainda não há lições nesta ilha.</p>'}<button class="btn-primary" id="studyClose">Fechar</button></div></div>`);
+  document.body.appendChild(modal);
+  modal.querySelector('#studyClose').addEventListener('click', ()=> modal.remove());
+  modal.querySelectorAll('.study-item').forEach(b => b.addEventListener('click', ()=>{ modal.remove(); openLessonModal(b.dataset.phase); }));
 }
 
 // ---------------------------- QUIZ ----------------------------
@@ -2148,7 +2643,9 @@ function renderQuiz(){
     </div>`);
   root.appendChild(wrap);
   wrap.querySelector('#quitQuiz').addEventListener('click', ()=>{
-    if(confirm('Sair do quiz? Seu progresso nessa fase será perdido.')){ goTo('phaseIntro', { subjectId: subject.id, phaseId: phase.id }); }
+    if(confirm('Sair do quiz? Seu progresso nessa fase será perdido.')){
+      if (QUIZ.review) goTo('map'); else goTo('phaseIntro', { subjectId: subject.id, phaseId: phase.id });
+    }
   });
 
   const area = wrap.querySelector('#quizCardArea');
@@ -2270,6 +2767,17 @@ function renderReflectionCard(q){
   return card;
 }
 
+// Guarda o que a criança errou (para "Revisar meus erros") e o resultado da 1ª tentativa de cada
+// questão (para o painel de questões mais erradas). Nada disso altera estrelas ou XP.
+function recordAnswer(q, isCorrect){
+  if (!STATE.mistakes) STATE.mistakes = {};
+  if (!STATE.firstTry) STATE.firstTry = {};
+  if (STATE.firstTry[q.id] === undefined) STATE.firstTry[q.id] = isCorrect ? 1 : 0;
+  if (isCorrect) delete STATE.mistakes[q.id];
+  else STATE.mistakes[q.id] = 1;
+  saveGame();
+}
+
 function finishAnswer(isCorrect, card, isReflection, q){
   if (!isReflection){
     if (isCorrect){ SFX.correct(); QUIZ.correctCount++; }
@@ -2278,9 +2786,13 @@ function finishAnswer(isCorrect, card, isReflection, q){
     const banner = el(`<div class="feedback-banner ${isCorrect?'good':'bad'}">${isCorrect ? '✅ '+esc(pick(MASCOT_LINES.correct)) : '❌ '+esc(pick(MASCOT_LINES.wrong))}</div>`);
     card.appendChild(banner);
     if (q && q.explain){
-      const explainBox = el(`<div class="explain-box"><div class="explain-icon">💡</div><div class="explain-text"><b>Por quê?</b>${rich(q.explain)}</div></div>`);
+      const lessonId = q.__phaseId || (QUIZ.phase && QUIZ.phase.id);
+      const canReview = typeof LESSONS !== 'undefined' && LESSONS[lessonId];
+      const explainBox = el(`<div class="explain-box"><div class="explain-icon">💡</div><div class="explain-text"><b>Por quê?</b>${rich(q.explain)}${canReview ? `<button class="review-lesson-link">📚 Rever a lição</button>` : ''}</div></div>`);
+      explainBox.querySelector('.review-lesson-link')?.addEventListener('click', ()=>{ SFX.click(); openLessonModal(lessonId); });
       card.appendChild(explainBox);
     }
+    if (q) recordAnswer(q, isCorrect);
   } else {
     const banner = el(`<div class="feedback-banner good">💬 Obrigado por compartilhar!</div>`);
     card.appendChild(banner);
@@ -2298,6 +2810,16 @@ function finishAnswer(isCorrect, card, isReflection, q){
 }
 
 function finishQuiz(){
+  if (QUIZ.review){
+    // Revisão: +5 XP e +5 moedas por questão corrigida. Não mexe em estrelas nem fases.
+    const { correctCount, total } = QUIZ;
+    const xpGained = correctCount*5, coinsGained = correctCount*5;
+    STATE.xp += xpGained; STATE.coins += coinsGained;
+    saveGame(); syncScoreToCloud();
+    QUIZ.resultData = { stars: starsFor(correctCount, total), correctCount, total, xpGained, coinsGained, review: true, left: mistakeQuestions().length };
+    goTo('result', { review: true });
+    return;
+  }
   const { subject, phase, correctCount, total, scorable } = QUIZ;
   const stars = starsFor(correctCount, scorable || total);
   const prev = STATE.phaseResults[phase.id];
@@ -2347,6 +2869,9 @@ function renderResult(){
   const { stars, correctCount, total, xpGained, coinsGained, subjectJustCompleted, gameJustCompleted, xpRule, prevBest, scorable } = resultData;
   const maxScore = scorable || total;
   let xpNote = '';
+  if (resultData.review) xpNote = resultData.left
+    ? `Você corrigiu ${correctCount} de ${total}. Ainda faltam ${resultData.left} para revisar.`
+    : `Parabéns! Você corrigiu todos os seus erros! 🎉`;
   if (xpRule === 'record') xpNote = `🏅 Novo recorde nesta fase! XP completo.`;
   else if (xpRule === 'same') xpNote = prevBest >= maxScore
     ? `Você igualou seu recorde (${prevBest}/${maxScore}): metade do XP.`
@@ -2388,17 +2913,23 @@ function renderResult(){
   if (stars >= 2) burstConfetti(wrap.querySelector('#confettiCanvas'));
   if (stars === 3) SFX.victory();
 
+  if (resultData.review){
+    wrap.querySelector('#continueBtn').textContent = resultData.left ? 'Revisar mais 🔁' : 'Voltar ao mapa 🗺️';
+    wrap.querySelector('#retryBtn').remove();
+    if (!resultData.left) wrap.querySelector('#mapBtn').remove();
+  }
   wrap.querySelector('#continueBtn').addEventListener('click', ()=>{
     SFX.click();
+    if (resultData.review){ if (resultData.left) startReview(); else goTo('map'); return; }
     if (gameJustCompleted){ showToast(pick(MASCOT_LINES.gameComplete)); }
     else if (subjectJustCompleted){ showToast(pick(MASCOT_LINES.islandComplete)); }
     goTo('island', { subjectId: subject.id });
   });
-  wrap.querySelector('#retryBtn').addEventListener('click', ()=>{
+  wrap.querySelector('#retryBtn')?.addEventListener('click', ()=>{
     SFX.click();
     goTo('phaseIntro', { subjectId: subject.id, phaseId: phase.id });
   });
-  wrap.querySelector('#mapBtn').addEventListener('click', ()=>{
+  wrap.querySelector('#mapBtn')?.addEventListener('click', ()=>{
     SFX.click();
     if (gameJustCompleted){ showToast(pick(MASCOT_LINES.gameComplete)); }
     else if (subjectJustCompleted){ showToast(pick(MASCOT_LINES.islandComplete)); }

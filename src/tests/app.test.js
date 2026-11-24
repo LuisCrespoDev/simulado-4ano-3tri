@@ -66,7 +66,8 @@ const APP = path.resolve(process.argv[2] || 'index.html');
   // ---------------- Placar com pergunta aberta ----------------
   section('Placar');
   const r = await H.play(p, 'hist', 'hist-1', 99);
-  ok(r.score.trim() === '5/5 corretas', `fase com pergunta aberta mostra 5/5 (mostrou "${r.score.trim()}")`);
+  const sc = await p.evaluate(() => [QUIZ.scorable, QUIZ.total]);
+  ok(sc[1] === sc[0] + 1 && r.score.trim() === `${sc[0]}/${sc[0]} corretas`, `pergunta aberta não conta no placar (mostrou "${r.score.trim()}", ${sc[1]} perguntas)`);
   await ctx.close();
 
   // ---------------- Recuperar com código ----------------
@@ -216,7 +217,7 @@ const APP = path.resolve(process.argv[2] || 'index.html');
   await p.evaluate(() => goTo('phaseIntro', { subjectId: 'mat', phaseId: 'mat-1' }));
   ok(await p.$('#learnBtn') !== null, 'fase com lição mostra "Aprender primeiro"');
   ok(await p.$eval('#playBtn', (b) => b.textContent.includes('Já sei')), 'dá para pular com "Já sei, quero jogar"');
-  ok(await p.evaluate(() => SUBJECTS.every((s) => s.phases.every((ph) => LESSONS[ph.id]))), 'todas as 23 fases têm lição');
+  ok(await p.evaluate(() => SUBJECTS.every((s) => corePhases(s).every((ph) => LESSONS[ph.id]))), 'todas as 23 fases têm lição');
   await p.evaluate(() => goTo('phaseIntro', { subjectId: 'mat', phaseId: 'mat-1' }));
   await p.click('#learnBtn');
   await p.waitForSelector('.lesson-card');
@@ -282,6 +283,42 @@ const APP = path.resolve(process.argv[2] || 'index.html');
   ok(await p.evaluate(() => mistakeQuestions().length === 0), 'erros corrigidos saem da lista');
   ok(await p.$eval('.xp-note', (e) => e.textContent.includes('corrigiu todos')), 'tela comemora quando não sobra erro');
   ok(await p.evaluate(() => STATE.phaseResults['geo-1'].stars) === 2, 'revisão não mexe nas estrelas da fase');
+  ok(p.__errors.length === 0, 'sem erros de JavaScript' + (p.__errors[0] ? ': ' + p.__errors[0] : ''));
+  await ctx.close();
+
+  // ---------------- Banco maior e Desafio ----------------
+  section('Sorteio de questões e fase Desafio');
+  ctx = await browser.newContext(ctxOpts);
+  p = await H.open(ctx, server, 'app');
+  await H.newPlayer(p);
+  const big = await p.evaluate(() => { const out = []; SUBJECTS.forEach((s) => corePhases(s).forEach((ph) => { if (ph.questions.filter((q) => q.type !== 'reflection').length > PHASE_DRAW) out.push([s.id, ph.id]); })); return out; });
+  if (big.length) {
+    const [bs, bp] = big[0];
+    const sets = new Set();
+    for (let k = 0; k < 6; k++) {
+      await p.evaluate(([s, ph]) => goTo('phaseIntro', { subjectId: s, phaseId: ph }), [bs, bp]);
+      await p.click('#playBtn');
+      const ids = await p.evaluate(() => QUIZ.questions.map((q) => q.id).sort().join());
+      ok(await p.evaluate(() => QUIZ.scorable === PHASE_DRAW), k === 0 ? `fase com banco grande (${bp}) sorteia ${6} questões por partida` : 'partida ' + (k + 1) + ' também com 6');
+      sets.add(ids);
+    }
+    ok(sets.size > 1, `as questões mudam entre partidas (${sets.size} combinações em 6 partidas)`);
+  }
+  // quem já tinha completado a ilha não perde o troféu com o Desafio novo
+  await p.evaluate(() => { const s = findSubject('mat'); corePhases(s).forEach((ph) => (STATE.phaseResults[ph.id] = { stars: 3, bestCorrect: 6, total: 6, attempts: 1 })); STATE.badges.push('island_mat'); saveGame(); goTo('map'); });
+  ok(await p.evaluate(() => isSubjectComplete(findSubject('mat'))), 'ilha completa continua completa com o Desafio criado');
+  const matCard = await p.$eval('.island-card[data-subject="mat"]', (e) => e.textContent);
+  ok(matCard.includes('12/12') && matCard.includes('Desafio'), 'mapa mantém 12/12 e avisa "NOVO: Desafio!"');
+  await p.evaluate(() => goTo('island', { subjectId: 'mat' }));
+  ok(await p.$eval('.trail-node[data-phase="mat-desafio"]', (b) => !b.disabled && b.textContent.includes('🏆')), 'Desafio já liberado para quem completou as fases');
+  const rc = await H.play(p, 'mat', 'mat-desafio', 8);
+  ok(rc.stars === 3 && rc.score.trim() === '8/8 corretas', 'Desafio tem 8 questões e dá estrelas');
+  ok(await p.evaluate(() => QUIZ.questions.every((q) => q.__phaseId && q.__phaseId.startsWith('mat-')) && new Set(QUIZ.questions.map((q) => q.__phaseId)).size > 1), 'Desafio mistura questões de fases diferentes');
+  ok(await p.evaluate(() => STATE.badges.includes('challenge_mat')), 'ganha a medalha "Desafio vencido"');
+  await p.evaluate(() => goTo('map'));
+  ok(!(await p.$eval('.island-card[data-subject="mat"]', (e) => e.textContent.includes('NOVO'))), 'aviso de Desafio novo some depois de jogar');
+  await p.evaluate(() => goTo('island', { subjectId: 'port' }));
+  ok(await p.$('.trail-node[data-phase$="desafio"]') === null, 'Português não tem Desafio');
   ok(p.__errors.length === 0, 'sem erros de JavaScript' + (p.__errors[0] ? ': ' + p.__errors[0] : ''));
   await ctx.close();
 

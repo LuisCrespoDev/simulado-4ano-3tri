@@ -168,7 +168,7 @@ const LESSONS = {
     cards: [
       { icon: '🦠', title: 'Seres que causam doenças', text: 'Vírus, bactérias, vermes e outros microrganismos podem causar doenças. Quem causa doença é chamado de patogênico.' },
       { icon: '🧬', title: 'Vírus', text: 'São tão pequenos que só aparecem em microscópios potentes. Só conseguem se multiplicar dentro das células de outro ser vivo.' },
-      { icon: '🤧', title: 'Doenças por vírus', text: 'Gripe, sarampo, dengue, zika e chikungunya são causadas por vírus.', ex: 'Sarampo: manchas vermelhas na pele, febre alta e tosse.' },
+      { icon: '🤧', title: 'Doenças por vírus', text: 'Gripe, sarampo, Covid-19, dengue, zika e chikungunya são causadas por vírus.', ex: 'Sarampo: manchas vermelhas na pele, febre alta e tosse.' },
       { icon: '🦟', title: 'Dengue, zika e chikungunya', text: 'São transmitidas pela picada do mosquito Aedes aegypti, que nasce em água parada.', ex: 'Não deixar água parada ajuda a combater o mosquito.' },
       { icon: '💉', title: 'Vacina', text: 'A vacina ensina o corpo a criar defesas antes de ficarmos doentes. Assim ele reage mais rápido se o vírus aparecer.' },
     ],

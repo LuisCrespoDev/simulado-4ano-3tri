@@ -216,11 +216,39 @@ function isPhaseUnlocked(subject, phaseIndex){
   const prevResult = STATE.phaseResults[prevPhase.id];
   return !!(prevResult && prevResult.stars >= 1);
 }
+// A fase Desafio (challenge) é extra: não entra no "ilha completa" nem na barra da ilha,
+// para quem já tinha completado não perder o troféu quando o Desafio foi criado.
+function corePhases(subject){ return subject.phases.filter(p => !p.challenge); }
 function isSubjectComplete(subject){
-  return subject.phases.every(p => STATE.phaseResults[p.id] && STATE.phaseResults[p.id].stars >= 1);
+  return corePhases(subject).every(p => STATE.phaseResults[p.id] && STATE.phaseResults[p.id].stars >= 1);
 }
 function subjectStars(subject){
-  return subject.phases.reduce((a,p)=> a + (STATE.phaseResults[p.id] ? STATE.phaseResults[p.id].stars : 0), 0);
+  return corePhases(subject).reduce((a,p)=> a + (STATE.phaseResults[p.id] ? STATE.phaseResults[p.id].stars : 0), 0);
+}
+function challengePhase(subject){ return subject.phases.find(p => p.challenge) || null; }
+
+// ---------- Sorteio das questões de uma partida ----------
+// Fase normal: sorteia PHASE_DRAW questões do banco da fase (se o banco tiver mais que isso).
+// Desafio: sorteia CHALLENGE_DRAW questões de todas as fases da ilha.
+// Pergunta aberta (reflexão) não é sorteada: entra sempre no fim, quando a fase tem uma.
+const PHASE_DRAW = 6, CHALLENGE_DRAW = 8;
+function drawQuestions(subject, phase, firstTime){
+  if (phase.challenge){
+    const pool = [];
+    corePhases(subject).forEach(p => p.questions.forEach(q => { if (q.type !== 'reflection') pool.push(Object.assign({}, q, { __phaseId: p.id })); }));
+    return shuffleArr(pool).slice(0, CHALLENGE_DRAW);
+  }
+  const scorable = phase.questions.filter(q => q.type !== 'reflection');
+  const refl = phase.questions.filter(q => q.type === 'reflection');
+  let picked;
+  if (scorable.length <= PHASE_DRAW) picked = firstTime ? scorable.slice() : shuffleArr(scorable);
+  else picked = shuffleArr(scorable).slice(0, PHASE_DRAW);
+  return picked.concat(refl);
+}
+function shuffleArr(arr){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
 }
 function allSubjectsComplete(){ return SUBJECTS.every(isSubjectComplete); }
 
@@ -230,6 +258,7 @@ if (typeof module !== 'undefined') {
     SAVE_KEY, defaultSave, loadSave, saveGame, resetGame, registerPlayToday,
     levelForXp, xpIntoLevel, BADGE_DEFS, subjectBadgeId, awardBadge, checkStreakBadges,
     starsFor, isPhaseUnlocked, isSubjectComplete, subjectStars, allSubjectsComplete,
+    corePhases, challengePhase, drawQuestions, PHASE_DRAW, CHALLENGE_DRAW,
     ensurePlayerId, totalStarsEarned, newRecoveryCode, ensureRecoveryCode, normalizeCode,
     normalizeName, mergeProgress,
   };

@@ -301,3 +301,10 @@ button{ touch-action: manipulation; }
 .panel-study{ background:#fff; color:var(--text); border-radius:14px; padding:6px 12px; }
 .panel-study-row{ display:flex; justify-content:space-between; gap:10px; padding:7px 0; border-bottom:1px solid #EEF2F7; font-size:.9rem; }
 .panel-study-row:last-child{ border-bottom:none; }
+
+/* -------- Fase Desafio -------- */
+.island-new{ position:absolute; top:-8px; left:50%; transform:translateX(-50%); background:#FF5C5C; color:#fff; font-size:.7rem; font-weight:900; padding:3px 8px; border-radius:999px; white-space:nowrap; box-shadow:0 2px 0 rgba(0,0,0,.2); }
+
+.fbar{ display:flex; gap:3px; margin:10px auto 2px; max-width:300px; }
+.fbar-cell{ flex:1; height:34px; border:2px solid #334155; border-radius:4px; background:#fff; }
+.fbar-cell.on{ background:#FFC93C; }

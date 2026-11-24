@@ -254,7 +254,7 @@ function renderPanel(){
         </div>`;
       }).join('') : `<div class="ranking-empty">Ainda há poucos dados. As respostas começam a aparecer aqui conforme os alunos jogam (cada questão precisa de pelo menos ${MIN} alunos).</div>`}
       <h2 class="panel-h2">Quem estudou os cartões de cada fase</h2>
-      <div class="panel-study">${SUBJECTS.map(s => s.phases.map(p => `<div class="panel-study-row"><span>${s.icon} ${esc(p.name)}</span><b>${studiedBy[p.id] || 0}</b></div>`).join('')).join('')}</div>`;
+      <div class="panel-study">${SUBJECTS.map(s => corePhases(s).map(p => `<div class="panel-study-row"><span>${s.icon} ${esc(p.name)}</span><b>${studiedBy[p.id] || 0}</b></div>`).join('')).join('')}</div>`;
   }
   wrap.querySelectorAll('.ranking-tab').forEach(b => b.addEventListener('click', ()=>{
     filter = b.dataset.filter;
@@ -414,12 +414,15 @@ function renderMap(){
 
   const grid = el(`<div class="island-grid"></div>`);
   SUBJECTS.forEach(subject => {
-    const totalStars = subject.phases.length * 3;
+    const totalStars = corePhases(subject).length * 3;
+    const ch = challengePhase(subject);
+    const chNew = ch && !STATE.phaseResults[ch.id];
     const earned = subjectStars(subject);
     const complete = isSubjectComplete(subject);
     const card = el(`
       <button class="island-card" data-subject="${subject.id}" style="--c:${subject.color}; --cd:${subject.colorDark}">
         ${complete ? '<div class="island-badge">🏆</div>' : ''}
+        ${chNew ? '<div class="island-new">NOVO: Desafio!</div>' : ''}
         <div class="island-icon">${subject.icon}</div>
         <div class="island-name">${esc(subject.name)}</div>
         <div class="island-subtitle">${esc(subject.subtitle)}</div>
@@ -544,6 +547,7 @@ function renderRanking(){
 function renderBadgesSection(){
   const defs = Object.assign({}, BADGE_DEFS);
   SUBJECTS.forEach(s => { defs[subjectBadgeId(s.id)] = { icon:s.icon, name:'Ilha completa: '+s.subtitle, desc:'Completou todas as fases de '+s.subtitle }; });
+  SUBJECTS.forEach(s => { if (challengePhase(s)) defs['challenge_'+s.id] = { icon:'🏆', name:'Desafio vencido: '+s.subtitle, desc:'Conseguiu 2 ou mais estrelas no Desafio de '+s.subtitle }; });
   const items = Object.keys(defs).map(id => {
     const owned = STATE.badges.includes(id) || (id.startsWith('island_') && isSubjectComplete(findSubject(id.replace('island_',''))));
     const d = defs[id];
@@ -577,7 +581,7 @@ function renderIsland(){
     const node = el(`
       <div class="trail-node-wrap ${idx%2===0?'left':'right'}">
         <button class="trail-node ${unlocked?'unlocked':'locked'} ${stars===3?'maxed':''}" data-phase="${phase.id}" ${unlocked?'':'disabled'}>
-          <span class="trail-node-num">${unlocked ? (idx+1) : '🔒'}</span>
+          <span class="trail-node-num">${unlocked ? (phase.challenge ? '🏆' : (idx+1)) : '🔒'}</span>
         </button>
         <div class="trail-node-label">${esc(phase.name)}</div>
         <div class="trail-node-stars">${renderStarsInline(stars)}</div>
@@ -618,7 +622,11 @@ function renderPhaseIntro(){
         <h2 class="phase-intro-title">${esc(phase.name)}</h2>
         <div class="phase-intro-stars">${renderStarsInline(result?result.stars:0)}</div>
         <div class="mascot-banner small"><span class="mascot-emoji">${MASCOT}</span><span class="speech">${esc(pick(MASCOT_LINES.phaseIntro))}</span></div>
-        <p class="phase-intro-sub">${phase.questions.length} perguntas • responda com calma!</p>
+        <p class="phase-intro-sub">${phase.challenge
+          ? `${CHALLENGE_DRAW} perguntas sorteadas de todas as fases da ilha • um simulado da prova!`
+          : (phase.questions.filter(q => q.type !== 'reflection').length > PHASE_DRAW
+              ? `${PHASE_DRAW} perguntas sorteadas de ${phase.questions.filter(q => q.type !== 'reflection').length} • a cada vez muda!`
+              : `${phase.questions.length} perguntas • responda com calma!`)}</p>
         ${lesson && !studied
           ? `<button class="btn-primary btn-big" id="learnBtn">📚 Aprender primeiro <span class="btn-badge">+10 XP</span></button>
              <button class="btn-secondary" id="playBtn">Já sei, quero jogar ▶️</button>`
@@ -653,11 +661,9 @@ function startReview(){
 
 function startPhase(subject, phase){
   const result = STATE.phaseResults[phase.id];
-  const scorable = phase.questions.filter(q => q.type !== 'reflection').length;
-  const questions = result
-    ? shuffled(phase.questions.filter(q => q.type !== 'reflection')).concat(phase.questions.filter(q => q.type === 'reflection'))
-    : phase.questions.slice();
-  QUIZ = { subject, phase, questions, index:0, correctCount:0, total: phase.questions.length, scorable, selected:null };
+  const questions = drawQuestions(subject, phase, !result);
+  const scorable = questions.filter(q => q.type !== 'reflection').length;
+  QUIZ = { subject, phase, questions, index:0, correctCount:0, total: questions.length, scorable, selected:null };
   goTo('quiz', { subjectId: subject.id, phaseId: phase.id });
 }
 
@@ -899,6 +905,12 @@ function renderChoiceCard(q){
   return card;
 }
 
+// Opções que têm uma ordem natural (Sim/Não, Menor/Igual/Maior) não são embaralhadas.
+function isOrderedScale(opts){
+  const t = opts.map(o => String(o).replace(/<[^>]+>/g,'').trim().toLowerCase());
+  return (t.length === 2 && t[0] === 'sim' && t[1] === 'não') || t.some(x => x.startsWith('igual a'));
+}
+
 function renderItemsCard(q){
   const card = el(`
     <div class="q-card">
@@ -914,7 +926,7 @@ function renderItemsCard(q){
       <div class="q-item-row">
         <div class="q-item-label">${rich(item.label)}</div>
         <div class="q-item-opts">
-          ${shuffled(item.options.map((o,oi)=>oi)).map(oi=>`<button class="mini-opt" data-item="${idx}" data-opt="${oi}">${rich(item.options[oi])}</button>`).join('')}
+          ${(isOrderedScale(item.options) ? item.options.map((o,oi)=>oi) : shuffled(item.options.map((o,oi)=>oi))).map(oi=>`<button class="mini-opt" data-item="${idx}" data-opt="${oi}">${rich(item.options[oi])}</button>`).join('')}
         </div>
       </div>`);
     itemsWrap.appendChild(row);
@@ -1043,6 +1055,7 @@ function finishQuiz(){
     total, attempts: (prev?prev.attempts:0)+1,
   };
   if (isFirstTime) awardBadge('firstPhase');
+  if (phase.challenge && stars >= 2) awardBadge('challenge_'+subject.id);
   if (stars===3) awardBadge('allStars');
 
   let subjectJustCompleted = false, gameJustCompleted = false;
